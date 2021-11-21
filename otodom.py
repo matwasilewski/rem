@@ -15,12 +15,12 @@ def get_price(soup: BeautifulSoup) -> Optional[int]:
     price_div = extract_divs(soup, soup_filter, "price")
 
     if len(price_div) != 1:
-        logging.error(f"{len(price_div)} prices found for the listing, "
-                      f"instead of expected one. Skipping the record.")
+        log_wrong_number(len(price_div), 1, "price")
 
-    if "." or "," in price_div[0]:
-        logging.error(f". or , encountered in price - investigate. "
-                      f"Skipping the record.")
+    if "." in price_div[0]:
+        log_unexpected(".", "price")
+    elif "," in price_div[0]:
+        log_unexpected(",", "price")
 
     price = int(re.sub(pattern=r'[^0-9,.]',
                        repl=u'',
@@ -33,11 +33,12 @@ def get_size(soup: BeautifulSoup) -> Optional[float]:
     soup_filter = {"aria-label": "Powierzchnia"}
 
     size_div = extract_divs(soup, soup_filter, "size")
+
     if not size_div:
         return None
 
     floor_size = []
-    for child in size_div.children:
+    for child in size_div:
         if child.attrs.get("title") is not None and child.attrs.get(
                 "title") != "Powierzchnia":
             floor_size = child.contents
@@ -63,11 +64,7 @@ def extract_divs(soup, soup_filter, what: str):
     elif len(divs) == 0:
         log_wrong_number(0, 1, what)
         return None
-
-    nested_div = [floor_size for floor_size in divs[0].children]
-    if len(nested_div) != 1:
-        log_wrong_number(len(nested_div), 1, what)
-        return None
+    nested_div = list(divs[0].children)
 
     return nested_div
 
