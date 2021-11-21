@@ -24,3 +24,5 @@ def test_get_price(soup) -> None:
 def test_get_size(soup) -> None:
     size = otodom.get_size(soup)
     assert size == float(72)
+
+def test_
