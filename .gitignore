@@ -1,3 +1,4 @@
 .ipynb_checkpoints
 geckodriver.log
 .idea
+.pytest_cache
