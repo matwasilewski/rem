@@ -1,17 +1,21 @@
 import argparse
-from urllib.parse import ParseResult
+import logging
+
+logging.basicConfig(filename='otodom.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(threadName)s -  %(levelname)s - %(message)s')
 
 
-hostURL = 'www.otodom.pl'
-typesPL = {'renting': 'wynajem',
-            'selling': 'sprzedaz',
-            'house': 'dom',
-            'flat': 'mieszkanie',
-            'room': 'pokoj',
-            'plot': 'dzialka',
-            'premises': 'lokal',
-            'hall': 'haleimagazyny',
-            'garage': 'garaz'}
+HOST_URL = 'www.otodom.pl'
+TYPES_PL = {'renting': 'wynajem',
+           'selling': 'sprzedaz',
+           'house': 'dom',
+           'flat': 'mieszkanie',
+           'room': 'pokoj',
+           'plot': 'dzialka',
+           'premises': 'lokal',
+           'hall': 'haleimagazyny',
+           'garage': 'garaz'}
 
 
 # setup argumet parser with 4 arguments: propertytype, rentaltype, city, savephotos
@@ -22,7 +26,9 @@ def get_args():
                         type=lambda input: is_valid(parser, ('renting', 'selling'), input))
     parser.add_argument('-pt', '--propertytype', nargs='+', required=True,
                         help='Enter one or more property types: house, flat, room, plot, premises, hall, garage',
-                        type=lambda input: is_valid(parser, ('house', 'flat', 'room', 'plot', 'premises', 'hall', 'garage'), input))
+                        type=lambda input: is_valid(parser,
+                                                    ('house', 'flat', 'room', 'plot', 'premises', 'hall', 'garage'),
+                                                    input))
     parser.add_argument('-c', '--city', nargs='+', required=True,
                         help='Enter one or more city names')
     # parser.add_argument('-sp', '--savephotos', dest='savephotos', action='store_true',
