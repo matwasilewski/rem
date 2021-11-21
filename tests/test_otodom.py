@@ -19,3 +19,8 @@ def test_load_html(soup) -> None:
 def test_get_price(soup) -> None:
     price = otodom.get_price(soup)
     assert price == 1500000
+
+
+def test_get_size(soup) -> None:
+    size = otodom.get_size(soup)
+    assert size == float(72)

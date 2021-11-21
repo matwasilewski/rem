@@ -11,25 +11,72 @@ def get_listing(path: Union[str, TextIO]):
 
 def get_price(soup: BeautifulSoup) -> Optional[int]:
     soup_filter = {"aria-label": "Cena"}
-    price_divs = soup.find_all(attrs=soup_filter)
 
-    if len(price_divs) > 1:
-        logging.error(f"{len(price_divs)} prices found for the listing, "
-                      f"instead of expected one. Skipping the record.")
-        return None
-    elif len(price_divs) == 0:
-        logging.error(f"0 prices found for the listing, instead of expected "
-                      f"one. Skipping the record.")
-        return None
+    price_div = extract_divs(soup, soup_filter, "price")
 
-    price = [price for price in price_divs[0].children]
-    if len(price) != 1:
-        logging.error(f"{len(price)} prices found for the listing, "
+    if len(price_div) != 1:
+        logging.error(f"{len(price_div)} prices found for the listing, "
                       f"instead of expected one. Skipping the record.")
 
-    if "." or "," in price[0]:
+    if "." or "," in price_div[0]:
         logging.error(f". or , encountered in price - investigate. "
                       f"Skipping the record.")
 
-    price = int("".join(re.findall('[0-9]+', price[0])))
+    price = int(re.sub(pattern=r'[^0-9,.]',
+                       repl=u'',
+                       string=price_div[0],
+                       flags=re.UNICODE))
     return price
+
+
+def get_size(soup: BeautifulSoup) -> Optional[float]:
+    soup_filter = {"aria-label": "Powierzchnia"}
+
+    size_div = extract_divs(soup, soup_filter, "size")
+    if not size_div:
+        return None
+
+    floor_size = []
+    for child in size_div.children:
+        if child.attrs.get("title") is not None and child.attrs.get(
+                "title") != "Powierzchnia":
+            floor_size = child.contents
+
+    if len(floor_size) != 1:
+        log_wrong_number(len(floor_size), 1, "floor size")
+        return None
+
+    floor_size_float = float(re.sub(pattern=r'[^0-9,.]',
+                                    repl=u'',
+                                    string=floor_size[0],
+                                    flags=re.UNICODE))
+
+    return floor_size_float
+
+
+def extract_divs(soup, soup_filter, what: str):
+    divs = soup.find_all(attrs=soup_filter)
+
+    if len(divs) > 1:
+        log_wrong_number(len(divs), 1, what)
+        return None
+    elif len(divs) == 0:
+        log_wrong_number(0, 1, what)
+        return None
+
+    nested_div = [floor_size for floor_size in divs[0].children]
+    if len(nested_div) != 1:
+        log_wrong_number(len(nested_div), 1, what)
+        return None
+
+    return nested_div
+
+
+def log_wrong_number(actual: int, expected: int, what: str) -> None:
+    logging.error(f"{actual} {what} found for the listing, "
+                  f"instead of expected {expected}. Skipping the record.")
+
+
+def log_unexpected(unexpected: str, where: str) -> None:
+    logging.error(f"Unexpected {unexpected} encountered in {where} "
+                  f"in the listing")
