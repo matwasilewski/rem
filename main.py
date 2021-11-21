@@ -43,7 +43,8 @@ def get_urls_dirs(args):
     for propertytype in args.propertytype:
         for rentaltype in args.rentaltype:
             for city in args.city:
-                # FIXME
+                pass
+                # @FIXME
                 # if rentaltype == 'selling' and propertytype == 'room':
                 #     continue
                 # main_url = ParseResult(scheme='https', netloc=hostURL,
