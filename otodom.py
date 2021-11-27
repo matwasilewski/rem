@@ -6,12 +6,23 @@ import re
 OTODOM_LINK = "https://www.otodom.pl/"
 
 
-def get_promoted_urls_for_page(soup):
+def get_promoted_listing_urls_for_page(soup):
     promoted_filter = {"data-cy": "search.listing.promoted"}
     promoted_div = soup.find(attrs=promoted_filter)
     lis = promoted_div.findAll("li")
-    links = []
+    return _get_listing_urls_for_page(lis)
 
+
+def get_standard_listing_urls_for_page(soup):
+    standard_filter = {"data-cy": "search.listing"}
+    divs = soup.find_all(attrs=standard_filter)
+    standard_divs = divs[1]
+    lis = standard_divs.findAll("li")
+    return _get_listing_urls_for_page(lis)
+
+
+def _get_listing_urls_for_page(lis):
+    links = []
     for li in lis:
         local_links = []
         for element in li:
