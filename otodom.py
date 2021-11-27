@@ -3,8 +3,28 @@ import logging
 from bs4 import BeautifulSoup
 import re
 
+OTODOM_LINK = "https://www.otodom.pl/"
 
-def get_listing(path: Union[str, TextIO]):
+
+def get_promoted_urls_for_page(soup):
+    promoted_filter = {"data-cy": "search.listing.promoted"}
+    promoted_div = soup.find(attrs=promoted_filter)
+    lis = promoted_div.findAll("li")
+    links = []
+
+    for li in lis:
+        local_links = []
+        for element in li:
+            if element.has_attr("href"):
+                local_links.append(element["href"])
+        if len(local_links) == 1:
+            links.append(OTODOM_LINK + local_links[0])
+        else:
+            _log_wrong_number(len(local_links), 1, "listing links")
+    return links
+
+
+def get_soup(path: Union[str, TextIO]):
     soup = BeautifulSoup(path, "html.parser")
     return soup
 
