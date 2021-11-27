@@ -74,7 +74,7 @@ def get_building_type(soup):
         _log_wrong_number(len(rodzaj), 1, "type of building")
         return None
 
-    return rodzaj
+    return rodzaj[0][0]
 
 
 def _extract_divs(soup, soup_filter, what: str):
