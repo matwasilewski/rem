@@ -100,18 +100,18 @@ def get_building_type(soup):
     if not type_of_building_div:
         return None
 
-    rodzaj = []
+    type_of_building = []
 
     for child in type_of_building_div:
         if child.attrs.get("title") is not None and child.attrs.get(
                 "title") != "Rodzaj zabudowy":
-            rodzaj.append(child.contents)
+            type_of_building.append(child.contents)
 
-    if len(rodzaj) != 1:
-        _log_wrong_number(len(rodzaj), 1, "type of building")
+    if len(type_of_building) != 1:
+        _log_wrong_number(len(type_of_building), 1, "type of building")
         return None
 
-    return rodzaj[0][0]
+    return type_of_building[0][0]
 
 
 def get_window_type(soup):
