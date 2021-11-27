@@ -76,6 +76,27 @@ def get_building_type(soup):
 
     return rodzaj[0][0]
 
+def get_window_type(soup):
+    soup_filter = {"aria-label": "Okna"}
+
+    type_of_window_div = _extract_divs(soup, soup_filter, "window")
+    if not type_of_window_div:
+        return None
+
+    window = []
+
+    for child in type_of_window_div:
+        if child.attrs.get("title") is not None and child.attrs.get(
+                "title") != "Okna":
+            window.append(child.contents)
+
+    if len(window) != 1:
+        _log_wrong_number(len(window), 1, "window")
+        return None
+
+    return window[0][0]
+
+
 
 def _extract_divs(soup, soup_filter, what: str):
     divs = soup.find_all(attrs=soup_filter)
