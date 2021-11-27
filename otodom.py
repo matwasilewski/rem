@@ -96,6 +96,26 @@ def get_window_type(soup):
 
     return window[0][0]
 
+def get_year_of_construction(soup):
+    soup_filter = {"aria-label": "Rok budowy"}
+
+    year_of_construction_div = _extract_divs(soup, soup_filter, "year")
+    if not year_of_construction_div:
+        return None
+
+    year = []
+
+    for child in year_of_construction_div:
+        if child.attrs.get("title") is not None and child.attrs.get(
+                "title") != "Rok budowy":
+            year.append(child.contents)
+
+    if len(year) != 1:
+        _log_wrong_number(len(year), 1, "year")
+        return None
+
+    return int(year[0][0])
+
 
 
 def _extract_divs(soup, soup_filter, what: str):
