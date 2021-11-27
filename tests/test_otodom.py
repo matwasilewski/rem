@@ -8,7 +8,8 @@ import otodom
 
 @pytest.fixture(scope='session', autouse=True)
 def listing_soup() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"])
+    path = os.sep.join(["tests", "resources",
+                        "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"])
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
@@ -16,8 +17,8 @@ def listing_soup() -> BeautifulSoup:
 
 @pytest.fixture(scope='session', autouse=True)
 def search_soup() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "www.otodom.pl", "pl", "oferty", "sprzedaz",
-                        "mieszkanie", "warszawa?page=1.html"])
+    path = os.sep.join(["tests", "resources", "www.otodom.pl", "pl", "oferty",
+                        "sprzedaz", "mieszkanie", "warszawa?page=1.html"])
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
