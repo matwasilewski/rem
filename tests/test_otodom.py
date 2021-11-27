@@ -26,3 +26,8 @@ def test_get_price(soup) -> None:
 def test_get_size(soup) -> None:
     size = otodom.get_size(soup)
     assert size == float(72)
+
+
+def test_type_of_building(soup) -> None:
+    building_type = otodom.get_building_type(soup)
+    assert building_type == "kamienica"
