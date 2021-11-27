@@ -55,6 +55,13 @@ def test_year_of_construction(listing_soup) -> None:
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
+    assert promoted_urls[0] == 'https://www.otodom.pl/pl/oferta/nowa' \
+                               '-kawalerka-odbior-kluczy-1q2022-ochota-wloch' \
+                               '-ID4blGn'
+    assert promoted_urls[1] == 'https://www.otodom.pl/pl/oferta/apartament' \
+                               '-130-m-w-babka-tower-ID4ehmq'
+    assert promoted_urls[2] == 'https://www.otodom.pl/pl/oferta/penthouse-na' \
+                               '-marymonckiej-ID4ehkP'
 
 
 def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
