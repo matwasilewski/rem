@@ -76,6 +76,7 @@ def get_building_type(soup):
 
     return rodzaj[0][0]
 
+
 def get_window_type(soup):
     soup_filter = {"aria-label": "Okna"}
 
@@ -96,6 +97,7 @@ def get_window_type(soup):
 
     return window[0][0]
 
+
 def get_year_of_construction(soup):
     soup_filter = {"aria-label": "Rok budowy"}
 
@@ -115,7 +117,6 @@ def get_year_of_construction(soup):
         return None
 
     return int(year[0][0])
-
 
 
 def _extract_divs(soup, soup_filter, what: str):
@@ -140,5 +141,3 @@ def _log_wrong_number(actual: int, expected: int, what: str) -> None:
 def _log_unexpected(unexpected: str, where: str) -> None:
     logging.error(f"Unexpected {unexpected} encountered in {where} "
                   f"in the listing")
-
-
