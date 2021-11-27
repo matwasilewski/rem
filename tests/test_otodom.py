@@ -52,6 +52,11 @@ def test_year_of_construction(listing_soup) -> None:
     assert year_of_construction == 1939
 
 
-def test_get_promoted_urls_for_page(search_soup) -> None:
-    promoted_urls = otodom.get_promoted_urls_for_page(search_soup)
+def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
+    promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
+
+
+def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
+    standard_urls = otodom.get_standard_listing_urls_for_page(search_soup)
+    assert len(standard_urls) == 36
