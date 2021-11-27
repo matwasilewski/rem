@@ -45,7 +45,7 @@ def get_args():
 
 
 # check if arguments passed from console arr correct
-def is_valid(parser, choices, input):
+def is_valid(parser, choices, user_input):
     return input if input in choices else parser.error(
         "Args doesn't equal to {}".format(choices))
 
