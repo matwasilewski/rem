@@ -6,6 +6,12 @@ import re
 OTODOM_LINK = "https://www.otodom.pl/"
 
 
+def get_all_listings_for_page(search_soup):
+    lis_standard = get_standard_listing_urls_for_page(search_soup)
+    lis_promoted = get_promoted_listing_urls_for_page(search_soup)
+    return lis_promoted + lis_standard
+
+
 def get_promoted_listing_urls_for_page(soup):
     promoted_filter = {"data-cy": "search.listing.promoted"}
     promoted_div = soup.find(attrs=promoted_filter)
