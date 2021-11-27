@@ -55,6 +55,28 @@ def get_size(soup: BeautifulSoup) -> Optional[float]:
     return floor_size_float
 
 
+def get_building_type(soup):
+    soup_filter = {"aria-label": "Rodzaj zabudowy"}
+
+    type_of_building_div = _extract_divs(soup, soup_filter, "type-of-building")
+
+    if not type_of_building_div:
+        return None
+
+    rodzaj = []
+
+    for child in type_of_building_div:
+        if child.attrs.get("title") is not None and child.attrs.get(
+                "title") != "Rodzaj zabudowy":
+            rodzaj.append(child.contents)
+
+    if len(rodzaj) != 1:
+        _log_wrong_number(len(rodzaj), 1, "type of building")
+        return None
+
+    return rodzaj
+
+
 def _extract_divs(soup, soup_filter, what: str):
     divs = soup.find_all(attrs=soup_filter)
 
@@ -77,3 +99,5 @@ def _log_wrong_number(actual: int, expected: int, what: str) -> None:
 def _log_unexpected(unexpected: str, where: str) -> None:
     logging.error(f"Unexpected {unexpected} encountered in {where} "
                   f"in the listing")
+
+
