@@ -29,3 +29,7 @@ def test_get_size(soup) -> None:
 def test_type_of_building(soup) -> None:
     building_type = otodom.get_building_type(soup)
     assert building_type == "kamienica"
+
+def test_type_of_window(soup) -> None:
+    window_type = otodom.get_window_type(soup)
+    assert window_type == "plastikowe"
