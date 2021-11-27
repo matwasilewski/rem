@@ -33,3 +33,7 @@ def test_type_of_building(soup) -> None:
 def test_type_of_window(soup) -> None:
     window_type = otodom.get_window_type(soup)
     assert window_type == "plastikowe"
+
+def test_year_of_construction(soup) -> None:
+    year_of_construction = otodom.get_year_of_construction(soup)
+    assert year_of_construction == 1939
