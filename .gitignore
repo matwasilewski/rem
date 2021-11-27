@@ -3,3 +3,4 @@ geckodriver.log
 .idea
 .pytest_cache
 __pycache__
+notebooks/*
