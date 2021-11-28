@@ -2,6 +2,9 @@ from typing import Union, TextIO, Optional
 import logging
 from bs4 import BeautifulSoup
 import re
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
+
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -186,11 +189,15 @@ def _log_wrong_number(actual: int, expected: int, what: str) -> None:
 
 
 def _log_unexpected(unexpected: str, where: str) -> None:
-    logging.error(f"Unexpected {unexpected} encountered in {where} " f"in the listing")
+    logging.error(f"Unexpected {unexpected} encountered in {where} in the listing")
 
 
-def get_url_generator(base_url):
-    page = 1
+def get_url_generator(url):
+    parsed_url = urlparse(url)
+    page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
+    limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+
     while True:
-        yield f"{base_url}?page={page}"
-        page += 1
+        yield f"{base_url}?page={page_value}&limit={limit_value}"
+        page_value += 1
