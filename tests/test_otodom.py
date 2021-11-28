@@ -68,6 +68,15 @@ def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
 def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
     standard_urls = otodom.get_standard_listing_urls_for_page(search_soup)
     assert len(standard_urls) == 36
+    assert standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka" \
+                               "-warszawa-ul-fundamentowa-ID47bq4"
+    assert standard_urls[1] == 'https://www.otodom.pl/pl/oferta/mieszkanie' \
+                               '-dla-rodziny-przy-parku-szczesliwickim' \
+                               '-ID4dVV3'
+    assert standard_urls[-2] == 'https://www.otodom.pl/pl/oferta/dwupokojowe' \
+                                '-nowe-i-do-odbioru-ID4ebFQ'
+    assert standard_urls[-1] == 'https://www.otodom.pl/pl/oferta/z-tarasem' \
+                                '-18-52m2-10min-do-centrum-blisko-skm-ID4enyi'
 
 
 def test_get_all_listings_for_search_page(search_soup) -> None:
