@@ -117,15 +117,35 @@ def test_url_generator():
 
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1"
+        "/mieszkanie/warszawa?page=1&limit=36"
     )
     assert (
         next(url_generator)
         == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=2"
+        "?page=2&limit=36"
     )
     assert (
         next(url_generator)
         == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=3"
+        "?page=3&limit=36"
+    )
+
+
+def test_url_generator_with_query_parameters():
+    url = (
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
+        "=1&limit=72"
+    )
+    url_generator = otodom.get_url_generator(url)
+    assert (
+        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+        "/mieszkanie/warszawa?page=1&limit=72"
+    )
+    assert (
+        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+        "/mieszkanie/warszawa?page=2&limit=72"
+    )
+    assert (
+        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+        "/mieszkanie/warszawa?page=3&limit=72"
     )
