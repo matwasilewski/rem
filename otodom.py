@@ -64,10 +64,9 @@ def get_price(soup: BeautifulSoup) -> Optional[int]:
     elif "," in price_div[0]:
         _log_unexpected(",", "price")
 
-    price = int(re.sub(pattern=r'[^0-9,.]',
-                       repl=u'',
-                       string=price_div[0],
-                       flags=re.UNICODE))
+    price = int(
+        re.sub(pattern=r"[^0-9,.]", repl="", string=price_div[0], flags=re.UNICODE)
+    )
     return price
 
 
@@ -81,18 +80,19 @@ def get_size(soup: BeautifulSoup) -> Optional[float]:
 
     floor_size = []
     for child in size_div:
-        if child.attrs.get("title") is not None and child.attrs.get(
-                "title") != "Powierzchnia":
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Powierzchnia"
+        ):
             floor_size = child.contents
 
     if len(floor_size) != 1:
         _log_wrong_number(len(floor_size), 1, "floor size")
         return None
 
-    floor_size_float = float(re.sub(pattern=r'[^0-9,.]',
-                                    repl=u'',
-                                    string=floor_size[0],
-                                    flags=re.UNICODE))
+    floor_size_float = float(
+        re.sub(pattern=r"[^0-9,.]", repl="", string=floor_size[0], flags=re.UNICODE)
+    )
 
     return floor_size_float
 
@@ -108,8 +108,10 @@ def get_building_type(soup):
     type_of_building = []
 
     for child in type_of_building_div:
-        if child.attrs.get("title") is not None and child.attrs.get(
-                "title") != "Rodzaj zabudowy":
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Rodzaj zabudowy"
+        ):
             type_of_building.append(child.contents)
 
     if len(type_of_building) != 1:
@@ -129,8 +131,7 @@ def get_window_type(soup):
     window = []
 
     for child in type_of_window_div:
-        if child.attrs.get("title") is not None and child.attrs.get(
-                "title") != "Okna":
+        if child.attrs.get("title") is not None and child.attrs.get("title") != "Okna":
             window.append(child.contents)
 
     if len(window) != 1:
@@ -150,8 +151,10 @@ def get_year_of_construction(soup):
     year = []
 
     for child in year_of_construction_div:
-        if child.attrs.get("title") is not None and child.attrs.get(
-                "title") != "Rok budowy":
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Rok budowy"
+        ):
             year.append(child.contents)
 
     if len(year) != 1:
@@ -176,10 +179,18 @@ def _extract_divs(soup, soup_filter, what: str):
 
 
 def _log_wrong_number(actual: int, expected: int, what: str) -> None:
-    logging.error(f"{actual} {what} found for the listing, "
-                  f"instead of expected {expected}. Skipping the record.")
+    logging.error(
+        f"{actual} {what} found for the listing, "
+        f"instead of expected {expected}. Skipping the record."
+    )
 
 
 def _log_unexpected(unexpected: str, where: str) -> None:
-    logging.error(f"Unexpected {unexpected} encountered in {where} "
-                  f"in the listing")
+    logging.error(f"Unexpected {unexpected} encountered in {where} " f"in the listing")
+
+
+def get_url_generator(base_url):
+    page = 1
+    while True:
+        yield f"{base_url}?page={page}"
+        page += 1
