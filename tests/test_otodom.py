@@ -119,3 +119,13 @@ def test_url_generator():
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=1"
     )
+    assert (
+        next(url_generator)
+        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+        "?page=2"
+    )
+    assert (
+        next(url_generator)
+        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+        "?page=3"
+    )
