@@ -9,7 +9,10 @@ OTODOM_LINK = "https://www.otodom.pl/"
 def get_all_listings_for_page(search_soup):
     lis_standard = get_standard_listing_urls_for_page(search_soup)
     lis_promoted = get_promoted_listing_urls_for_page(search_soup)
-    return lis_promoted + lis_standard
+    if len(lis_standard) == 0:
+        return []
+    else:
+        return lis_promoted + lis_standard
 
 
 def get_promoted_listing_urls_for_page(soup):
@@ -22,6 +25,8 @@ def get_promoted_listing_urls_for_page(soup):
 def get_standard_listing_urls_for_page(soup):
     standard_filter = {"data-cy": "search.listing"}
     divs = soup.find_all(attrs=standard_filter)
+    if len(divs) < 2:
+        return []
     standard_divs = divs[1]
     lis = standard_divs.findAll("li")
     return _get_listing_urls_for_page(lis)
