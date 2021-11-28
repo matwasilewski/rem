@@ -25,10 +25,11 @@ def search_soup() -> BeautifulSoup:
 
 @pytest.fixture(scope='session', autouse=True)
 def empty_search_soup() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "warszawa?page=169.html"])
+    path = os.sep.join(["tests", "resources", "warszawa?page=2000.html"])
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
+
 
 def test_load_html(listing_soup) -> None:
     assert len(listing_soup.contents) == 2
@@ -90,6 +91,6 @@ def test_get_all_listings_for_search_page(search_soup) -> None:
     assert len(urls) == 39
 
 
-def test_get_none_for_empty_page(search_soup) -> None:
+def test_get_none_for_empty_page(empty_search_soup) -> None:
     urls = otodom.get_all_listings_for_page(empty_search_soup)
     assert len(urls) == 0
