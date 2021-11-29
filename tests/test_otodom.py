@@ -1,9 +1,9 @@
 import os
 
+import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
-
-import otodom
+from rem import otodom
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -149,3 +149,13 @@ def test_url_generator_with_query_parameters():
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=3&limit=72"
     )
+
+
+@pytest.skip
+def test_scrap():
+    url = (
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
+        "=1&limit=72"
+    )
+    scrapped_data = otodom.scrap(url)
+    assert isinstance(scrapped_data, pd.DataFrame)
