@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
+from enum import Enum
 
 
 OTODOM_LINK = "https://www.otodom.pl/"
@@ -194,6 +195,30 @@ def _log_unexpected(unexpected: str, where: str) -> None:
     logging.error(f"Unexpected {unexpected} encountered in {where} in the listing")
 
 
+LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
+    get_price,
+    get_size,
+    get_building_type,
+    get_window_type,
+    get_year_of_construction,
+]
+
+
+def scrap(base_search_url):
+    generator = get_url_generator(base_search_url)
+    scrapped_data = pd.DataFrame()
+
+    for url in generator:
+        search_soup = get_soup(url)
+        listings = get_all_listings_for_page(search_soup)
+        if len(listings) == 0:
+            break
+        for listing in listings:
+            listing_data = get_data_from_listing(listing)
+            update_listing_data(scrapped_data, listing_data)
+    return scrapped_data
+
+
 def get_url_generator(url):
     parsed_url = urlparse(url)
     page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
@@ -211,18 +236,3 @@ def get_data_from_listing(listing):
 
 def update_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
     pass
-
-
-def scrap(base_search_url):
-    generator = get_url_generator(base_search_url)
-    scrapped_data = pd.DataFrame()
-
-    for url in generator:
-        search_soup = get_soup(url)
-        listings = get_all_listings_for_page(search_soup)
-        if len(listings) == 0:
-            break
-        for listing in listings:
-            listing_data = get_data_from_listing(listing)
-            update_listing_data(scrapped_data, listing_data)
-    return scrapped_data
