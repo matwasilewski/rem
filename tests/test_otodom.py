@@ -18,7 +18,7 @@ def listing_soup() -> BeautifulSoup:
 
 @pytest.fixture(scope="session", autouse=True)
 def search_soup() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "warszawa?page=1.html"])
+    path = os.sep.join(["tests", "resources", "warszawa-page-1.html"])
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
@@ -26,7 +26,7 @@ def search_soup() -> BeautifulSoup:
 
 @pytest.fixture(scope="session", autouse=True)
 def empty_search_soup() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "warszawa?page=2000.html"])
+    path = os.sep.join(["tests", "resources", "warszawa-page-2000.html"])
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
