@@ -151,7 +151,7 @@ def test_url_generator_with_query_parameters():
     )
 
 
-@pytest.skip
+@pytest.mark.skip
 def test_scrap():
     url = (
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
