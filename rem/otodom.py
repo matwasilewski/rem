@@ -272,7 +272,7 @@ def scrap(base_search_url):
     scrapped_data = pd.DataFrame()
 
     for url in generator:
-        search_soup = get_soup(url)
+        search_soup = get_soup_from_url(url)
         listings = get_all_listings_for_page(search_soup)
         if len(listings) == 0:
             break
