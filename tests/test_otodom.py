@@ -34,8 +34,14 @@ def empty_search_soup() -> BeautifulSoup:
 
 
 def test_get_website() -> None:
-    example_page = get_website("http://example.com/")
+    example_page = otodom.get_website("http://example.com/")
     assert example_page.status_code == 200
+
+
+def test_get_html_doc() -> None:
+    example_page = otodom.get_website("http://example.com/")
+    example_html = otodom.get_html_doc(example_page)
+    assert "Example Domain" in example_html
 
 
 def test_load_html(listing_soup) -> None:

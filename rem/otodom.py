@@ -58,6 +58,11 @@ def get_website(url: str) -> Response:
     return page
 
 
+def get_html_doc(response):
+    page = response.text
+    return page
+
+
 def get_soup(html_doc: TextIO):
     soup = BeautifulSoup(html_doc, "html.parser")
     return soup
