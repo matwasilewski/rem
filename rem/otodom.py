@@ -187,6 +187,7 @@ def get_year_of_construction(soup):
 
     return int(year[0][0])
 
+
 def get_number_of_rooms(soup):
     soup_filter = {"aria-label": "Liczba pokoi"}
 
@@ -208,6 +209,7 @@ def get_number_of_rooms(soup):
         return None
 
     return int(rooms[0][0])
+
 
 def get_condition(soup):
     soup_filter = {"aria-label": "Stan wykończenia"}
@@ -267,11 +269,13 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
 ]
 
 
-def scrap(base_search_url):
+def scrap(base_search_url, page_limit=1):
     generator = get_url_generator(base_search_url)
     scrapped_data = pd.DataFrame()
 
-    for url in generator:
+    for url_count, url in enumerate(generator):
+        if url_count == page_limit:
+            break
         search_soup = get_soup_from_url(url)
         listings = get_all_listings_for_page(search_soup)
         if len(listings) == 0:
@@ -309,11 +313,15 @@ def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
     if "\\" in floor_string or "/" in floor_string:
         temp_floor, temp_floors_in_building = floor_string.split("/")
         if temp_floor == "parter":
-            floor=0
-            floors_in_building = int(temp_floors_in_building) if temp_floors_in_building else None
+            floor = 0
+            floors_in_building = (
+                int(temp_floors_in_building) if temp_floors_in_building else None
+            )
         else:
             floor = int(temp_floor)
-            floors_in_building = int(temp_floors_in_building) if temp_floors_in_building else None
+            floors_in_building = (
+                int(temp_floors_in_building) if temp_floors_in_building else None
+            )
     elif floor_string == "parter":
         floor = 0
         floors_in_building = None
@@ -322,6 +330,7 @@ def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
         floors_in_building = None
 
     return floor, floors_in_building
+
 
 def get_floor(listing_soup):
     floor, floors_in_building = resolve_floor(floor_string)

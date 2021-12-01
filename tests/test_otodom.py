@@ -220,9 +220,12 @@ def test_scrap():
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
     scrapped_data = otodom.scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
+    assert len(scrapped_data.index) == 75
 
 
 @pytest.mark.skip
 def test_unique_id(listing_soup) -> None:
-    unique_id = otodom.get_unique_id(listing_soup)
+    unique_id = otodom.get_unique_id(
+        listing_soup,
+    )
     assert unique_id == 62365446
