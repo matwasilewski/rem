@@ -191,6 +191,29 @@ def get_number_of_rooms(soup):
 
     return int(rooms[0][0])
 
+def get_condition(soup):
+    soup_filter = {"aria-label": "Stan wykończenia"}
+
+    condition_div = _extract_divs(soup, soup_filter, "condition")
+    if not condition_div:
+
+        return None
+
+    condition = []
+
+    for child in condition_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Stan wykończenia"
+        ):
+            condition.append(child.contents)
+
+    if len(condition) != 1:
+        _log_wrong_number(len(condition), 1, "condition")
+        return None
+
+    return condition[0][0]
+
 
 def _extract_divs(soup, soup_filter, what: str):
     divs = soup.find_all(attrs=soup_filter)
