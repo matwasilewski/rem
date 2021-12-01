@@ -169,6 +169,28 @@ def get_year_of_construction(soup):
 
     return int(year[0][0])
 
+def get_number_of_rooms(soup):
+    soup_filter = {"aria-label": "Liczba pokoi"}
+
+    number_of_rooms_div = _extract_divs(soup, soup_filter, "number_of_rooms")
+    if not number_of_rooms_div:
+        return None
+
+    rooms = []
+
+    for child in number_of_rooms_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Liczba pokoi"
+        ):
+            rooms.append(child.contents)
+
+    if len(rooms) != 1:
+        _log_wrong_number(len(rooms), 1, "number_of_rooms")
+        return None
+
+    return int(rooms[0][0])
+
 
 def _extract_divs(soup, soup_filter, what: str):
     divs = soup.find_all(attrs=soup_filter)

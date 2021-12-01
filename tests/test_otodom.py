@@ -65,6 +65,10 @@ def test_number_of_rooms(listing_soup) -> None:
     number_of_rooms = otodom.get_number_of_rooms(listing_soup)
     assert number_of_rooms == 3
 
+def test_condition(listing_soup) -> None:
+    condition = otodom.get_condition(listing_soup)
+    assert condition == "do zamieszkania"
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
