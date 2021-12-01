@@ -44,6 +44,13 @@ def test_get_html_doc() -> None:
     assert "Example Domain" in example_html
 
 
+def test_get_soup_from_url() -> None:
+    example_page = otodom.get_website("http://example.com/")
+    example_html = otodom.get_html_doc(example_page)
+    example_soup = otodom.get_soup(example_html)
+    assert example_soup.find("h1").text == "Example Domain"
+
+
 def test_load_html(listing_soup) -> None:
     assert len(listing_soup.contents) == 2
 
