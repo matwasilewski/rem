@@ -60,10 +60,10 @@ def test_year_of_construction(listing_soup) -> None:
     year_of_construction = otodom.get_year_of_construction(listing_soup)
     assert year_of_construction == 1939
 
-def test_unique_id(listing_soup) -> None:
-    unique_id = otodom.get_unique_id(listing_soup)
-    assert unique_id == 62365446
 
+def test_number_of_rooms(listing_soup) -> None:
+    number_of_rooms = otodom.get_number_of_rooms(listing_soup)
+    assert number_of_rooms == 3
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
@@ -163,3 +163,8 @@ def test_scrap():
     )
     scrapped_data = otodom.scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
+
+@pytest.mark.skip
+def test_unique_id(listing_soup) -> None:
+    unique_id = otodom.get_unique_id(listing_soup)
+    assert unique_id == 62365446
