@@ -51,6 +51,11 @@ def test_get_soup_from_url() -> None:
     assert example_soup.find("h1").text == "Example Domain"
 
 
+def test_get_soup_from_url_function() -> None:
+    example_soup = otodom.get_soup_from_url("http://example.com/")
+    assert example_soup.find("h1").text == "Example Domain"
+
+
 def test_load_html(listing_soup) -> None:
     assert len(listing_soup.contents) == 2
 

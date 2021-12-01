@@ -68,6 +68,13 @@ def get_soup(html_doc: TextIO):
     return soup
 
 
+def get_soup_from_url(url):
+    page = get_website(url)
+    html = get_html_doc(page)
+    soup = get_soup(html)
+    return soup
+
+
 def get_price(soup: BeautifulSoup) -> Optional[int]:
     soup_filter = {"aria-label": "Cena"}
 
