@@ -60,6 +60,10 @@ def test_year_of_construction(listing_soup) -> None:
     year_of_construction = otodom.get_year_of_construction(listing_soup)
     assert year_of_construction == 1939
 
+def test_unique_id(listing_soup) -> None:
+    unique_id = otodom.get_unique_id(listing_soup)
+    assert unique_id == 62365446
+
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
