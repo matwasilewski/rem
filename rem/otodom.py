@@ -4,10 +4,11 @@ import logging
 import pandas as pd
 from bs4 import BeautifulSoup
 import re
+import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
-from enum import Enum
 
+from requests import Request, Response
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -52,8 +53,13 @@ def _get_listing_urls_for_page(lis):
     return links
 
 
-def get_soup(path: Union[str, TextIO]):
-    soup = BeautifulSoup(path, "html.parser")
+def get_website(url: str) -> Response:
+    page = requests.get(url)
+    return page
+
+
+def get_soup(html_doc: TextIO):
+    soup = BeautifulSoup(html_doc, "html.parser")
     return soup
 
 
