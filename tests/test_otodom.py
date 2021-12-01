@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 from rem import otodom
+from rem.otodom import get_website
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -30,6 +31,11 @@ def empty_search_soup() -> BeautifulSoup:
     with open(path, encoding="utf-8") as fp:
         soup = otodom.get_soup(fp)
     return soup
+
+
+def test_get_website() -> None:
+    example_page = get_website("http://example.com/")
+    assert example_page.status_code == 200
 
 
 def test_load_html(listing_soup) -> None:
@@ -191,12 +197,8 @@ def test_url_generator_with_query_parameters():
     )
 
 
-@pytest.mark.skip
 def test_scrap():
-    url = (
-        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
-        "=1&limit=72"
-    )
+    url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
     scrapped_data = otodom.scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
 
