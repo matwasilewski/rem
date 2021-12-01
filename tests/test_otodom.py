@@ -95,6 +95,12 @@ def test_resolve_floor_3() -> None:
     assert floors_in_building == 5
 
 
+def test_resolve_floor_4() -> None:
+    floor, floors_in_building = otodom.resolve_floor("4")
+    assert floor == 4
+    assert floors_in_building == None
+
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3

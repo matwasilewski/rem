@@ -286,20 +286,24 @@ def update_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame)
 def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
     floor: int
     floors_in_building: Optional[int]
-    floor_string = "".join(floor_string.split())
+    floor_string = "".join(floor_string.split()).lower()
 
-    if floor_string.lower() == "parter":
+    if "\\" in floor_string or "/" in floor_string:
+        temp_floor, temp_floors_in_building = floor_string.split("/")
+        if temp_floor == "parter":
+            floor=0
+            floors_in_building = int(temp_floors_in_building) if temp_floors_in_building else None
+        else:
+            floor = int(temp_floor)
+            floors_in_building = int(temp_floors_in_building) if temp_floors_in_building else None
+    elif floor_string == "parter":
         floor = 0
         floors_in_building = None
     else:
-        temp_floor, temp_floors_in_building = floor_string.split("/")
-        floor = int(temp_floor)
-        floors_in_building = int(temp_floors_in_building) if temp_floors_in_building else None
+        floor = int(floor_string)
+        floors_in_building = None
 
     return floor, floors_in_building
-
-
-
 
 def get_floor(listing_soup):
     floor, floors_in_building = resolve_floor(floor_string)
