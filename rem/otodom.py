@@ -1,4 +1,4 @@
-from typing import Union, TextIO, Optional
+from typing import Union, TextIO, Optional, Tuple
 import logging
 
 import pandas as pd
@@ -281,3 +281,14 @@ def get_data_from_listing(listing):
 
 def update_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
     pass
+
+
+def resolve_floor(floor_string: str) -> Tuple[int, int]:
+    x, y = floor_string.split("/")
+    return int(x), int(y)
+
+
+def get_floor(listing_soup):
+    floor, floors_in_building = resolve_floor(floor_string)
+
+    return None

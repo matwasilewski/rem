@@ -65,25 +65,50 @@ def test_number_of_rooms(listing_soup) -> None:
     number_of_rooms = otodom.get_number_of_rooms(listing_soup)
     assert number_of_rooms == 3
 
+
 def test_condition(listing_soup) -> None:
     condition = otodom.get_condition(listing_soup)
     assert condition == "do zamieszkania"
+
+
+def test_floor(listing_soup) -> None:
+    floor, floors_in_building = otodom.get_floor(listing_soup)
+    assert floor == "do zamieszkania"
+
+
+def test_resolve_floor_1() -> None:
+    floor, floors_in_building = otodom.resolve_floor("1/3")
+    assert floor == 1
+    assert floors_in_building == 3
+
+
+def test_resolve_floor_2() -> None:
+    floor, floors_in_building = otodom.resolve_floor("Parter")
+    assert floor == 0
+    assert floors_in_building == None
+
+
+def test_resolve_floor_3() -> None:
+    floor, floors_in_building = otodom.resolve_floor("Parter / 5")
+    assert floor == 0
+    assert floors_in_building == 5
+
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
     assert (
-        promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
-        "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
-        "-ID4blGn"
+            promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
+                                "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
+                                "-ID4blGn"
     )
     assert (
-        promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
-        "-130-m-w-babka-tower-ID4ehmq"
+            promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
+                                "-130-m-w-babka-tower-ID4ehmq"
     )
     assert (
-        promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
-        "-marymonckiej-ID4ehkP"
+            promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
+                                "-marymonckiej-ID4ehkP"
     )
 
 
@@ -91,21 +116,21 @@ def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
     standard_urls = otodom.get_standard_listing_urls_for_page(search_soup)
     assert len(standard_urls) == 36
     assert (
-        standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
-        "-warszawa-ul-fundamentowa-ID47bq4"
+            standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
+                                "-warszawa-ul-fundamentowa-ID47bq4"
     )
     assert (
-        standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
-        "-dla-rodziny-przy-parku-szczesliwickim"
-        "-ID4dVV3"
+            standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
+                                "-dla-rodziny-przy-parku-szczesliwickim"
+                                "-ID4dVV3"
     )
     assert (
-        standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
-        "-nowe-i-do-odbioru-ID4ebFQ"
+            standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
+                                 "-nowe-i-do-odbioru-ID4ebFQ"
     )
     assert (
-        standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
-        "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
+            standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
+                                 "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
     )
 
 
@@ -124,18 +149,18 @@ def test_url_generator():
     url_generator = otodom.get_url_generator(url)
 
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=36"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=2&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=2&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=3&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=3&limit=36"
     )
 
 
@@ -146,16 +171,16 @@ def test_url_generator_with_query_parameters():
     )
     url_generator = otodom.get_url_generator(url)
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=2&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=2&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=3&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=3&limit=72"
     )
 
 
@@ -167,6 +192,7 @@ def test_scrap():
     )
     scrapped_data = otodom.scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
+
 
 @pytest.mark.skip
 def test_unique_id(listing_soup) -> None:
