@@ -20,7 +20,7 @@ def otodom_scrap(base_search_url, page_limit=1):
         if url_count == page_limit:
             break
         search_soup = get_soup_from_url(url)
-        listings = get_all_otodom_listings_for_page(search_soup)
+        listings = get_all_otodom_listing_urls_for_page(search_soup)
         if len(listings) == 0:
             break
         for listing in listings:
@@ -40,14 +40,20 @@ def otodom_url_generator(url):
 
 
 def get_data_from_otodom_listing(listing):
-    return pd.DataFrame()
+    listing_data: pd.Series = pd.Series()
+
+    for listing_extractor in LISTING_INFORMATION_RETRIEVAL_FUNCTIONS:
+        data = pd.Series(listing_extractor(listing))
+        listing_data = listing_data.append(data)
+
+    return listing_data
 
 
 def update_otodom_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
     pass
 
 
-def get_all_otodom_listings_for_page(search_soup):
+def get_all_otodom_listing_urls_for_page(search_soup):
     lis_standard = get_otodom_standard_listing_urls_for_page(search_soup)
     lis_promoted = get_otodom_promoted_listing_urls_for_page(search_soup)
     if len(lis_standard) == 0:
@@ -60,7 +66,7 @@ def get_otodom_promoted_listing_urls_for_page(soup: BeautifulSoup):
     promoted_filter = {"data-cy": "search.listing.promoted"}
     promoted_div = soup.find(attrs=promoted_filter)
     lis = promoted_div.findAll("li")
-    return get_otodom_listing_urls_for_page(lis)
+    return get_otodom_listing_urls_from_search_page(lis)
 
 
 def get_otodom_standard_listing_urls_for_page(soup: BeautifulSoup):
@@ -70,10 +76,10 @@ def get_otodom_standard_listing_urls_for_page(soup: BeautifulSoup):
         return []
     standard_divs = divs[1]
     lis = standard_divs.findAll("li")
-    return get_otodom_listing_urls_for_page(lis)
+    return get_otodom_listing_urls_from_search_page(lis)
 
 
-def get_otodom_listing_urls_for_page(lis):
+def get_otodom_listing_urls_from_search_page(lis):
     links = []
     for li in lis:
         local_links = []
@@ -286,4 +292,6 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_building_type,
     get_window_type,
     get_year_of_construction,
+    get_number_of_rooms,
+    get_condition,
 ]
