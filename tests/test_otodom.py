@@ -176,8 +176,8 @@ def test_resolve_floor_4() -> None:
     assert floors_in_building is None
 
 
-def test_monthly_fee(listing_soup) -> None:
-    monthly_fee = otodom.get_monthly_fee(listing_soup)
+def test_monthly_fee(listing) -> None:
+    monthly_fee = otodom.get_monthly_fee(listing)
     assert monthly_fee == {"monthly_fee": 800}
 
 
@@ -212,6 +212,11 @@ def test_get_listing_url(listing) -> None:
         listing_url
         == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
+
+
+def test_unique_id(listing) -> None:
+    unique_id = otodom.get_unique_id(listing)
+    assert unique_id == {"unique_id": 62365446}
 
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
@@ -343,9 +348,3 @@ def test_scrap():
     assert len(scrapped_data.index) == 75
 
 
-@pytest.mark.skip
-def test_unique_id(listing) -> None:
-    unique_id = otodom.get_unique_id(
-        listing,
-    )
-    assert unique_id == 62365446
