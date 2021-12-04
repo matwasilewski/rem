@@ -3,8 +3,10 @@ import os
 import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
+
+import rem.universal
 from rem import otodom
-from rem.otodom import get_website
+from rem.universal import get_website
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -13,7 +15,7 @@ def listing_soup() -> BeautifulSoup:
         ["tests", "resources", "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"]
     )
     with open(path, encoding="utf-8") as fp:
-        soup = otodom.get_soup(fp)
+        soup = rem.universal.get_soup(fp)
     return soup
 
 
@@ -21,7 +23,7 @@ def listing_soup() -> BeautifulSoup:
 def search_soup() -> BeautifulSoup:
     path = os.sep.join(["tests", "resources", "warszawa-page-1.html"])
     with open(path, encoding="utf-8") as fp:
-        soup = otodom.get_soup(fp)
+        soup = rem.universal.get_soup(fp)
     return soup
 
 
@@ -29,30 +31,30 @@ def search_soup() -> BeautifulSoup:
 def empty_search_soup() -> BeautifulSoup:
     path = os.sep.join(["tests", "resources", "warszawa-page-2000.html"])
     with open(path, encoding="utf-8") as fp:
-        soup = otodom.get_soup(fp)
+        soup = rem.universal.get_soup(fp)
     return soup
 
 
 def test_get_website() -> None:
-    example_page = otodom.get_website("http://example.com/")
+    example_page = rem.universal.get_website("http://example.com/")
     assert example_page.status_code == 200
 
 
 def test_get_html_doc() -> None:
-    example_page = otodom.get_website("http://example.com/")
-    example_html = otodom.get_html_doc(example_page)
+    example_page = rem.universal.get_website("http://example.com/")
+    example_html = rem.universal.get_html_doc(example_page)
     assert "Example Domain" in example_html
 
 
 def test_get_soup_from_url() -> None:
-    example_page = otodom.get_website("http://example.com/")
-    example_html = otodom.get_html_doc(example_page)
-    example_soup = otodom.get_soup(example_html)
+    example_page = rem.universal.get_website("http://example.com/")
+    example_html = rem.universal.get_html_doc(example_page)
+    example_soup = rem.universal.get_soup(example_html)
     assert example_soup.find("h1").text == "Example Domain"
 
 
 def test_get_soup_from_url_function() -> None:
-    example_soup = otodom.get_soup_from_url("http://example.com/")
+    example_soup = rem.universal.get_soup_from_url("http://example.com/")
     assert example_soup.find("h1").text == "Example Domain"
 
 
@@ -102,31 +104,31 @@ def test_floor(listing_soup) -> None:
 
 
 def test_resolve_floor_1() -> None:
-    floor, floors_in_building = otodom.resolve_floor("1/3")
+    floor, floors_in_building = otodom._resolve_floor("1/3")
     assert floor == 1
     assert floors_in_building == 3
 
 
 def test_resolve_floor_2() -> None:
-    floor, floors_in_building = otodom.resolve_floor("Parter")
+    floor, floors_in_building = otodom._resolve_floor("Parter")
     assert floor == 0
     assert floors_in_building is None
 
 
 def test_resolve_floor_3() -> None:
-    floor, floors_in_building = otodom.resolve_floor("Parter / 5")
+    floor, floors_in_building = otodom._resolve_floor("Parter / 5")
     assert floor == 0
     assert floors_in_building == 5
 
 
 def test_resolve_floor_4() -> None:
-    floor, floors_in_building = otodom.resolve_floor("4")
+    floor, floors_in_building = otodom._resolve_floor("4")
     assert floor == 4
     assert floors_in_building is None
 
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
-    promoted_urls = otodom.get_promoted_listing_urls_for_page(search_soup)
+    promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
     assert (
         promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
@@ -144,7 +146,7 @@ def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
 
 
 def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
-    standard_urls = otodom.get_standard_listing_urls_for_page(search_soup)
+    standard_urls = otodom.get_otodom_standard_listing_urls_for_page(search_soup)
     assert len(standard_urls) == 36
     assert (
         standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
@@ -166,18 +168,18 @@ def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
 
 
 def test_get_all_listings_for_search_page(search_soup) -> None:
-    urls = otodom.get_all_listings_for_page(search_soup)
+    urls = otodom.get_all_otodom_listings_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(empty_search_soup) -> None:
-    urls = otodom.get_all_listings_for_page(empty_search_soup)
+    urls = otodom.get_all_otodom_listings_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
 def test_url_generator():
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-    url_generator = otodom.get_url_generator(url)
+    url_generator = otodom.otodom_url_generator(url)
 
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
@@ -200,7 +202,7 @@ def test_url_generator_with_query_parameters():
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
         "=1&limit=72"
     )
-    url_generator = otodom.get_url_generator(url)
+    url_generator = otodom.otodom_url_generator(url)
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=1&limit=72"
@@ -218,7 +220,7 @@ def test_url_generator_with_query_parameters():
 @pytest.mark.skip
 def test_scrap():
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom.scrap(url)
+    scrapped_data = otodom.otodom_scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
 

@@ -1,45 +1,79 @@
-from typing import Union, TextIO, Optional, Tuple, Dict
-import logging
+from typing import Optional, Tuple, Dict
 
 import pandas as pd
 from bs4 import BeautifulSoup
 import re
-import requests
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
-from requests import Request, Response
+from rem.universal import get_soup_from_url
+from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
 
-def get_all_listings_for_page(search_soup):
-    lis_standard = get_standard_listing_urls_for_page(search_soup)
-    lis_promoted = get_promoted_listing_urls_for_page(search_soup)
+def otodom_scrap(base_search_url, page_limit=1):
+    generator = otodom_url_generator(base_search_url)
+    scrapped_data = pd.DataFrame()
+
+    for url_count, url in enumerate(generator):
+        if url_count == page_limit:
+            break
+        search_soup = get_soup_from_url(url)
+        listings = get_all_otodom_listings_for_page(search_soup)
+        if len(listings) == 0:
+            break
+        for listing in listings:
+            listing_data = get_data_from_otodom_listing(listing)
+            update_otodom_listing_data(scrapped_data, listing_data)
+    return scrapped_data
+
+
+def otodom_url_generator(url):
+    parsed_url = urlparse(url)
+    page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
+    limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
+    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+    while True:
+        yield f"{base_url}?page={page_value}&limit={limit_value}"
+        page_value += 1
+
+
+def get_data_from_otodom_listing(listing):
+    return pd.DataFrame()
+
+
+def update_otodom_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
+    pass
+
+
+def get_all_otodom_listings_for_page(search_soup):
+    lis_standard = get_otodom_standard_listing_urls_for_page(search_soup)
+    lis_promoted = get_otodom_promoted_listing_urls_for_page(search_soup)
     if len(lis_standard) == 0:
         return []
     else:
         return lis_promoted + lis_standard
 
 
-def get_promoted_listing_urls_for_page(soup: BeautifulSoup):
+def get_otodom_promoted_listing_urls_for_page(soup: BeautifulSoup):
     promoted_filter = {"data-cy": "search.listing.promoted"}
     promoted_div = soup.find(attrs=promoted_filter)
     lis = promoted_div.findAll("li")
-    return _get_listing_urls_for_page(lis)
+    return get_otodom_listing_urls_for_page(lis)
 
 
-def get_standard_listing_urls_for_page(soup: BeautifulSoup):
+def get_otodom_standard_listing_urls_for_page(soup: BeautifulSoup):
     standard_filter = {"data-cy": "search.listing"}
     divs = soup.find_all(attrs=standard_filter)
     if len(divs) < 2:
         return []
     standard_divs = divs[1]
     lis = standard_divs.findAll("li")
-    return _get_listing_urls_for_page(lis)
+    return get_otodom_listing_urls_for_page(lis)
 
 
-def _get_listing_urls_for_page(lis):
+def get_otodom_listing_urls_for_page(lis):
     links = []
     for li in lis:
         local_links = []
@@ -51,28 +85,6 @@ def _get_listing_urls_for_page(lis):
         else:
             _log_wrong_number(len(local_links), 1, "listing links")
     return links
-
-
-def get_website(url: str) -> Response:
-    page = requests.get(url)
-    return page
-
-
-def get_html_doc(response):
-    page = response.text
-    return page
-
-
-def get_soup(html_doc: TextIO):
-    soup = BeautifulSoup(html_doc, "html.parser")
-    return soup
-
-
-def get_soup_from_url(url):
-    page = get_website(url)
-    html = get_html_doc(page)
-    soup = get_soup(html)
-    return soup
 
 
 def get_price(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
@@ -235,76 +247,13 @@ def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     return {"condition": condition[0][0]}
 
 
-def _extract_divs(soup, soup_filter, what: str):
-    divs = soup.find_all(attrs=soup_filter)
+def get_floor(listing_soup):
+    floor, floors_in_building = _resolve_floor(floor_string)
 
-    if len(divs) > 1:
-        _log_wrong_number(len(divs), 1, what)
-        return None
-    elif len(divs) == 0:
-        _log_wrong_number(0, 1, what)
-        return None
-    nested_div = list(divs[0].children)
-
-    return nested_div
+    return {"floor": floor, "floors_in_building": floors_in_building}
 
 
-def _log_wrong_number(actual: int, expected: int, what: str) -> None:
-    logging.error(
-        f"{actual} {what} found for the listing, "
-        f"instead of expected {expected}. Skipping the record."
-    )
-
-
-def _log_unexpected(unexpected: str, where: str) -> None:
-    logging.error(f"Unexpected {unexpected} encountered in {where} in the listing")
-
-
-LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
-    get_price,
-    get_size,
-    get_building_type,
-    get_window_type,
-    get_year_of_construction,
-]
-
-
-def scrap(base_search_url, page_limit=1):
-    generator = get_url_generator(base_search_url)
-    scrapped_data = pd.DataFrame()
-
-    for url_count, url in enumerate(generator):
-        if url_count == page_limit:
-            break
-        search_soup = get_soup_from_url(url)
-        listings = get_all_listings_for_page(search_soup)
-        if len(listings) == 0:
-            break
-        for listing in listings:
-            listing_data = get_data_from_listing(listing)
-            update_listing_data(scrapped_data, listing_data)
-    return scrapped_data
-
-
-def get_url_generator(url):
-    parsed_url = urlparse(url)
-    page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
-    limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
-    base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
-    while True:
-        yield f"{base_url}?page={page_value}&limit={limit_value}"
-        page_value += 1
-
-
-def get_data_from_listing(listing):
-    return pd.DataFrame()
-
-
-def update_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
-    pass
-
-
-def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
+def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
     floor: int
     floors_in_building: Optional[int]
     floor_string = "".join(floor_string.split()).lower()
@@ -331,7 +280,10 @@ def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
     return floor, floors_in_building
 
 
-def get_floor(listing_soup):
-    floor, floors_in_building = resolve_floor(floor_string)
-
-    return {"floor": floor, "floors_in_building": floors_in_building}
+LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
+    get_price,
+    get_size,
+    get_building_type,
+    get_window_type,
+    get_year_of_construction,
+]
