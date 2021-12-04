@@ -147,10 +147,12 @@ def get_size(soup: BeautifulSoup) -> Dict[str, Optional[float]]:
 
 
 def _resolve_floor_size(floor_size: str) -> float:
-    floor_size_float = float(
-        re.sub(pattern=r"[^0-9,.]", repl="", string=floor_size, flags=re.UNICODE)
+    floor_size = floor_size.strip()
+    floor_size = re.match("^[0-9,.]+", floor_size).group(0)
+    floor_size = float(
+        re.sub(pattern=",", repl=r".", string=floor_size, flags=re.UNICODE)
     )
-    return floor_size_float
+    return floor_size
 
 
 def get_building_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
