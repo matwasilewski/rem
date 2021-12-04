@@ -98,9 +98,8 @@ def test_condition(listing_soup) -> None:
 
 
 def test_floor(listing_soup) -> None:
-    floor, floors_in_building = otodom.get_floor(listing_soup)
-    assert floor == 1
-    assert floors_in_building == 3
+    floors = otodom.get_floor(listing_soup)
+    assert floors == {"floor": 1, "floors_in_building": 3}
 
 
 def test_resolve_floor_1() -> None:

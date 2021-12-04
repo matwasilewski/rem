@@ -247,12 +247,6 @@ def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     return {"condition": condition[0][0]}
 
 
-def get_floor(listing_soup):
-    floor, floors_in_building = _resolve_floor(floor_string)
-
-    return {"floor": floor, "floors_in_building": floors_in_building}
-
-
 def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
     floor: int
     floors_in_building: Optional[int]
@@ -278,6 +272,57 @@ def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
         floors_in_building = None
 
     return floor, floors_in_building
+
+
+def get_total_floors_in_building(soup: BeautifulSoup):
+    soup_filter = {"aria-label": "Liczba pięter"}
+
+    floors_in_building_div = _extract_divs(soup, soup_filter, "floors_in_building")
+    if not floors_in_building_div:
+        return {"floors_in_building": None}
+
+    floors_in_building = []
+
+    for child in floors_in_building_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Liczba pięter"
+        ):
+            floors_in_building.append(child.contents)
+
+    if len(floors_in_building) != 1:
+        _log_wrong_number(len(floors_in_building), 1, "floors_in_building")
+        return None
+
+    return {"floors_in_building": int(floors_in_building[0][0])}
+
+
+def get_floor(soup: BeautifulSoup):
+    soup_filter = {"aria-label": "Piętro"}
+
+    floor_div = _extract_divs(soup, soup_filter, "floor")
+    if not floor_div:
+        return {"floor": None}
+
+    floor_list = []
+
+    for child in floor_div:
+        if (
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Piętro"
+        ):
+            floor_list.append(child.contents)
+
+    if len(floor_list) != 1:
+        _log_wrong_number(len(floor_list), 1, "floor")
+        return None
+
+    floor, floors_in_building = _resolve_floor(floor_list[0][0])
+    if floors_in_building is None:
+        floors_in_building = get_total_floors_in_building(soup)
+
+    return {"floor": floor, "floors_in_building": floors_in_building["floors_in_building"]}
+
 
 
 LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
