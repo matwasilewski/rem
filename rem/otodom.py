@@ -333,6 +333,26 @@ def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
 
 
 def get_floor(listing_soup):
-    floor, floors_in_building = resolve_floor(floor_string)
+    soup_filter = {"aria-label": "Piętro"}
 
-    return None
+    floor_div = _extract_divs(soup, soup_filter, "floor")
+    if not floor_div:
+        return None
+
+    floor_str = []
+
+    for child in floor_div:
+        if (
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Piętro"
+        ):
+            floor_str.append(child.contents)
+
+    if len(floor_str) != 1:
+        _log_wrong_number(len(floor_str), 1, "floor")
+        return None
+
+    floor, floors_in_building = resolve_floor(floor_str)
+
+    return floor, floors_in_building
+

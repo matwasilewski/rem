@@ -95,10 +95,10 @@ def test_condition(listing_soup) -> None:
     assert condition == "do zamieszkania"
 
 
-@pytest.mark.skip
 def test_floor(listing_soup) -> None:
     floor, floors_in_building = otodom.get_floor(listing_soup)
-    assert floor == "do zamieszkania"
+    assert floor == 1
+    assert floors_in_building == 3
 
 
 def test_resolve_floor_1() -> None:
