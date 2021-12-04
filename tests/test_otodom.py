@@ -291,13 +291,10 @@ def test_update_listing_data(
 
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
-    # assert listing_data.loc["price"] == 1500000
-    # assert listing_data.loc["floor_size_in_m2"] == float(72)
-    # assert listing_data.loc["building_type"] == "kamienica"
-    # assert listing_data.loc["windows_type"] == "plastikowe"
-    # assert listing_data.loc["year_of_construction"] == 1939
-    # assert listing_data.loc["number_of_rooms"] == 3
-    # assert listing_data.loc["condition"] == "do zamieszkania"
+    assert listing_data.loc[0, "price"] == 1500000.0
+    assert listing_data.loc[1, "price"] == 1782636.0
+    assert listing_data.loc[0, "year_of_construction"] == 1939
+    assert listing_data.loc[1, "year_of_construction"] is None
 
 
 @pytest.mark.skip
