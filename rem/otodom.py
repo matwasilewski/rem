@@ -349,6 +349,46 @@ def get_floor(soup: BeautifulSoup):
         "floors_in_building": floors_in_building["floors_in_building"],
     }
 
+def resolve_monthly_fee(monthly_fee_string: str):
+    monthly_fee: float
+    monthly_fee_string = "".join(monthly_fee_string.split()).lower()
+
+    if "zł" in monthly_fee_string:
+        monthly_fee_string = monthly_fee_string.replace("zł", "")
+    elif "pln" in monthly_fee_string:
+        monthly_fee_string = monthly_fee_string.replace("pln", "")
+
+    monthly_fee_string = re.sub(",", ".", monthly_fee_string)
+    monthly_fee_string = monthly_fee_string.strip()
+    monthly_fee = float(monthly_fee_string)
+    monthly_fee = round(monthly_fee, 0)
+    return monthly_fee
+
+
+def get_monthly_fee(soup: BeautifulSoup):
+    soup_filter = {"aria-label": "Czynsz"}
+
+    monthly_fee_div = _extract_divs(soup, soup_filter, "monthly_fee")
+    if not monthly_fee_div:
+        return {"monthly_fee": None}
+
+    monthly_fee_list = []
+
+    for child in monthly_fee_div:
+        if (
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Czynsz"
+        ):
+            monthly_fee_list.append(child.contents)
+
+    if len(monthly_fee_list) != 1:
+        _log_wrong_number(len(monthly_fee_list), 1, "monthly_fee")
+        return None
+
+    monthly_fee = resolve_monthly_fee(monthly_fee_list[0][0])
+
+    return {"monthly_fee": monthly_fee}
+
 
 LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_price,
