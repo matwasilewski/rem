@@ -84,42 +84,42 @@ def test_get_size(listing) -> None:
 
 def test_resolve_floor_size_1() -> None:
     size = otodom._resolve_floor_size("72")
-    assert size == {"floor_size_in_m2": float(72)}
+    assert size == float(72)
 
 
 def test_resolve_floor_size_2() -> None:
     size = otodom._resolve_floor_size("119,64")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_resolve_floor_size_3() -> None:
     size = otodom._resolve_floor_size("119.64")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_resolve_floor_size_4() -> None:
     size = otodom._resolve_floor_size("119")
-    assert size == {"floor_size_in_m2": float(119)}
+    assert size == float(119)
 
 
 def test_resolve_floor_size_5() -> None:
     size = otodom._resolve_floor_size("119.64m2")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_resolve_floor_size_6() -> None:
     size = otodom._resolve_floor_size("119.64 m2")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_resolve_floor_size_7() -> None:
     size = otodom._resolve_floor_size("119,64 m2")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_resolve_floor_size_8() -> None:
     size = otodom._resolve_floor_size("119,64 m")
-    assert size == {"floor_size_in_m2": float(119.64)}
+    assert size == float(119.64)
 
 
 def test_type_of_building(listing) -> None:

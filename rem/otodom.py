@@ -14,19 +14,28 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 def otodom_scrap(base_search_url, page_limit=1):
     generator = otodom_url_generator(base_search_url)
-    scrapped_data = pd.DataFrame()
+    dataframe = pd.DataFrame()
 
     for url_count, url in enumerate(generator):
         if url_count == page_limit:
             break
+
         search_soup = get_soup_from_url(url)
-        listings = get_all_otodom_listing_urls_for_page(search_soup)
-        if len(listings) == 0:
+
+        listings_urls = get_all_otodom_listing_urls_for_page(search_soup)
+        if len(listings_urls) == 0:
             break
-        for listing in listings:
-            listing_data = get_data_from_otodom_listing(listing)
-            update_otodom_listing_data(scrapped_data, listing_data)
-    return scrapped_data
+
+        listing_soups = [get_soup_from_url(url) for url in listings_urls]
+
+        extract_data_from_listing_soups(dataframe, listings_urls)
+    return dataframe
+
+
+def extract_data_from_listing_soups(dataframe, listings):
+    for listing in listings:
+        listing_data = get_data_from_otodom_listing(listing)
+        update_otodom_listing_data(dataframe, listing_data)
 
 
 def otodom_url_generator(url):
@@ -49,7 +58,7 @@ def get_data_from_otodom_listing(listing):
     return listing_data
 
 
-def update_otodom_listing_data(scrapped_data: pd.DataFrame, listing_data: pd.DataFrame):
+def update_otodom_listing_data(dataframe: pd.DataFrame, listing_data: pd.Series):
     pass
 
 
@@ -118,7 +127,7 @@ def get_size(soup: BeautifulSoup) -> Dict[str, Optional[float]]:
     size_div = _extract_divs(soup, soup_filter, "size")
 
     if not size_div:
-        return None
+        return {"floor_size_in_m2": None}
 
     floor_size = []
     for child in size_div:
@@ -130,13 +139,18 @@ def get_size(soup: BeautifulSoup) -> Dict[str, Optional[float]]:
 
     if len(floor_size) != 1:
         _log_wrong_number(len(floor_size), 1, "floor size")
-        return None
+        return {"floor_size_in_m2": None}
 
-    floor_size_float = float(
-        re.sub(pattern=r"[^0-9,.]", repl="", string=floor_size[0], flags=re.UNICODE)
-    )
+    floor_size_float = _resolve_floor_size(floor_size[0])
 
     return {"floor_size_in_m2": floor_size_float}
+
+
+def _resolve_floor_size(floor_size: str) -> float:
+    floor_size_float = float(
+        re.sub(pattern=r"[^0-9,.]", repl="", string=floor_size, flags=re.UNICODE)
+    )
+    return floor_size_float
 
 
 def get_building_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
@@ -234,7 +248,6 @@ def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     condition_div = _extract_divs(soup, soup_filter, "condition")
     if not condition_div:
-
         return {"condition": None}
 
     condition = []
@@ -314,8 +327,8 @@ def get_floor(soup: BeautifulSoup):
 
     for child in floor_div:
         if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Piętro"
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Piętro"
         ):
             floor_list.append(child.contents)
 
@@ -327,8 +340,10 @@ def get_floor(soup: BeautifulSoup):
     if floors_in_building is None:
         floors_in_building = get_total_floors_in_building(soup)
 
-    return {"floor": floor, "floors_in_building": floors_in_building["floors_in_building"]}
-
+    return {
+        "floor": floor,
+        "floors_in_building": floors_in_building["floors_in_building"],
+    }
 
 
 LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
