@@ -349,6 +349,7 @@ def get_floor(soup: BeautifulSoup):
         "floors_in_building": floors_in_building["floors_in_building"],
     }
 
+
 def resolve_monthly_fee(monthly_fee_string: str):
     monthly_fee: float
     monthly_fee_string = "".join(monthly_fee_string.split()).lower()
@@ -376,8 +377,8 @@ def get_monthly_fee(soup: BeautifulSoup):
 
     for child in monthly_fee_div:
         if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Czynsz"
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Czynsz"
         ):
             monthly_fee_list.append(child.contents)
 
@@ -390,7 +391,13 @@ def get_monthly_fee(soup: BeautifulSoup):
     return {"monthly_fee": monthly_fee}
 
 
+def get_listing_url(soup: BeautifulSoup):
+    link = soup.select('link[rel="canonical"]')[0].get("href")
+    return link
+
+
 LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
+    get_listing_url,
     get_price,
     get_size,
     get_building_type,

@@ -206,6 +206,14 @@ def test_resolve_monthly_fee_5() -> None:
     assert monthly_fee == 800
 
 
+def test_get_listing_url(listing) -> None:
+    listing_url = otodom.get_listing_url(listing)
+    assert (
+        listing_url
+        == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
+    )
+
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
