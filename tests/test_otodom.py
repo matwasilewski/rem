@@ -128,34 +128,35 @@ def test_resolve_floor_4() -> None:
     assert floors_in_building is None
 
 
-def test_monthly_fee() -> None:
+def test_monthly_fee(listing_soup) -> None:
     monthly_fee = otodom.get_monthly_fee(listing_soup)
-    assert monthly_fee == {"fee": 800}
+    assert monthly_fee == {"monthly_fee": 800}
 
 
 def test_resolve_monthly_fee_1() -> None:
-    monthly_fee = otodom.resolve_monthly_monthly_fee("800 zł")
+    monthly_fee = otodom.resolve_monthly_fee("800 zł")
     assert monthly_fee == 800
 
 
 def test_resolve_monthly_fee_2() -> None:
-    monthly_fee = otodom.resolve_monthly_monthly_fee("800 ZŁ")
+    monthly_fee = otodom.resolve_monthly_fee("800 ZŁ")
     assert monthly_fee == 800
 
 
 def test_resolve_monthly_fee_3() -> None:
-    monthly_fee = otodom.resolve_monthly_monthly_fee("800 PLN")
+    monthly_fee = otodom.resolve_monthly_fee("800 PLN")
     assert monthly_fee == 800
 
 
 def test_resolve_monthly_fee_4() -> None:
-    monthly_fee = otodom.resolve_monthly_monthly_fee("800,00 zł")
+    monthly_fee = otodom.resolve_monthly_fee("800,00 zł")
     assert monthly_fee == 800
 
 
 def test_resolve_monthly_fee_5() -> None:
-    monthly_fee = otodom.resolve_monthly_monthly_fee("800.00 zł")
+    monthly_fee = otodom.resolve_monthly_fee("800.00 zł")
     assert monthly_fee == 800
+
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
