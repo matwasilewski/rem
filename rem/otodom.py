@@ -398,4 +398,7 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_year_of_construction,
     get_number_of_rooms,
     get_condition,
+    get_floor,
+    get_monthly_fee,
+
 ]
