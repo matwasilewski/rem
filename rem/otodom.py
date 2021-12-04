@@ -1,4 +1,4 @@
-from typing import Union, TextIO, Optional, Tuple
+from typing import Union, TextIO, Optional, Tuple, Dict
 import logging
 
 import pandas as pd
@@ -22,14 +22,14 @@ def get_all_listings_for_page(search_soup):
         return lis_promoted + lis_standard
 
 
-def get_promoted_listing_urls_for_page(soup):
+def get_promoted_listing_urls_for_page(soup: BeautifulSoup):
     promoted_filter = {"data-cy": "search.listing.promoted"}
     promoted_div = soup.find(attrs=promoted_filter)
     lis = promoted_div.findAll("li")
     return _get_listing_urls_for_page(lis)
 
 
-def get_standard_listing_urls_for_page(soup):
+def get_standard_listing_urls_for_page(soup: BeautifulSoup):
     standard_filter = {"data-cy": "search.listing"}
     divs = soup.find_all(attrs=standard_filter)
     if len(divs) < 2:
@@ -75,7 +75,7 @@ def get_soup_from_url(url):
     return soup
 
 
-def get_price(soup: BeautifulSoup) -> Optional[int]:
+def get_price(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
     soup_filter = {"aria-label": "Cena"}
 
     price_div = _extract_divs(soup, soup_filter, "price")
@@ -91,10 +91,10 @@ def get_price(soup: BeautifulSoup) -> Optional[int]:
     price = int(
         re.sub(pattern=r"[^0-9,.]", repl="", string=price_div[0], flags=re.UNICODE)
     )
-    return price
+    return {"price": price}
 
 
-def get_size(soup: BeautifulSoup) -> Optional[float]:
+def get_size(soup: BeautifulSoup) -> Dict[str, Optional[float]]:
     soup_filter = {"aria-label": "Powierzchnia"}
 
     size_div = _extract_divs(soup, soup_filter, "size")
@@ -118,16 +118,16 @@ def get_size(soup: BeautifulSoup) -> Optional[float]:
         re.sub(pattern=r"[^0-9,.]", repl="", string=floor_size[0], flags=re.UNICODE)
     )
 
-    return floor_size_float
+    return {"floor_size_in_m2": floor_size_float}
 
 
-def get_building_type(soup):
+def get_building_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     soup_filter = {"aria-label": "Rodzaj zabudowy"}
 
     type_of_building_div = _extract_divs(soup, soup_filter, "type-of-building")
 
     if not type_of_building_div:
-        return None
+        return {"building_type": None}
 
     type_of_building = []
 
@@ -142,15 +142,15 @@ def get_building_type(soup):
         _log_wrong_number(len(type_of_building), 1, "type of building")
         return None
 
-    return type_of_building[0][0]
+    return {"building_type": type_of_building[0][0]}
 
 
-def get_window_type(soup):
+def get_window_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     soup_filter = {"aria-label": "Okna"}
 
     type_of_window_div = _extract_divs(soup, soup_filter, "window")
     if not type_of_window_div:
-        return None
+        return {"windows_type": None}
 
     window = []
 
@@ -162,15 +162,15 @@ def get_window_type(soup):
         _log_wrong_number(len(window), 1, "window")
         return None
 
-    return window[0][0]
+    return {"windows_type": window[0][0]}
 
 
-def get_year_of_construction(soup):
+def get_year_of_construction(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
     soup_filter = {"aria-label": "Rok budowy"}
 
     year_of_construction_div = _extract_divs(soup, soup_filter, "year")
     if not year_of_construction_div:
-        return None
+        return {"year_of_construction": None}
 
     year = []
 
@@ -185,15 +185,15 @@ def get_year_of_construction(soup):
         _log_wrong_number(len(year), 1, "year")
         return None
 
-    return int(year[0][0])
+    return {"year_of_construction": int(year[0][0])}
 
 
-def get_number_of_rooms(soup):
+def get_number_of_rooms(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
     soup_filter = {"aria-label": "Liczba pokoi"}
 
     number_of_rooms_div = _extract_divs(soup, soup_filter, "number_of_rooms")
     if not number_of_rooms_div:
-        return None
+        return {"number_of_rooms": None}
 
     rooms = []
 
@@ -206,18 +206,18 @@ def get_number_of_rooms(soup):
 
     if len(rooms) != 1:
         _log_wrong_number(len(rooms), 1, "number_of_rooms")
-        return None
+        return {"number_of_rooms": None}
 
-    return int(rooms[0][0])
+    return {"number_of_rooms": int(rooms[0][0])}
 
 
-def get_condition(soup):
+def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     soup_filter = {"aria-label": "Stan wykończenia"}
 
     condition_div = _extract_divs(soup, soup_filter, "condition")
     if not condition_div:
 
-        return None
+        return {"condition": None}
 
     condition = []
 
@@ -232,7 +232,7 @@ def get_condition(soup):
         _log_wrong_number(len(condition), 1, "condition")
         return None
 
-    return condition[0][0]
+    return {"condition": condition[0][0]}
 
 
 def _extract_divs(soup, soup_filter, what: str):
@@ -291,7 +291,6 @@ def get_url_generator(url):
     page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
     limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
     base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
-
     while True:
         yield f"{base_url}?page={page_value}&limit={limit_value}"
         page_value += 1
@@ -335,4 +334,4 @@ def resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
 def get_floor(listing_soup):
     floor, floors_in_building = resolve_floor(floor_string)
 
-    return None
+    return {"floor": floor, "floors_in_building": floors_in_building}
