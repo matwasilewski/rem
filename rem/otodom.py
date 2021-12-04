@@ -13,8 +13,8 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 
 def otodom_scrap(base_search_url, page_limit=1):
-    generator = otodom_url_generator(base_search_url)
     dataframe = pd.DataFrame()
+    generator = otodom_url_generator(base_search_url)
 
     for url_count, url in enumerate(generator):
         if url_count == page_limit:
@@ -27,15 +27,16 @@ def otodom_scrap(base_search_url, page_limit=1):
             break
 
         listing_soups = [get_soup_from_url(url) for url in listings_urls]
+        dataframe = extract_data_from_listing_soups(listings_urls)
 
-        extract_data_from_listing_soups(dataframe, listings_urls)
     return dataframe
 
 
 def extract_data_from_listing_soups(dataframe, listings):
     for listing in listings:
         listing_data = get_data_from_otodom_listing(listing)
-        update_otodom_listing_data(dataframe, listing_data)
+        dataframe = append_new_listing_data(dataframe, listing_data)
+    return dataframe
 
 
 def otodom_url_generator(url):
@@ -58,8 +59,9 @@ def get_data_from_otodom_listing(listing):
     return listing_data
 
 
-def update_otodom_listing_data(dataframe: pd.DataFrame, listing_data: pd.Series):
-    pass
+def append_new_listing_data(dataframe: pd.DataFrame, listing_data: pd.Series):
+    new_dataframe = dataframe.append(listing_data, ignore_index=True)
+    return new_dataframe
 
 
 def get_all_otodom_listing_urls_for_page(search_soup):

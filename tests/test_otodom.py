@@ -286,11 +286,8 @@ def test_update_listing_data(
 ) -> None:
     listing_data = pd.DataFrame()
 
-    first_listing_data = get_data_from_otodom_listing(listing)
-    second_listing_data = get_data_from_otodom_listing(alternative_listing)
-    listing_soups = [first_listing_data, second_listing_data]
-
-    otodom.extract_data_from_listing_soups(listing_data, listing_soups)
+    listing_soups = [listing, alternative_listing]
+    listing_data = otodom.extract_data_from_listing_soups(listing_data, listing_soups)
 
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
