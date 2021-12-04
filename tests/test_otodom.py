@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import pandas as pd
 import pytest
@@ -6,6 +7,7 @@ from bs4 import BeautifulSoup
 
 import rem.universal
 from rem import otodom
+from rem.otodom import get_data_from_otodom_listing
 from rem.universal import get_website
 
 
@@ -167,12 +169,12 @@ def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
 
 
 def test_get_all_listings_for_search_page(search_soup) -> None:
-    urls = otodom.get_all_otodom_listings_for_page(search_soup)
+    urls = otodom.get_all_otodom_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(empty_search_soup) -> None:
-    urls = otodom.get_all_otodom_listings_for_page(empty_search_soup)
+    urls = otodom.get_all_otodom_listing_urls_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
@@ -214,6 +216,21 @@ def test_url_generator_with_query_parameters():
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=3&limit=72"
     )
+
+
+def test_get_data_from_listing(listing_soup) -> None:
+    listing_data: Optional[pd.DataFrame] = None
+
+    listing_data = get_data_from_otodom_listing(listing_soup)
+
+    assert isinstance(listing_data, pd.Series)
+    assert listing_data.loc["price"] == 1500000
+    assert listing_data.loc["floor_size_in_m2"] == float(72)
+    assert listing_data.loc["building_type"] == "kamienica"
+    assert listing_data.loc["windows_type"] == "plastikowe"
+    assert listing_data.loc["year_of_construction"] == 1939
+    assert listing_data.loc["number_of_rooms"] == 3
+    assert listing_data.loc["condition"] == "do zamieszkania"
 
 
 @pytest.mark.skip
