@@ -64,43 +64,42 @@ def test_load_html(listing_soup) -> None:
 
 def test_get_price(listing_soup) -> None:
     price = otodom.get_price(listing_soup)
-    assert price == 1500000
+    assert price == {"price": 1500000}
 
 
 def test_get_size(listing_soup) -> None:
     size = otodom.get_size(listing_soup)
-    assert size == float(72)
+    assert size == {"floor_size_in_m2": float(72)}
 
 
 def test_type_of_building(listing_soup) -> None:
     building_type = otodom.get_building_type(listing_soup)
-    assert building_type == "kamienica"
+    assert building_type == {"building_type": "kamienica"}
 
 
 def test_type_of_window(listing_soup) -> None:
     window_type = otodom.get_window_type(listing_soup)
-    assert window_type == "plastikowe"
+    assert window_type == {"windows_type": "plastikowe"}
 
 
 def test_year_of_construction(listing_soup) -> None:
     year_of_construction = otodom.get_year_of_construction(listing_soup)
-    assert year_of_construction == 1939
+    assert year_of_construction == {"year_of_construction": 1939}
 
 
 def test_number_of_rooms(listing_soup) -> None:
     number_of_rooms = otodom.get_number_of_rooms(listing_soup)
-    assert number_of_rooms == 3
+    assert number_of_rooms == {"number_of_rooms": 3}
 
 
 def test_condition(listing_soup) -> None:
     condition = otodom.get_condition(listing_soup)
-    assert condition == "do zamieszkania"
+    assert condition == {"condition": "do zamieszkania"}
 
 
 @pytest.mark.skip
 def test_floor(listing_soup) -> None:
     floor, floors_in_building = otodom.get_floor(listing_soup)
-    assert floor == "do zamieszkania"
 
 
 def test_resolve_floor_1() -> None:
