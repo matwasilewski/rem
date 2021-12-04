@@ -11,8 +11,8 @@ from rem.otodom import get_data_from_otodom_listing
 from rem.universal import get_website
 
 
-@pytest.fixture(scope="session", autouse=True)
-def listing_soup() -> BeautifulSoup:
+@pytest.fixture(scope="session", autouse=False)
+def listing() -> BeautifulSoup:
     path = os.sep.join(
         ["tests", "resources", "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"]
     )
@@ -21,7 +21,15 @@ def listing_soup() -> BeautifulSoup:
     return soup
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=False)
+def alternative_listing() -> BeautifulSoup:
+    path = os.sep.join(["tests", "resources", "mieszkanie-12-min-do-centrum.html"])
+    with open(path, encoding="utf-8") as fp:
+        soup = rem.universal.get_soup(fp)
+    return soup
+
+
+@pytest.fixture(scope="session", autouse=False)
 def search_soup() -> BeautifulSoup:
     path = os.sep.join(["tests", "resources", "warszawa-page-1.html"])
     with open(path, encoding="utf-8") as fp:
@@ -60,47 +68,87 @@ def test_get_soup_from_url_function() -> None:
     assert example_soup.find("h1").text == "Example Domain"
 
 
-def test_load_html(listing_soup) -> None:
-    assert len(listing_soup.contents) == 2
+def test_load_html(listing) -> None:
+    assert len(listing.contents) == 2
 
 
-def test_get_price(listing_soup) -> None:
-    price = otodom.get_price(listing_soup)
+def test_get_price(listing) -> None:
+    price = otodom.get_price(listing)
     assert price == {"price": 1500000}
 
 
-def test_get_size(listing_soup) -> None:
-    size = otodom.get_size(listing_soup)
+def test_get_size(listing) -> None:
+    size = otodom.get_size(listing)
     assert size == {"floor_size_in_m2": float(72)}
 
 
-def test_type_of_building(listing_soup) -> None:
-    building_type = otodom.get_building_type(listing_soup)
+def test_resolve_floor_size_1() -> None:
+    size = otodom._resolve_floor_size("72")
+    assert size == {"floor_size_in_m2": float(72)}
+
+
+def test_resolve_floor_size_2() -> None:
+    size = otodom._resolve_floor_size("119,64")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_resolve_floor_size_3() -> None:
+    size = otodom._resolve_floor_size("119.64")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_resolve_floor_size_4() -> None:
+    size = otodom._resolve_floor_size("119")
+    assert size == {"floor_size_in_m2": float(119)}
+
+
+def test_resolve_floor_size_5() -> None:
+    size = otodom._resolve_floor_size("119.64m2")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_resolve_floor_size_6() -> None:
+    size = otodom._resolve_floor_size("119.64 m2")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_resolve_floor_size_7() -> None:
+    size = otodom._resolve_floor_size("119,64 m2")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_resolve_floor_size_8() -> None:
+    size = otodom._resolve_floor_size("119,64 m")
+    assert size == {"floor_size_in_m2": float(119.64)}
+
+
+def test_type_of_building(listing) -> None:
+    building_type = otodom.get_building_type(listing)
     assert building_type == {"building_type": "kamienica"}
 
 
-def test_type_of_window(listing_soup) -> None:
-    window_type = otodom.get_window_type(listing_soup)
+def test_type_of_window(listing) -> None:
+    window_type = otodom.get_window_type(listing)
     assert window_type == {"windows_type": "plastikowe"}
 
 
-def test_year_of_construction(listing_soup) -> None:
-    year_of_construction = otodom.get_year_of_construction(listing_soup)
+def test_year_of_construction(listing) -> None:
+    year_of_construction = otodom.get_year_of_construction(listing)
     assert year_of_construction == {"year_of_construction": 1939}
 
 
-def test_number_of_rooms(listing_soup) -> None:
-    number_of_rooms = otodom.get_number_of_rooms(listing_soup)
+def test_number_of_rooms(listing) -> None:
+    number_of_rooms = otodom.get_number_of_rooms(listing)
     assert number_of_rooms == {"number_of_rooms": 3}
 
 
-def test_condition(listing_soup) -> None:
-    condition = otodom.get_condition(listing_soup)
+def test_condition(listing) -> None:
+    condition = otodom.get_condition(listing)
     assert condition == {"condition": "do zamieszkania"}
 
 
-def test_floor(listing_soup) -> None:
-    floors = otodom.get_floor(listing_soup)
+def test_floor(listing) -> None:
+    floors = otodom.get_floor(listing)
     assert floors == {"floor": 1, "floors_in_building": 3}
 
 
@@ -218,10 +266,10 @@ def test_url_generator_with_query_parameters():
     )
 
 
-def test_get_data_from_listing(listing_soup) -> None:
+def test_get_data_from_listing(listing) -> None:
     listing_data: Optional[pd.DataFrame] = None
 
-    listing_data = get_data_from_otodom_listing(listing_soup)
+    listing_data = get_data_from_otodom_listing(listing)
 
     assert isinstance(listing_data, pd.Series)
     assert listing_data.loc["price"] == 1500000
@@ -233,6 +281,28 @@ def test_get_data_from_listing(listing_soup) -> None:
     assert listing_data.loc["condition"] == "do zamieszkania"
 
 
+def test_update_listing_data(
+    listing: BeautifulSoup, alternative_listing: BeautifulSoup
+) -> None:
+    listing_data = pd.DataFrame()
+
+    first_listing_data = get_data_from_otodom_listing(listing)
+    second_listing_data = get_data_from_otodom_listing(alternative_listing)
+    listing_soups = [first_listing_data, second_listing_data]
+
+    otodom.extract_data_from_listing_soups(listing_data, listing_soups)
+
+    assert isinstance(listing_data, pd.DataFrame)
+    assert len(listing_data.index) == 2
+    # assert listing_data.loc["price"] == 1500000
+    # assert listing_data.loc["floor_size_in_m2"] == float(72)
+    # assert listing_data.loc["building_type"] == "kamienica"
+    # assert listing_data.loc["windows_type"] == "plastikowe"
+    # assert listing_data.loc["year_of_construction"] == 1939
+    # assert listing_data.loc["number_of_rooms"] == 3
+    # assert listing_data.loc["condition"] == "do zamieszkania"
+
+
 @pytest.mark.skip
 def test_scrap():
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
@@ -242,8 +312,8 @@ def test_scrap():
 
 
 @pytest.mark.skip
-def test_unique_id(listing_soup) -> None:
+def test_unique_id(listing) -> None:
     unique_id = otodom.get_unique_id(
-        listing_soup,
+        listing,
     )
     assert unique_id == 62365446
