@@ -391,6 +391,22 @@ def get_monthly_fee(soup: BeautifulSoup):
     return {"monthly_fee": monthly_fee}
 
 
+def get_unique_id(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+
+    tags_content = []
+    for tags in soup.find_all('meta'):
+        tags_content.append(tags.get('content'))
+
+    title_string = "".join(tags_content[18].split())
+    title_string = title_string.strip("•www.otodom.pl")
+    unique_id = int(title_string[-8:])
+
+    if not unique_id:
+        return {"unique_id": None}
+
+    return {"unique_id": unique_id}
+
+
 def get_listing_url(soup: BeautifulSoup):
     link = soup.select('link[rel="canonical"]')[0].get("href")
     return link
