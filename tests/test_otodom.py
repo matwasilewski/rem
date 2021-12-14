@@ -224,6 +224,16 @@ def test_ownership_form(listing) -> None:
     assert ownership_form == {"ownership_form": "pełna własność"}
 
 
+def test_market_type(listing) -> None:
+    market_type = otodom.get_market_type(listing)
+    assert market_type == {"market_type": "wtórny"}
+
+
+def test_construction_material(listing) -> None:
+    construction_material = otodom.get_construction_material(listing)
+    assert construction_material == {"construction_material": "cegła"}
+
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
