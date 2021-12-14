@@ -219,6 +219,11 @@ def test_unique_id(listing) -> None:
     assert unique_id == {"unique_id": 62365446}
 
 
+def test_ownership_form(listing) -> None:
+    ownership_form = otodom.get_ownership_form(listing)
+    assert ownership_form == {"ownership_form": "pełna własność"}
+
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
