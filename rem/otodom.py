@@ -13,7 +13,7 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 
 class Otodom:
-    def __init__(self):
+    def __init__(self, base_search_url):
         self.listing_information_retrieval_methods = [
             self.get_listing_url,
             self.get_price,
@@ -32,9 +32,10 @@ class Otodom:
             self.get_heating,
         ]
 
-    def otodom_scrap(self, base_search_url, page_limit=1):
+
+    def otodom_scrap(self, page_limit=1):
         dataframe = pd.DataFrame()
-        generator = self.otodom_url_generator(base_search_url)
+        generator = self.otodom_url_generator()
 
         for url_count, url in enumerate(generator):
             if url_count == page_limit:
@@ -59,8 +60,8 @@ class Otodom:
             dataframe = self.append_new_listing_data(dataframe, listing_data)
         return dataframe
 
-    def otodom_url_generator(self, url):
-        parsed_url = urlparse(url)
+    def otodom_url_generator(self):
+        parsed_url = urlparse(self.base_search_url)
         page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
         limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
         base_url = (
