@@ -5,3 +5,4 @@ geckodriver.log
 __pycache__
 notebooks/*
 data/*
+gcp_api.key
