@@ -564,7 +564,7 @@ def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     return {"heating": heating[0][0]}
 
 
-def get_address(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
     address_list = []
     for a in soup.findAll('a'):
         address_list.append(a.text)
@@ -581,6 +581,13 @@ def get_address(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     address = max(contem_address_list, key=len)
 
     return {"address": address}
+
+
+#def extract_long_lat_via_address(address):
+#    GOOGLE_API_KEY = 'AIzaSyD_NUEuHNC0PS5LRCH4Cm1cfkUQJVbsOhQ'
+
+
+
 
 
 def get_listing_url(soup: BeautifulSoup):
