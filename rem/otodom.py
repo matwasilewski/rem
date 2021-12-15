@@ -1,3 +1,4 @@
+import os.path
 from typing import Optional, Tuple, Dict
 
 import pandas as pd
@@ -15,9 +16,19 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 
 class Otodom:
-    def __init__(self, base_search_url, page_limit = 1):
+    def __init__(self, base_search_url, file_name, page_limit=1,
+                 use_google_maps_api=False, gcp_api_key_path="gcp_api.key"):
         self.base_search_url = base_search_url
         self.page_limit = page_limit
+        self.file_name = file_name
+
+        if use_google_maps_api:
+            try:
+                with open(gcp_api_key_path) as f:
+                    gcp_key = f.read()
+                    self.gmaps = googlemaps.Client(key=gcp_key)
+            except FileNotFoundError:
+                raise "no GCP API key provided!"
 
         self.listing_information_retrieval_methods = [
             self.get_listing_url,
@@ -85,7 +96,7 @@ class Otodom:
         return listing_data
 
     def append_new_listing_data(
-        self, dataframe: pd.DataFrame, listing_data: pd.Series
+            self, dataframe: pd.DataFrame, listing_data: pd.Series
     ):
         new_dataframe = dataframe.append(listing_data, ignore_index=True)
         return new_dataframe
@@ -164,8 +175,8 @@ class Otodom:
         floor_size = []
         for child in size_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Powierzchnia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Powierzchnia"
             ):
                 floor_size = child.contents
 
@@ -186,7 +197,7 @@ class Otodom:
         return floor_size
 
     def get_building_type(
-        self, soup: BeautifulSoup
+            self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Rodzaj zabudowy"}
 
@@ -201,8 +212,8 @@ class Otodom:
 
         for child in type_of_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rodzaj zabudowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rodzaj zabudowy"
             ):
                 type_of_building.append(child.contents)
 
@@ -223,8 +234,8 @@ class Otodom:
 
         for child in type_of_window_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Okna"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Okna"
             ):
                 window.append(child.contents)
 
@@ -235,7 +246,7 @@ class Otodom:
         return {"windows_type": window[0][0]}
 
     def get_year_of_construction(
-        self, soup: BeautifulSoup
+            self, soup: BeautifulSoup
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Rok budowy"}
 
@@ -247,8 +258,8 @@ class Otodom:
 
         for child in year_of_construction_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rok budowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rok budowy"
             ):
                 year.append(child.contents)
 
@@ -259,7 +270,7 @@ class Otodom:
         return {"year_of_construction": int(year[0][0])}
 
     def get_number_of_rooms(
-        self, soup: BeautifulSoup
+            self, soup: BeautifulSoup
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Liczba pokoi"}
 
@@ -273,8 +284,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pokoi"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -295,8 +306,8 @@ class Otodom:
 
         for child in condition_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Stan wykończenia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Stan wykończenia"
             ):
                 condition.append(child.contents)
 
@@ -349,8 +360,8 @@ class Otodom:
 
         for child in floors_in_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pięter"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pięter"
             ):
                 floors_in_building.append(child.contents)
 
@@ -371,8 +382,8 @@ class Otodom:
 
         for child in floor_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Piętro"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Piętro"
             ):
                 floor_list.append(child.contents)
 
@@ -415,8 +426,8 @@ class Otodom:
 
         for child in monthly_fee_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Czynsz"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Czynsz"
             ):
                 monthly_fee_list.append(child.contents)
 
@@ -457,7 +468,7 @@ class Otodom:
         return {"unique_id": unique_id}
 
     def get_ownership_form(
-        self, soup: BeautifulSoup
+            self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Forma własności"}
 
@@ -469,8 +480,8 @@ class Otodom:
 
         for child in ownership_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Forma własności"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Forma własności"
             ):
                 ownership.append(child.contents)
 
@@ -491,8 +502,8 @@ class Otodom:
 
         for child in market_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rynek"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rynek"
             ):
                 market.append(child.contents)
 
@@ -503,7 +514,7 @@ class Otodom:
         return {"market_type": market[0][0]}
 
     def get_construction_material(
-        self, soup: BeautifulSoup
+            self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Materiał budynku"}
 
@@ -517,8 +528,8 @@ class Otodom:
 
         for child in material_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Materiał budynku"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Materiał budynku"
             ):
                 material.append(child.contents)
 
@@ -590,8 +601,8 @@ class Otodom:
 
         for child in heating_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Ogrzewanie"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Ogrzewanie"
             ):
                 heating.append(child.contents)
 
@@ -623,6 +634,6 @@ class Otodom:
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return link
 
-    def extract_long_lat_via_address(self, address, gmaps):
-        geocode_result = gmaps.geocode(address)
+    def extract_long_lat_via_address(self, address):
+        geocode_result = self.gmaps.geocode(address)
         return geocode_result

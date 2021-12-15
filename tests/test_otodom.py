@@ -13,7 +13,8 @@ from rem.universal import get_website
 @pytest.fixture(scope="session", autouse=True)
 def otodom_instance() -> Otodom:
     otodom = Otodom(
-        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72",
+        "warszawa-mieszkania"
     )
     return otodom
 
