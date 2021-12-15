@@ -6,9 +6,14 @@ import pytest
 from bs4 import BeautifulSoup
 
 import rem.universal
-from rem import otodom
-from rem.otodom import get_data_from_otodom_listing
+from rem.otodom import Otodom
 from rem.universal import get_website
+
+
+@pytest.fixture(scope="session", autouse=True)
+def otodom_instance() -> Otodom:
+    otodom = Otodom()
+    return otodom
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -74,259 +79,259 @@ def test_get_soup_from_url_function() -> None:
     assert example_soup.find("h1").text == "Example Domain"
 
 
-def test_load_html(listing) -> None:
+def test_load_html(otodom_instance, listing) -> None:
     assert len(listing.contents) == 2
 
 
-def test_get_price(listing) -> None:
-    price = otodom.get_price(listing)
+def test_get_price(otodom_instance, listing) -> None:
+    price = otodom_instance.get_price(listing)
     assert price == {"price": 1500000}
 
 
-def test_get_size(listing) -> None:
-    size = otodom.get_size(listing)
+def test_get_size(otodom_instance, listing) -> None:
+    size = otodom_instance.get_size(listing)
     assert size == {"floor_size_in_m2": float(72)}
 
 
-def test_resolve_floor_size_1() -> None:
-    size = otodom._resolve_floor_size("72")
+def test_resolve_floor_size_1(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("72")
     assert size == float(72)
 
 
-def test_resolve_floor_size_2() -> None:
-    size = otodom._resolve_floor_size("119,64")
+def test_resolve_floor_size_2(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119,64")
     assert size == float(119.64)
 
 
-def test_resolve_floor_size_3() -> None:
-    size = otodom._resolve_floor_size("119.64")
+def test_resolve_floor_size_3(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119.64")
     assert size == float(119.64)
 
 
-def test_resolve_floor_size_4() -> None:
-    size = otodom._resolve_floor_size("119")
+def test_resolve_floor_size_4(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119")
     assert size == float(119)
 
 
-def test_resolve_floor_size_5() -> None:
-    size = otodom._resolve_floor_size("119.64m2")
+def test_resolve_floor_size_5(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119.64m2")
     assert size == float(119.64)
 
 
-def test_resolve_floor_size_6() -> None:
-    size = otodom._resolve_floor_size("119.64 m2")
+def test_resolve_floor_size_6(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119.64 m2")
     assert size == float(119.64)
 
 
-def test_resolve_floor_size_7() -> None:
-    size = otodom._resolve_floor_size("119,64 m2")
+def test_resolve_floor_size_7(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119,64 m2")
     assert size == float(119.64)
 
 
-def test_resolve_floor_size_8() -> None:
-    size = otodom._resolve_floor_size("119,64 m")
+def test_resolve_floor_size_8(otodom_instance) -> None:
+    size = otodom_instance._resolve_floor_size("119,64 m")
     assert size == float(119.64)
 
 
-def test_type_of_building(listing) -> None:
-    building_type = otodom.get_building_type(listing)
+def test_type_of_building(otodom_instance, listing) -> None:
+    building_type = otodom_instance.get_building_type(listing)
     assert building_type == {"building_type": "kamienica"}
 
 
-def test_type_of_window(listing) -> None:
-    window_type = otodom.get_window_type(listing)
+def test_type_of_window(otodom_instance, listing) -> None:
+    window_type = otodom_instance.get_window_type(listing)
     assert window_type == {"windows_type": "plastikowe"}
 
 
-def test_year_of_construction(listing) -> None:
-    year_of_construction = otodom.get_year_of_construction(listing)
+def test_year_of_construction(otodom_instance, listing) -> None:
+    year_of_construction = otodom_instance.get_year_of_construction(listing)
     assert year_of_construction == {"year_of_construction": 1939}
 
 
-def test_number_of_rooms(listing) -> None:
-    number_of_rooms = otodom.get_number_of_rooms(listing)
+def test_number_of_rooms(otodom_instance, listing) -> None:
+    number_of_rooms = otodom_instance.get_number_of_rooms(listing)
     assert number_of_rooms == {"number_of_rooms": 3}
 
 
-def test_condition(listing) -> None:
-    condition = otodom.get_condition(listing)
+def test_condition(otodom_instance, listing) -> None:
+    condition = otodom_instance.get_condition(listing)
     assert condition == {"condition": "do zamieszkania"}
 
 
-def test_floor(listing) -> None:
-    floors = otodom.get_floor(listing)
+def test_floor(otodom_instance, listing) -> None:
+    floors = otodom_instance.get_floor(listing)
     assert floors == {"floor": 1, "floors_in_building": 3}
 
 
-def test_resolve_floor_1() -> None:
-    floor, floors_in_building = otodom._resolve_floor("1/3")
+def test_resolve_floor_1(otodom_instance) -> None:
+    floor, floors_in_building = otodom_instance._resolve_floor("1/3")
     assert floor == 1
     assert floors_in_building == 3
 
 
-def test_resolve_floor_2() -> None:
-    floor, floors_in_building = otodom._resolve_floor("Parter")
+def test_resolve_floor_2(otodom_instance) -> None:
+    floor, floors_in_building = otodom_instance._resolve_floor("Parter")
     assert floor == 0
     assert floors_in_building is None
 
 
-def test_resolve_floor_3() -> None:
-    floor, floors_in_building = otodom._resolve_floor("Parter / 5")
+def test_resolve_floor_3(otodom_instance) -> None:
+    floor, floors_in_building = otodom_instance._resolve_floor("Parter / 5")
     assert floor == 0
     assert floors_in_building == 5
 
 
-def test_resolve_floor_4() -> None:
-    floor, floors_in_building = otodom._resolve_floor("4")
+def test_resolve_floor_4(otodom_instance) -> None:
+    floor, floors_in_building = otodom_instance._resolve_floor("4")
     assert floor == 4
     assert floors_in_building is None
 
 
-def test_monthly_fee(listing) -> None:
-    monthly_fee = otodom.get_monthly_fee(listing)
+def test_monthly_fee(otodom_instance, listing) -> None:
+    monthly_fee = otodom_instance.get_monthly_fee(listing)
     assert monthly_fee == {"monthly_fee": 800}
 
 
-def test_resolve_monthly_fee_1() -> None:
-    monthly_fee = otodom.resolve_monthly_fee("800 zł")
+def test_resolve_monthly_fee_1(otodom_instance) -> None:
+    monthly_fee = otodom_instance.resolve_monthly_fee("800 zł")
     assert monthly_fee == 800
 
 
-def test_resolve_monthly_fee_2() -> None:
-    monthly_fee = otodom.resolve_monthly_fee("800 ZŁ")
+def test_resolve_monthly_fee_2(otodom_instance) -> None:
+    monthly_fee = otodom_instance.resolve_monthly_fee("800 ZŁ")
     assert monthly_fee == 800
 
 
-def test_resolve_monthly_fee_3() -> None:
-    monthly_fee = otodom.resolve_monthly_fee("800 PLN")
+def test_resolve_monthly_fee_3(otodom_instance) -> None:
+    monthly_fee = otodom_instance.resolve_monthly_fee("800 PLN")
     assert monthly_fee == 800
 
 
-def test_resolve_monthly_fee_4() -> None:
-    monthly_fee = otodom.resolve_monthly_fee("800,00 zł")
+def test_resolve_monthly_fee_4(otodom_instance) -> None:
+    monthly_fee = otodom_instance.resolve_monthly_fee("800,00 zł")
     assert monthly_fee == 800
 
 
-def test_resolve_monthly_fee_5() -> None:
-    monthly_fee = otodom.resolve_monthly_fee("800.00 zł")
+def test_resolve_monthly_fee_5(otodom_instance) -> None:
+    monthly_fee = otodom_instance.resolve_monthly_fee("800.00 zł")
     assert monthly_fee == 800
 
 
-def test_get_listing_url(listing) -> None:
-    listing_url = otodom.get_listing_url(listing)
+def test_get_listing_url(otodom_instance, listing) -> None:
+    listing_url = otodom_instance.get_listing_url(listing)
     assert (
             listing_url
             == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
 
 
-def test_unique_id(listing) -> None:
-    unique_id = otodom.get_unique_id(listing)
+def test_unique_id(otodom_instance, listing) -> None:
+    unique_id = otodom_instance.get_unique_id(listing)
     assert unique_id == {"unique_id": 62365446}
 
 
-def test_ownership_form(listing) -> None:
-    ownership_form = otodom.get_ownership_form(listing)
+def test_ownership_form(otodom_instance, listing) -> None:
+    ownership_form = otodom_instance.get_ownership_form(listing)
     assert ownership_form == {"ownership_form": "pełna własność"}
 
 
-def test_market_type(listing) -> None:
-    market_type = otodom.get_market_type(listing)
+def test_market_type(otodom_instance, listing) -> None:
+    market_type = otodom_instance.get_market_type(listing)
     assert market_type == {"market_type": "wtórny"}
 
 
-def test_construction_material(listing) -> None:
-    construction_material = otodom.get_construction_material(listing)
+def test_construction_material(otodom_instance, listing) -> None:
+    construction_material = otodom_instance.get_construction_material(listing)
     assert construction_material == {"construction_material": "cegła"}
 
 
-def test_resolve_outdoor_space_1() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("ogród, taras")
+def test_resolve_outdoor_space_1(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogród, taras")
     assert garden == 1
     assert balcony == 0
     assert terrace == 1
 
 
-def test_resolve_outdoor_space_2() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("taras, ogródek")
+def test_resolve_outdoor_space_2(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("taras, ogródek")
     assert garden == 1
     assert balcony == 0
     assert terrace == 1
 
 
-def test_resolve_outdoor_space_3() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("balkon, ogródek, taras")
+def test_resolve_outdoor_space_3(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("balkon, ogródek, taras")
     assert balcony == 1
     assert garden == 1
     assert terrace == 1
 
 
-def test_resolve_outdoor_space_4() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("balkon/ ogródek/ taras")
+def test_resolve_outdoor_space_4(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("balkon/ ogródek/ taras")
     assert balcony == 1
     assert garden == 1
     assert terrace == 1
 
 
-def test_resolve_outdoor_space_5() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("taras")
+def test_resolve_outdoor_space_5(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("taras")
     assert balcony == 0
     assert garden == 0
     assert terrace == 1
 
 
-def test_resolve_outdoor_space_6() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("ogródek")
+def test_resolve_outdoor_space_6(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogródek")
     assert balcony == 0
     assert garden == 1
     assert terrace == 0
 
 
-def test_resolve_outdoor_space_7() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("ogród")
+def test_resolve_outdoor_space_7(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogród")
     assert balcony == 0
     assert garden == 1
     assert terrace == 0
 
 
-def test_resolve_outdoor_space_8() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("balkon")
+def test_resolve_outdoor_space_8(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("balkon")
     assert balcony == 1
     assert garden == 0
     assert terrace == 0
 
 
-def test_resolve_outdoor_space_9() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("ogródek, balkon")
+def test_resolve_outdoor_space_9(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogródek, balkon")
     assert balcony == 1
     assert garden == 1
     assert terrace == 0
 
 
-def test_resolve_outdoor_space_10() -> None:
-    garden, balcony, terrace = otodom.resolve_outdoor_space("balkon\ taras")
+def test_resolve_outdoor_space_10(otodom_instance) -> None:
+    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("balkon\ taras")
     assert balcony == 1
     assert garden == 0
     assert terrace == 1
 
 @pytest.mark.skip
-def test_outdoor_space(listing) -> None:
-    outdoor_space = otodom.get_outdoor_space(listing)
+def test_outdoor_space(otodom_instance, listing) -> None:
+    outdoor_space = otodom_instance.get_outdoor_space(listing)
     assert outdoor_space == {"balcony": 1, "garden": 0, "terrace": 0}
 
 
-def test_heating(listing) -> None:
-    heating = otodom.get_heating(listing)
+def test_heating(otodom_instance, listing) -> None:
+    heating = otodom_instance.get_heating(listing)
     assert heating == {"heating": "miejskie"}
 
 
-def test_address(listing) -> None:
-    address = otodom.get_address(listing)
+def test_address(otodom_instance, listing) -> None:
+    address = otodom_instance.get_address(listing)
     assert address == {"address": "Warszawa, Śródmieście, Belwederska"}
 
 
-def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
-    promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(
+def test_get_promoted_listing_urls_for_search_page(otodom_instance, search_soup) -> None:
+    promoted_urls = otodom_instance.get_otodom_promoted_listing_urls_for_page(
         search_soup
     )
     assert len(promoted_urls) == 3
@@ -345,8 +350,8 @@ def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     )
 
 
-def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
-    standard_urls = otodom.get_otodom_standard_listing_urls_for_page(
+def test_get_standard_listintg_urls_for_search_page(otodom_instance, search_soup) -> None:
+    standard_urls = otodom_instance.get_otodom_standard_listing_urls_for_page(
         search_soup
     )
     assert len(standard_urls) == 36
@@ -369,19 +374,19 @@ def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
     )
 
 
-def test_get_all_listings_for_search_page(search_soup) -> None:
-    urls = otodom.get_all_otodom_listing_urls_for_page(search_soup)
+def test_get_all_listings_for_search_page(otodom_instance, search_soup) -> None:
+    urls = otodom_instance.get_all_otodom_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
-def test_get_empty_list_of_urls_for_empty_page(empty_search_soup) -> None:
-    urls = otodom.get_all_otodom_listing_urls_for_page(empty_search_soup)
+def test_get_empty_list_of_urls_for_empty_page(otodom_instance, empty_search_soup) -> None:
+    urls = otodom_instance.get_all_otodom_listing_urls_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
-def test_url_generator():
+def test_url_generator(otodom_instance):
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-    url_generator = otodom.otodom_url_generator(url)
+    url_generator = otodom_instance.otodom_url_generator(url)
 
     assert (
             next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
@@ -399,12 +404,12 @@ def test_url_generator():
     )
 
 
-def test_url_generator_with_query_parameters():
+def test_url_generator_with_query_parameters(otodom_instance):
     url = (
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page"
         "=1&limit=72"
     )
-    url_generator = otodom.otodom_url_generator(url)
+    url_generator = otodom_instance.otodom_url_generator(url)
     assert (
             next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
                                    "/mieszkanie/warszawa?page=1&limit=72"
@@ -419,10 +424,10 @@ def test_url_generator_with_query_parameters():
     )
 
 
-def test_get_data_from_listing(listing) -> None:
+def test_get_data_from_listing(otodom_instance, listing) -> None:
     listing_data: Optional[pd.DataFrame] = None
 
-    listing_data = get_data_from_otodom_listing(listing)
+    listing_data = otodom_instance.get_data_from_otodom_listing(listing)
 
     assert isinstance(listing_data, pd.Series)
     assert listing_data.loc["price"] == 1500000
@@ -435,12 +440,13 @@ def test_get_data_from_listing(listing) -> None:
 
 
 def test_update_listing_data(
+        otodom_instance,
         listing: BeautifulSoup, alternative_listing: BeautifulSoup
 ) -> None:
     listing_data = pd.DataFrame()
 
     listing_soups = [listing, alternative_listing]
-    listing_data = otodom.extract_data_from_listing_soups(
+    listing_data = otodom_instance.extract_data_from_listing_soups(
         listing_data, listing_soups
     )
 
@@ -453,8 +459,8 @@ def test_update_listing_data(
 
 
 @pytest.mark.skip
-def test_scrap():
+def test_scrap(otodom_instance):
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom.otodom_scrap(url)
+    scrapped_data = otodom_instance.otodom_scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
