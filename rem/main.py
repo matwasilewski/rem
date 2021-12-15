@@ -1,5 +1,7 @@
 import argparse
 import logging
+import sys
+
 import validators
 
 logging.basicConfig(filename='otodom.log',
@@ -15,22 +17,15 @@ def parse_args(args):
     parser = argparse.ArgumentParser(description='Provide input scrapper args')
 
     # @TODO: Add url validator
-    parser.add_argument('--url', nargs=1, required=True,
+    parser.add_argument('--url', nargs="?", required=True,
                         help='Enter otodom search url')
 
+    parser.add_argument('--page_limit', nargs="?", required=False,
+                        type=int, default=1,
+                        help='Enter otodom search url')
+
+
     return parser.parse_args(args)
-
-
-# check if arguments passed from console arr correct
-def is_valid(parser, choices, user_input):
-    return input if input in choices else parser.error(
-        "Args doesn't equal to {}".format(choices))
-
-
-# check if arguments passed from console arr correct
-def is_valid_url(parser, user_input):
-    return input if validators.url(input) else parser.error(
-        f"Passed URL invalid {input}")
 
 
 # create all necessary urls and dirs based on categories
