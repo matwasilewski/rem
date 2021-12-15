@@ -550,6 +550,25 @@ def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     return {"heating": heating[0][0]}
 
 
+def get_address(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    address_list = []
+    for a in soup.findAll('a'):
+        address_list.append(a.text)
+
+    indices = []
+    for i, elem in enumerate(address_list):
+        if 'Warszawa' in elem:
+            indices.append(i)
+
+    contem_address_list = []
+    for i in indices:
+        contem_address_list.append(address_list[i])
+
+    address = max(contem_address_list, key=len)
+
+    return {"address": address}
+
+
 def get_listing_url(soup: BeautifulSoup):
     link = soup.select('link[rel="canonical"]')[0].get("href")
     return link
@@ -570,5 +589,6 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_ownership_form,
     get_construction_material,
     get_market_type,
+    get_heating,
 
 ]

@@ -314,6 +314,11 @@ def test_heating(listing) -> None:
     assert heating == {"heating": "miejskie"}
 
 
+def test_address(listing) -> None:
+    address = otodom.get_address(listing)
+    assert address == {"address": "Warszawa, Śródmieście, Belwederska"}
+
+
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
     promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
     assert len(promoted_urls) == 3
