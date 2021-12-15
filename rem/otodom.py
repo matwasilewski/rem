@@ -393,12 +393,26 @@ def get_monthly_fee(soup: BeautifulSoup):
 
 def get_unique_id(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
     tags_content = []
+
     for tags in soup.find_all('meta'):
         tags_content.append(tags.get('content'))
 
-    title_string = "".join(tags_content[18].split())
-    title_string = title_string.strip("•www.otodom.pl")
-    unique_id = int(title_string[-8:])
+    indices = []
+    for i, elem in enumerate(tags_content):
+        if elem and 'www.otodom.pl' in elem:
+            indices.append(i)
+
+    contem_elements_list = []
+    for i in indices:
+        contem_elements_list.append(tags_content[i])
+
+    id_candidate = []
+    for element in contem_elements_list:
+        id_string = re.search(r"(?<!\d)\d{8}(?!\d)", element)
+        if id_string:
+            id_candidate.append(id_string.group(0))
+
+    unique_id = int(id_candidate[0])
 
     if not unique_id:
         return {"unique_id": None}
