@@ -1,53 +1,36 @@
 import argparse
 import logging
+import validators
 
 logging.basicConfig(filename='otodom.log',
                     level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(threadName)s -  %('
                            'levelname)s - %(message)s')
 
-HOST_URL = 'www.otodom.pl'
-TYPES_PL = {'renting': 'wynajem',
-            'selling': 'sprzedaz',
-            'house': 'dom',
-            'flat': 'mieszkanie',
-            'room': 'pokoj',
-            'plot': 'dzialka',
-            'premises': 'lokal',
-            'hall': 'haleimagazyny',
-            'garage': 'garaz'}
-
 
 # setup argparser with: propertytype, rentaltype, city, savephotos
-def get_args():
+def parse_args(args):
+    # @TODO: Add parser.add_argument('-sp', '--savephotos', dest='savephotos' ...)
+
     parser = argparse.ArgumentParser(description='Provide input scrapper args')
-    parser.add_argument('-rt', '--rentaltype', nargs='+', required=True,
-                        help='Enter rental types: renting, selling',
-                        type=lambda user_input: is_valid(parser, ('renting',
-                                                                  'selling'),
-                                                         input))
-    parser.add_argument('-pt', '--propertytype', nargs='+', required=True,
-                        help='Enter one or more property types: house, flat, '
-                             'room, plot, premises, hall, garage',
-                        type=lambda user_input: is_valid(parser, ('house',
-                                                                  'flat',
-                                                                  'room',
-                                                                  'plot',
-                                                                  'premises',
-                                                                  'hall',
-                                                                  'garage'),
-                                                         input))
-    parser.add_argument('-c', '--city', nargs='+', required=True,
-                        help='Enter one or more city names')
-    # parser.add_argument('-sp', '--savephotos', dest='savephotos',
-    # action='store_true', help='Use, if you want to save photos')
-    return parser.parse_args()
+
+    # @TODO: Add url validator
+    parser.add_argument('--url', nargs=1, required=True,
+                        help='Enter otodom search url')
+
+    return parser.parse_args(args)
 
 
 # check if arguments passed from console arr correct
 def is_valid(parser, choices, user_input):
     return input if input in choices else parser.error(
         "Args doesn't equal to {}".format(choices))
+
+
+# check if arguments passed from console arr correct
+def is_valid_url(parser, user_input):
+    return input if validators.url(input) else parser.error(
+        f"Passed URL invalid {input}")
 
 
 # create all necessary urls and dirs based on categories
@@ -74,6 +57,7 @@ def get_urls_dirs(args):
 
 
 def main():
+    parser = parse_args(sys.argv[1:])
     args = get_args()
 
     urls_dirs = get_urls_dirs(args)
