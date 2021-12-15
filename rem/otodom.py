@@ -527,6 +527,29 @@ def resolve_outdoor_space(outdoor_space_string: str):
 #      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
 
+def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    soup_filter = {"aria-label": "Ogrzewanie"}
+
+    heating_div = _extract_divs(soup, soup_filter, "heating")
+    if not heating_div:
+        return {"heating": None}
+
+    heating = []
+
+    for child in heating_div:
+        if (
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Ogrzewanie"
+        ):
+            heating.append(child.contents)
+
+    if len(heating) != 1:
+        _log_wrong_number(len(heating), 1, "heating")
+        return None
+
+    return {"heating": heating[0][0]}
+
+
 def get_listing_url(soup: BeautifulSoup):
     link = soup.select('link[rel="canonical"]')[0].get("href")
     return link
