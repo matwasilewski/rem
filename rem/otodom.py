@@ -8,6 +8,8 @@ from urllib.parse import parse_qs
 
 from rem.universal import get_soup_from_url
 from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
+import googlemaps
+from datetime import datetime
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -594,8 +596,9 @@ def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
     return {"address": address}
 
 
-def extract_long_lat_via_address(address):
-    GOOGLE_API_KEY = 'AIzaSyD_NUEuHNC0PS5LRCH4Cm1cfkUQJVbsOhQ'
+def extract_long_lat_via_address(address, gmaps):
+    geocode_result = gmaps.geocode(address)
+    return geocode_result
 
 
 
