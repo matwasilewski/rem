@@ -407,6 +407,75 @@ def get_unique_id(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
     return {"unique_id": unique_id}
 
 
+def get_ownership_form(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    soup_filter = {"aria-label": "Forma własności"}
+
+    ownership_div = _extract_divs(soup, soup_filter, "ownership_form")
+    if not ownership_div:
+        return {"ownership_form": None}
+
+    ownership = []
+
+    for child in ownership_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Forma własności"
+        ):
+            ownership.append(child.contents)
+
+    if len(ownership) != 1:
+        _log_wrong_number(len(ownership), 1, "ownership_form")
+        return None
+
+    return {"ownership_form": ownership[0][0]}
+
+
+def get_market_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    soup_filter = {"aria-label": "Rynek"}
+
+    market_div = _extract_divs(soup, soup_filter, "market_type")
+    if not market_div:
+        return {"market_type": None}
+
+    market = []
+
+    for child in market_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Rynek"
+        ):
+            market.append(child.contents)
+
+    if len(market) != 1:
+        _log_wrong_number(len(market), 1, "market_type")
+        return None
+
+    return {"market_type": market[0][0]}
+
+
+def get_construction_material(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    soup_filter = {"aria-label": "Materiał budynku"}
+
+    material_div = _extract_divs(soup, soup_filter, "construction_material")
+    if not material_div:
+        return {"construction_material": None}
+
+    material = []
+
+    for child in material_div:
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Materiał budynku"
+        ):
+            material.append(child.contents)
+
+    if len(material) != 1:
+        _log_wrong_number(len(material), 1, "construction_material")
+        return None
+
+    return {"construction_material": material[0][0]}
+
+
 def get_listing_url(soup: BeautifulSoup):
     link = soup.select('link[rel="canonical"]')[0].get("href")
     return link
@@ -423,5 +492,6 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_condition,
     get_floor,
     get_monthly_fee,
+    get_unique_id,
 
 ]
