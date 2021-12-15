@@ -134,8 +134,8 @@ def get_size(soup: BeautifulSoup) -> Dict[str, Optional[float]]:
     floor_size = []
     for child in size_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Powierzchnia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Powierzchnia"
         ):
             floor_size = child.contents
 
@@ -169,8 +169,8 @@ def get_building_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     for child in type_of_building_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Rodzaj zabudowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rodzaj zabudowy"
         ):
             type_of_building.append(child.contents)
 
@@ -212,8 +212,8 @@ def get_year_of_construction(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
 
     for child in year_of_construction_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Rok budowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rok budowy"
         ):
             year.append(child.contents)
 
@@ -235,8 +235,8 @@ def get_number_of_rooms(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
 
     for child in number_of_rooms_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Liczba pokoi"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pokoi"
         ):
             rooms.append(child.contents)
 
@@ -258,8 +258,8 @@ def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     for child in condition_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Stan wykończenia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Stan wykończenia"
         ):
             condition.append(child.contents)
 
@@ -308,8 +308,8 @@ def get_total_floors_in_building(soup: BeautifulSoup):
 
     for child in floors_in_building_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Liczba pięter"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pięter"
         ):
             floors_in_building.append(child.contents)
 
@@ -331,8 +331,8 @@ def get_floor(soup: BeautifulSoup):
 
     for child in floor_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Piętro"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Piętro"
         ):
             floor_list.append(child.contents)
 
@@ -377,8 +377,8 @@ def get_monthly_fee(soup: BeautifulSoup):
 
     for child in monthly_fee_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Czynsz"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Czynsz"
         ):
             monthly_fee_list.append(child.contents)
 
@@ -392,7 +392,6 @@ def get_monthly_fee(soup: BeautifulSoup):
 
 
 def get_unique_id(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
-
     tags_content = []
     for tags in soup.find_all('meta'):
         tags_content.append(tags.get('content'))
@@ -418,8 +417,8 @@ def get_ownership_form(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     for child in ownership_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Forma własności"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Forma własności"
         ):
             ownership.append(child.contents)
 
@@ -441,8 +440,8 @@ def get_market_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     for child in market_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Rynek"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rynek"
         ):
             market.append(child.contents)
 
@@ -464,8 +463,8 @@ def get_construction_material(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
 
     for child in material_div:
         if (
-            child.attrs.get("title") is not None
-            and child.attrs.get("title") != "Materiał budynku"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Materiał budynku"
         ):
             material.append(child.contents)
 
@@ -474,6 +473,58 @@ def get_construction_material(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         return None
 
     return {"construction_material": material[0][0]}
+
+
+def resolve_outdoor_space(outdoor_space_string: str):
+    garden: int
+    balcony: int
+    terrace: int
+
+    outdoor_space_string = "".join(outdoor_space_string.split()).lower()
+
+    if "\\" in outdoor_space_string:
+        outdoor_space_string = outdoor_space_string.replace("\\", ",")
+    elif "/" in outdoor_space_string:
+        outdoor_space_string = outdoor_space_string.replace("/", ",")
+
+    outdoor_space_list = []
+    outdoor_space_list = outdoor_space_string.split(",")
+
+    if "ogród" in outdoor_space_list or "ogródek" in outdoor_space_list:
+        garden = 1
+    else:
+        garden = 0
+    if "balkon" in outdoor_space_list:
+        balcony = 1
+    else:
+        balcony = 0
+    if "taras" in outdoor_space_list:
+        terrace = 1
+    else:
+        terrace = 0
+
+    return garden, balcony, terrace
+
+
+# def get_outdoor_space(soup: BeautifulSoup):
+#     soup_filter = {"aria-label": "Balkon / ogród / taras"}
+#
+#     outdoor_space_div = _extract_divs(soup, soup_filter, "outdoor_space")
+#     if not outdoor_space_div:
+#         return {"outdoor_space": None}
+#
+#     outdoor_space_list = []
+#
+#     for child in outdoor_space_div:
+#         if (
+#                 child.attrs.get("title") is not None
+#                 and child.attrs.get("title") != "Balkon / ogród / taras"
+#         ):
+#             outdoor_space_list.append(child.contents)
+#
+#     garden, balcony, terrace = resolve_outdoor_space(outdoor_space_list[0][0])
+
+#      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
 
 def get_listing_url(soup: BeautifulSoup):
@@ -493,5 +544,8 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_floor,
     get_monthly_fee,
     get_unique_id,
+    get_ownership_form,
+    get_construction_material,
+    get_market_type,
 
 ]
