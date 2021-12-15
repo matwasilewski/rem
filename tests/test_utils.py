@@ -4,5 +4,5 @@ from rem import utils
 
 
 def test_load_data() -> None:
-    loaded_data = utils.load_data('warszawa-sprzedaz.csv')
+    loaded_data = utils.load_data('warszawa-sprzedaz.csv', "resources")
     assert isinstance(loaded_data, pd.DataFrame)
