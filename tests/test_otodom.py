@@ -12,7 +12,9 @@ from rem.universal import get_website
 
 @pytest.fixture(scope="session", autouse=True)
 def otodom_instance() -> Otodom:
-    otodom = Otodom("https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72")
+    otodom = Otodom(
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    )
     return otodom
 
 
@@ -408,7 +410,9 @@ def test_get_empty_list_of_urls_for_empty_page(
 
 
 def test_url_generator(otodom_instance):
-    otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+    otodom_instance.base_search_url = (
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+    )
     url_generator = otodom_instance.otodom_url_generator()
 
     assert (

@@ -34,7 +34,6 @@ class Otodom:
             self.get_heating,
         ]
 
-
     def otodom_scrap(self, page_limit=1):
         dataframe = pd.DataFrame()
         generator = self.otodom_url_generator()
@@ -530,17 +529,17 @@ class Otodom:
     #    garden: int
     #    balcony: int
     #     terrace: int
-#
+    #
     #     outdoor_space_string = "".join(outdoor_space_string.split()).lower()
-#
+    #
     #    if "\\" in outdoor_space_string:
     #        outdoor_space_string = outdoor_space_string.replace("\\", ",")
     #    elif "/" in outdoor_space_string:
     #         outdoor_space_string = outdoor_space_string.replace("/", ",")
-#
+    #
     #    outdoor_space_list = []
     #     outdoor_space_list = outdoor_space_string.split(",")
-#
+    #
     #    if "ogród" in outdoor_space_list or "ogródek" in outdoor_space_list:
     #        garden = 1
     #    else:
@@ -553,16 +552,16 @@ class Otodom:
     #        terrace = 1
     #    else:
     #         terrace = 0
-#
+    #
     #    return garden, balcony, terrace#
-#
+    #
     # def get_outdoor_space(soup: BeautifulSoup):
     #     soup_filter = {"aria-label": "Balkon / ogród / taras"}
     #
     #     outdoor_space_div = _extract_divs(soup, soup_filter, "outdoor_space")
     #     if not outdoor_space_div:
     #         breakpoint()
-#return {"outdoor_space": None}
+    # return {"outdoor_space": None}
     #
     #     outdoor_space_list = []
     #
@@ -574,7 +573,7 @@ class Otodom:
     #             outdoor_space_list.append(child.contents)
     #
     #     garden, balcony, terrace = resolve_outdoor_space(outdoor_space_list[0][0])
-#
+    #
     #      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
     def get_heating(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
@@ -624,9 +623,3 @@ class Otodom:
     def extract_long_lat_via_address(self, address, gmaps):
         geocode_result = gmaps.geocode(address)
         return geocode_result
-
-
-
-    def get_listing_url(self, soup: BeautifulSoup):
-        link = soup.select('link[rel="canonical"]')[0].get("href")
-        return link
