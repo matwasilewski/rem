@@ -10,7 +10,6 @@ from urllib.parse import parse_qs
 from rem.universal import get_soup_from_url
 from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
 import googlemaps
-from datetime import datetime
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -128,6 +127,7 @@ class Otodom:
         lis = standard_divs.findAll("li")
         return self.get_otodom_listing_urls_from_search_page(lis)
 
+    @staticmethod
     def get_otodom_listing_urls_from_search_page(self, lis):
         links = []
         for li in lis:
@@ -141,6 +141,7 @@ class Otodom:
                 _log_wrong_number(len(local_links), 1, "listing links")
         return links
 
+    @staticmethod
     def get_price(self, soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Cena"}
 
@@ -188,6 +189,7 @@ class Otodom:
 
         return {"floor_size_in_m2": floor_size_float}
 
+    @staticmethod
     def _resolve_floor_size(self, floor_size: str) -> float:
         floor_size = floor_size.strip()
         floor_size = re.match("^[0-9,.]+", floor_size).group(0)
@@ -196,6 +198,7 @@ class Otodom:
         )
         return floor_size
 
+    @staticmethod
     def get_building_type(
             self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
@@ -223,6 +226,7 @@ class Otodom:
 
         return {"building_type": type_of_building[0][0]}
 
+    @staticmethod
     def get_window_type(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Okna"}
 
@@ -245,6 +249,7 @@ class Otodom:
 
         return {"windows_type": window[0][0]}
 
+    @staticmethod
     def get_year_of_construction(
             self, soup: BeautifulSoup
     ) -> Dict[str, Optional[int]]:
@@ -269,6 +274,7 @@ class Otodom:
 
         return {"year_of_construction": int(year[0][0])}
 
+    @staticmethod
     def get_number_of_rooms(
             self, soup: BeautifulSoup
     ) -> Dict[str, Optional[int]]:
@@ -295,6 +301,7 @@ class Otodom:
 
         return {"number_of_rooms": int(rooms[0][0])}
 
+    @staticmethod
     def get_condition(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Stan wykończenia"}
 
@@ -347,6 +354,7 @@ class Otodom:
 
         return floor, floors_in_building
 
+    @staticmethod
     def get_total_floors_in_building(self, soup: BeautifulSoup):
         soup_filter = {"aria-label": "Liczba pięter"}
 
@@ -400,6 +408,7 @@ class Otodom:
             "floors_in_building": floors_in_building["floors_in_building"],
         }
 
+    @staticmethod
     def resolve_monthly_fee(self, monthly_fee_string: str):
         monthly_fee: float
         monthly_fee_string = "".join(monthly_fee_string.split()).lower()
@@ -439,6 +448,7 @@ class Otodom:
 
         return {"monthly_fee": monthly_fee}
 
+    @staticmethod
     def get_unique_id(self, soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         tags_content = []
 
@@ -467,6 +477,7 @@ class Otodom:
 
         return {"unique_id": unique_id}
 
+    @staticmethod
     def get_ownership_form(
             self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
@@ -491,6 +502,7 @@ class Otodom:
 
         return {"ownership_form": ownership[0][0]}
 
+    @staticmethod
     def get_market_type(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Rynek"}
 
@@ -513,6 +525,7 @@ class Otodom:
 
         return {"market_type": market[0][0]}
 
+    @staticmethod
     def get_construction_material(
             self, soup: BeautifulSoup
     ) -> Dict[str, Optional[str]]:
@@ -612,6 +625,7 @@ class Otodom:
 
         return {"heating": heating[0][0]}
 
+    @staticmethod
     def get_address(self, soup: BeautifulSoup) -> dict[str, Optional[str]]:
         address_list = []
         for a in soup.findAll('a'):
@@ -630,6 +644,7 @@ class Otodom:
 
         return {"address": address}
 
+    @staticmethod
     def get_listing_url(self, soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return link
