@@ -23,4 +23,6 @@ def _log_wrong_number(actual: int, expected: int, what: str) -> None:
 
 
 def _log_unexpected(unexpected: str, where: str) -> None:
-    logging.error(f"Unexpected {unexpected} encountered in {where} in the listing")
+    logging.error(
+        f"Unexpected {unexpected} encountered in {where} in the listing"
+    )

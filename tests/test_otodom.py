@@ -14,7 +14,11 @@ from rem.universal import get_website
 @pytest.fixture(scope="session", autouse=False)
 def listing() -> BeautifulSoup:
     path = os.sep.join(
-        ["tests", "resources", "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"]
+        [
+            "tests",
+            "resources",
+            "mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html",
+        ]
     )
     with open(path, encoding="utf-8") as fp:
         soup = rem.universal.get_soup(fp)
@@ -23,7 +27,9 @@ def listing() -> BeautifulSoup:
 
 @pytest.fixture(scope="session", autouse=False)
 def alternative_listing() -> BeautifulSoup:
-    path = os.sep.join(["tests", "resources", "mieszkanie-12-min-do-centrum.html"])
+    path = os.sep.join(
+        ["tests", "resources", "mieszkanie-12-min-do-centrum.html"]
+    )
     with open(path, encoding="utf-8") as fp:
         soup = rem.universal.get_soup(fp)
     return soup
@@ -235,7 +241,9 @@ def test_construction_material(listing) -> None:
 
 
 def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
-    promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(search_soup)
+    promoted_urls = otodom.get_otodom_promoted_listing_urls_for_page(
+        search_soup
+    )
     assert len(promoted_urls) == 3
     assert (
         promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
@@ -253,7 +261,9 @@ def test_get_promoted_listing_urls_for_search_page(search_soup) -> None:
 
 
 def test_get_standard_listintg_urls_for_search_page(search_soup) -> None:
-    standard_urls = otodom.get_otodom_standard_listing_urls_for_page(search_soup)
+    standard_urls = otodom.get_otodom_standard_listing_urls_for_page(
+        search_soup
+    )
     assert len(standard_urls) == 36
     assert (
         standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
@@ -345,7 +355,9 @@ def test_update_listing_data(
     listing_data = pd.DataFrame()
 
     listing_soups = [listing, alternative_listing]
-    listing_data = otodom.extract_data_from_listing_soups(listing_data, listing_soups)
+    listing_data = otodom.extract_data_from_listing_soups(
+        listing_data, listing_soups
+    )
 
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
@@ -361,5 +373,3 @@ def test_scrap():
     scrapped_data = otodom.otodom_scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
-
-

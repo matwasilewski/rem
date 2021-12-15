@@ -118,7 +118,9 @@ def get_price(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         _log_unexpected(",", "price")
 
     price = int(
-        re.sub(pattern=r"[^0-9,.]", repl="", string=price_div[0], flags=re.UNICODE)
+        re.sub(
+            pattern=r"[^0-9,.]", repl="", string=price_div[0], flags=re.UNICODE
+        )
     )
     return {"price": price}
 
@@ -191,7 +193,10 @@ def get_window_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
     window = []
 
     for child in type_of_window_div:
-        if child.attrs.get("title") is not None and child.attrs.get("title") != "Okna":
+        if (
+            child.attrs.get("title") is not None
+            and child.attrs.get("title") != "Okna"
+        ):
             window.append(child.contents)
 
     if len(window) != 1:
@@ -280,12 +285,16 @@ def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
         if temp_floor == "parter":
             floor = 0
             floors_in_building = (
-                int(temp_floors_in_building) if temp_floors_in_building else None
+                int(temp_floors_in_building)
+                if temp_floors_in_building
+                else None
             )
         else:
             floor = int(temp_floor)
             floors_in_building = (
-                int(temp_floors_in_building) if temp_floors_in_building else None
+                int(temp_floors_in_building)
+                if temp_floors_in_building
+                else None
             )
     elif floor_string == "parter":
         floor = 0
@@ -300,7 +309,9 @@ def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
 def get_total_floors_in_building(soup: BeautifulSoup):
     soup_filter = {"aria-label": "Liczba pięter"}
 
-    floors_in_building_div = _extract_divs(soup, soup_filter, "floors_in_building")
+    floors_in_building_div = _extract_divs(
+        soup, soup_filter, "floors_in_building"
+    )
     if not floors_in_building_div:
         return {"floors_in_building": None}
 
@@ -493,5 +504,4 @@ LISTING_INFORMATION_RETRIEVAL_FUNCTIONS = [
     get_floor,
     get_monthly_fee,
     get_unique_id,
-
 ]
