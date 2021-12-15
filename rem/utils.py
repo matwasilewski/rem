@@ -1,4 +1,7 @@
 import logging
+import os.path
+
+import pandas as pd
 
 
 def _extract_divs(soup, soup_filter, what: str):
@@ -26,3 +29,24 @@ def _log_unexpected(unexpected: str, where: str) -> None:
     logging.error(
         f"Unexpected {unexpected} encountered in {where} in the listing"
     )
+
+
+def load_data(file_name, data_dir="data"):
+    try:
+        data_path = os.sep.join([data_dir, f"{file_name}.csv"])
+        df = pd.read_csv(data_path)
+        logging.info(f"Loading existing data containing {len(df)} records...")
+        return df
+    except FileNotFoundError:
+        logging.info(f"No existing data found.")
+        return pd.DataFrame()
+
+
+def save_data(data: pd.DataFrame, file_name, data_dir="data"):
+    data_path = os.sep.join([data_dir, f"{file_name}.csv"])
+    logging.info(f"Saving data to {data_path}...")
+
+    if os.path.isfile(data_path):
+        logging.warning("Overwriting data")
+
+    data.to_csv(data_path)
