@@ -8,6 +8,8 @@ from urllib.parse import parse_qs
 
 from rem.universal import get_soup_from_url
 from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
+import googlemaps
+from datetime import datetime
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -524,42 +526,43 @@ class Otodom:
 
         return {"construction_material": material[0][0]}
 
-    def resolve_outdoor_space(self, outdoor_space_string: str):
-        garden: int
-        balcony: int
-        terrace: int
-
-        outdoor_space_string = "".join(outdoor_space_string.split()).lower()
-
-        if "\\" in outdoor_space_string:
-            outdoor_space_string = outdoor_space_string.replace("\\", ",")
-        elif "/" in outdoor_space_string:
-            outdoor_space_string = outdoor_space_string.replace("/", ",")
-
-        outdoor_space_list = []
-        outdoor_space_list = outdoor_space_string.split(",")
-
-        if "ogród" in outdoor_space_list or "ogródek" in outdoor_space_list:
-            garden = 1
-        else:
-            garden = 0
-        if "balkon" in outdoor_space_list:
-            balcony = 1
-        else:
-            balcony = 0
-        if "taras" in outdoor_space_list:
-            terrace = 1
-        else:
-            terrace = 0
-
-        return garden, balcony, terrace
-
+    # def resolve_outdoor_space(self, outdoor_space_string: str):
+    #    garden: int
+    #    balcony: int
+    #     terrace: int
+#
+    #     outdoor_space_string = "".join(outdoor_space_string.split()).lower()
+#
+    #    if "\\" in outdoor_space_string:
+    #        outdoor_space_string = outdoor_space_string.replace("\\", ",")
+    #    elif "/" in outdoor_space_string:
+    #         outdoor_space_string = outdoor_space_string.replace("/", ",")
+#
+    #    outdoor_space_list = []
+    #     outdoor_space_list = outdoor_space_string.split(",")
+#
+    #    if "ogród" in outdoor_space_list or "ogródek" in outdoor_space_list:
+    #        garden = 1
+    #    else:
+    #        garden = 0
+    #    if "balkon" in outdoor_space_list:
+    #        balcony = 1
+    #    else:
+    #        balcony = 0
+    #    if "taras" in outdoor_space_list:
+    #        terrace = 1
+    #    else:
+    #         terrace = 0
+#
+    #    return garden, balcony, terrace#
+#
     # def get_outdoor_space(soup: BeautifulSoup):
     #     soup_filter = {"aria-label": "Balkon / ogród / taras"}
     #
     #     outdoor_space_div = _extract_divs(soup, soup_filter, "outdoor_space")
     #     if not outdoor_space_div:
-    #         return {"outdoor_space": None}
+    #         breakpoint()
+#return {"outdoor_space": None}
     #
     #     outdoor_space_list = []
     #
@@ -571,7 +574,7 @@ class Otodom:
     #             outdoor_space_list.append(child.contents)
     #
     #     garden, balcony, terrace = resolve_outdoor_space(outdoor_space_list[0][0])
-
+#
     #      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
     def get_heating(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
@@ -613,6 +616,16 @@ class Otodom:
         address = max(contem_address_list, key=len)
 
         return {"address": address}
+
+    def get_listing_url(self, soup: BeautifulSoup):
+        link = soup.select('link[rel="canonical"]')[0].get("href")
+        return link
+
+    def extract_long_lat_via_address(self, address, gmaps):
+        geocode_result = gmaps.geocode(address)
+        return geocode_result
+
+
 
     def get_listing_url(self, soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
