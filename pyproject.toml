@@ -15,6 +15,7 @@ requests = "^2.26.0"
 coverage = "^6.2"
 google = "^3.0.0"
 validators = "^0.18.2"
+googlemaps = "^4.5.3"
 
 [tool.poetry.dev-dependencies]
 
