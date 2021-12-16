@@ -87,12 +87,20 @@ class Otodom:
 
             self.process_listing_soups(listing_soups)
 
+            self.checkpoint()
+
         if self.save_to_file:
             utils.save_data(
                 self.data, self.data_file_name, self.data_directory
             )
 
         return dataframe
+
+    def checkpoint(self):
+        utils.save_data(
+            self.data, f"checkpoint-{self.data_file_name}", self.data_directory
+        )
+
 
     def process_listing_soups(self, listings: List[BeautifulSoup]):
         for listing in listings:
@@ -116,12 +124,11 @@ class Otodom:
         for listing_extractor in self.listing_information_retrieval_methods:
             try:
                 outcome = listing_extractor(listing)
+                data = pd.Series(outcome)
+                listing_data = listing_data.append(data)
             except Exception as e:
                 logging.error(
                     f"Exception in extractor {listing_extractor}: {e}")
-                outcome = None
-            data = pd.Series(outcome)
-            listing_data = listing_data.append(data)
 
         return listing_data
 
