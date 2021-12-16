@@ -51,6 +51,9 @@ class Otodom:
             self.get_construction_material,
             self.get_market_type,
             self.get_heating,
+            self.get_address,
+            self.get_ad_description,
+
         ]
 
     def otodom_scrap(self):
@@ -627,6 +630,29 @@ class Otodom:
             return None
 
         return {"heating": heating[0][0]}
+
+    #@staticmethod
+    # def get_parking_space(soup: BeautifulSoup) -> Dict[str, int]:
+    #     soup_filter = {"aria-label": "Miejsce parkingowe"}
+    #
+    #     parking_space_div = _extract_divs(soup, soup_filter, "parking_space")
+    #     if not parking_space_div:
+    #         return {"parking_space": None}
+    #
+    #     parking_space = []
+    #
+    #     for child in parking_space_div:
+    #         if (
+    #                 child.attrs.get("title") is not None
+    #                 and child.attrs.get("title") != "Miejsce parkingowe"
+    #         ):
+    #             parking_space.append(child.contents)
+    #
+    #     if len(parking_space) != 1:
+    #         _log_wrong_number(len(parking_space), 1, "parking_space")
+    #         return None
+    #
+    #     return {"parking_space": parking_space[0][0]}
 
     @staticmethod
     def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:

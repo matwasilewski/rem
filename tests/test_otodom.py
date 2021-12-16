@@ -351,6 +351,12 @@ def test_heating(otodom_instance, listing) -> None:
     assert heating == {"heating": "miejskie"}
 
 
+@pytest.mark.skip
+def test_parking_space(otodom_instance, listing) -> None:
+    parking_space = otodom_instance.get_parking_space(listing)
+    assert parking_space == {"parking_space": 1}
+
+
 def test_address(otodom_instance, listing) -> None:
     address = otodom_instance.get_address(listing)
     assert address == {"address": "Warszawa, Śródmieście, Belwederska"}
