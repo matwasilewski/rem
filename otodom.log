@@ -145,7 +145,7 @@
 2021-12-16 02:06:27,238 - urllib3.connectionpool - MainThread -  DEBUG - https://www.otodom.pl:443 "GET /pl/oferta/mieszkanie-na-powislu-ID4ezMC HTTP/1.1" 200 None
 2021-12-16 02:06:27,286 - urllib3.connectionpool - MainThread -  DEBUG - Starting new HTTPS connection (1): www.otodom.pl:443
 2021-12-16 02:06:27,368 - urllib3.connectionpool - MainThread -  DEBUG - https://www.otodom.pl:443 "GET /pl/oferta/mieszkanie-78m2-4-pokoje-wysoki-standard-ochrona-ID4cMou HTTP/1.1" 302 None
-2021-12-16 02:06:28,072 - urllib3.connectionpool - MainThread -  DEBUG - https://www.otodom.pl:443 "GET /pl/oferty/sprzedaz/mieszkanie/warszawa?locations%5B0%5D%5BstreetId%5D=12451&locations%5B0%5D%5BcityId%5D=26&locations=%5Bstreets-12451%5D HTTP/1.1" 200 None
+2021-12-16 02:06:28,072 - urllib3.connectionpool - MainThread -  DEBUG - htt    ps://www.otodom.pl:443 "GET /pl/oferty/sprzedaz/mieszkanie/warszawa?locations%5B0%5D%5BstreetId%5D=12451&locations%5B0%5D%5BcityId%5D=26&locations=%5Bstreets-12451%5D HTTP/1.1" 200 None
 2021-12-16 02:06:28,123 - urllib3.connectionpool - MainThread -  DEBUG - Starting new HTTPS connection (1): www.otodom.pl:443
 2021-12-16 02:06:28,581 - urllib3.connectionpool - MainThread -  DEBUG - https://www.otodom.pl:443 "GET /pl/oferta/nowe-2-pokojowe-mieszkanie-szczesliwice-rakow-ID4eBT0 HTTP/1.1" 200 None
 2021-12-16 02:06:28,636 - urllib3.connectionpool - MainThread -  DEBUG - Starting new HTTPS connection (1): www.otodom.pl:443

@@ -1,3 +1,4 @@
+import logging
 import os.path
 from typing import Optional, Tuple, Dict, List
 
@@ -112,7 +113,11 @@ class Otodom:
         listing_data: pd.Series = pd.Series()
 
         for listing_extractor in self.listing_information_retrieval_methods:
-            data = pd.Series(listing_extractor(listing))
+            try:
+                outcome = listing_extractor(listing)
+            except Exception as e:
+                logging.error(f"Exception in extractor {listing_extractor}: {e}")ž
+            data = pd.Series()
             listing_data = listing_data.append(data)
 
         return listing_data
@@ -171,14 +176,18 @@ class Otodom:
         elif "," in price_div[0]:
             _log_unexpected(",", "price")
 
-        price = int(
-            re.sub(
-                pattern=r"[^0-9,.]",
-                repl="",
-                string=price_div[0],
-                flags=re.UNICODE,
+        try:
+            price = int(
+                re.sub(
+                    pattern=r"[^0-9,.]",
+                    repl="",
+                    string=price_div[0],
+                    flags=re.UNICODE,
+                )
             )
-        )
+        except ValueError as e:
+            logging.error(f"Can't conver the price {e}")
+
         return {"price": price}
 
     def get_size(self, soup: BeautifulSoup) -> Dict[str, Optional[float]]:
