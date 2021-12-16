@@ -372,6 +372,11 @@ def test_seller_type(otodom_instance, listing) -> None:
     assert seller_type == {"seller_type": 1}
 
 
+def test_extract_long_lat_via_address(otodom_instance, listing) -> None:
+    geocoordinates = otodom_instance.extract_long_lat_via_address(listing)
+    assert geocoordinates == {"latitude": 52.2098433, "longitude": 21.028336}
+
+
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
