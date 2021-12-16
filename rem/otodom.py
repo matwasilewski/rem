@@ -702,4 +702,8 @@ class Otodom:
 
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
-        return geocode_result
+        geometry = geocode_result[0]['geometry']
+        lat = geometry['location']['' \
+                                   'lat']
+        lon = geometry['location']['lng']
+        return {"latitude": lat, "longitude": lon}
