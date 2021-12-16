@@ -23,15 +23,15 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 class Otodom:
     def __init__(
-        self,
-        base_search_url,
-        data_file_name,
-        data_directory="data",
-        page_limit=1,
-        use_google_maps_api=False,
-        gcp_api_key_path="gcp_api.key",
-        save_to_file=True,
-        offset=0,
+            self,
+            base_search_url,
+            data_file_name,
+            data_directory="data",
+            page_limit=1,
+            use_google_maps_api=False,
+            gcp_api_key_path="gcp_api.key",
+            save_to_file=True,
+            offset=0,
     ):
         self.data_directory = data_directory
         self.base_search_url = base_search_url
@@ -82,7 +82,8 @@ class Otodom:
             listings_urls = self.get_all_listing_urls_for_page(search_soup)
             if len(listings_urls) == 0:
                 break
-            listing_soups = [get_soup_from_url(url, self.offset) for url in listings_urls]
+            listing_soups = [get_soup_from_url(url, self.offset) for url in
+                             listings_urls]
 
             self.process_listing_soups(listing_soups)
 
@@ -116,8 +117,10 @@ class Otodom:
             try:
                 outcome = listing_extractor(listing)
             except Exception as e:
-                logging.error(f"Exception in extractor {listing_extractor}: {e}")ž
-            data = pd.Series()
+                logging.error(
+                    f"Exception in extractor {listing_extractor}: {e}")
+                outcome = None
+            data = pd.Series(outcome)
             listing_data = listing_data.append(data)
 
         return listing_data
@@ -201,8 +204,8 @@ class Otodom:
         floor_size = []
         for child in size_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Powierzchnia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Powierzchnia"
             ):
                 floor_size = child.contents
 
@@ -238,14 +241,14 @@ class Otodom:
 
         for child in type_of_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rodzaj zabudowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rodzaj zabudowy"
             ):
                 type_of_building.append(child.contents)
 
         if len(type_of_building) != 1:
             _log_wrong_number(len(type_of_building), 1, "type of building")
-            return None
+            return {"building_type": None}
 
         return {"building_type": type_of_building[0][0]}
 
@@ -261,20 +264,20 @@ class Otodom:
 
         for child in type_of_window_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Okna"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Okna"
             ):
                 window.append(child.contents)
 
         if len(window) != 1:
             _log_wrong_number(len(window), 1, "window")
-            return None
+            return {"windows_type": None}
 
         return {"windows_type": window[0][0]}
 
     @staticmethod
     def get_year_of_construction(
-        soup: BeautifulSoup,
+            soup: BeautifulSoup,
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Rok budowy"}
 
@@ -286,14 +289,14 @@ class Otodom:
 
         for child in year_of_construction_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rok budowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rok budowy"
             ):
                 year.append(child.contents)
 
         if len(year) != 1:
             _log_wrong_number(len(year), 1, "year")
-            return None
+            return {"year_of_construction": None}
 
         return {"year_of_construction": int(year[0][0])}
 
@@ -311,8 +314,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pokoi"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -334,14 +337,14 @@ class Otodom:
 
         for child in condition_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Stan wykończenia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Stan wykończenia"
             ):
                 condition.append(child.contents)
 
         if len(condition) != 1:
             _log_wrong_number(len(condition), 1, "condition")
-            return None
+            return {"condition": None}
 
         return {"condition": condition[0][0]}
 
@@ -390,14 +393,14 @@ class Otodom:
 
         for child in floors_in_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pięter"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pięter"
             ):
                 floors_in_building.append(child.contents)
 
         if len(floors_in_building) != 1:
             _log_wrong_number(len(floors_in_building), 1, "floors_in_building")
-            return None
+            return {"floors_in_building": None}
 
         return {"floors_in_building": int(floors_in_building[0][0])}
 
@@ -406,20 +409,26 @@ class Otodom:
 
         floor_div = _extract_divs(soup, soup_filter, "floor")
         if not floor_div:
-            return {"floor": None}
+            return {
+                "floor": None,
+                "floors_in_building": None,
+            }
 
         floor_list = []
 
         for child in floor_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Piętro"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Piętro"
             ):
                 floor_list.append(child.contents)
 
         if len(floor_list) != 1:
             _log_wrong_number(len(floor_list), 1, "floor")
-            return None
+            return {
+                "floor": None,
+                "floors_in_building": None,
+            }
 
         floor, floors_in_building = self._resolve_floor(floor_list[0][0])
         if floors_in_building is None:
@@ -457,14 +466,14 @@ class Otodom:
 
         for child in monthly_fee_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Czynsz"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Czynsz"
             ):
                 monthly_fee_list.append(child.contents)
 
         if len(monthly_fee_list) != 1:
             _log_wrong_number(len(monthly_fee_list), 1, "monthly_fee")
-            return None
+            return {"monthly_fee": None}
 
         monthly_fee = self.resolve_monthly_fee(monthly_fee_list[0][0])
 
@@ -511,14 +520,14 @@ class Otodom:
 
         for child in ownership_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Forma własności"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Forma własności"
             ):
                 ownership.append(child.contents)
 
         if len(ownership) != 1:
             _log_wrong_number(len(ownership), 1, "ownership_form")
-            return None
+            return {"ownership_form": None}
 
         return {"ownership_form": ownership[0][0]}
 
@@ -534,20 +543,20 @@ class Otodom:
 
         for child in market_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rynek"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rynek"
             ):
                 market.append(child.contents)
 
         if len(market) != 1:
             _log_wrong_number(len(market), 1, "market_type")
-            return None
+            return {"market_type": None}
 
         return {"market_type": market[0][0]}
 
     @staticmethod
     def get_construction_material(
-        soup: BeautifulSoup,
+            soup: BeautifulSoup,
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Materiał budynku"}
 
@@ -561,14 +570,14 @@ class Otodom:
 
         for child in material_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Materiał budynku"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Materiał budynku"
             ):
                 material.append(child.contents)
 
         if len(material) != 1:
             _log_wrong_number(len(material), 1, "construction_material")
-            return None
+            return {"construction_material": None}
 
         return {"construction_material": material[0][0]}
 
@@ -635,14 +644,14 @@ class Otodom:
 
         for child in heating_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Ogrzewanie"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Ogrzewanie"
             ):
                 heating.append(child.contents)
 
         if len(heating) != 1:
             _log_wrong_number(len(heating), 1, "heating")
-            return None
+            return {"heating": None}
 
         return {"heating": heating[0][0]}
 
@@ -668,7 +677,7 @@ class Otodom:
     @staticmethod
     def get_listing_url(soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
-        return link
+        return {"link": link}
 
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
