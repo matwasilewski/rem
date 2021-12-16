@@ -17,6 +17,7 @@ from rem.utils import (
     load_data,
 )
 import googlemaps
+import datetime
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -70,6 +71,9 @@ class Otodom:
             self.get_construction_material,
             self.get_market_type,
             self.get_heating,
+            self.get_address,
+            self.get_ad_description,
+
         ]
 
     def scrap(self):
@@ -678,6 +682,29 @@ class Otodom:
 
         return {"heating": heating[0][0]}
 
+    # @staticmethod
+    # def get_parking_space(soup: BeautifulSoup) -> Dict[str, int]:
+    #     soup_filter = {"aria-label": "Miejsce parkingowe"}
+    #
+    #     parking_space_div = _extract_divs(soup, soup_filter, "parking_space")
+    #     if not parking_space_div:
+    #         return {"parking_space": None}
+    #
+    #     parking_space = []
+    #
+    #     for child in parking_space_div:
+    #         if (
+    #                 child.attrs.get("title") is not None
+    #                 and child.attrs.get("title") != "Miejsce parkingowe"
+    #         ):
+    #             parking_space.append(child.contents)
+    #
+    #     if len(parking_space) != 1:
+    #         _log_wrong_number(len(parking_space), 1, "parking_space")
+    #         return None
+    #
+    #     return {"parking_space": parking_space[0][0]}
+
     @staticmethod
     def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
         address_list = []
@@ -699,11 +726,47 @@ class Otodom:
 
     def get_listing_url(self, soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
-        return {"url": link}
+        return link
+
+    @staticmethod
+    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+        seller_type = soup.find("a", {"class": "css-1dd80io enlr3ze0"})
+        if not seller_type:
+            seller_type = 0
+        else:
+            seller_type = seller_type.getText()
+            if not seller_type:
+                return None
+            else:
+                seller_type = 1
+
+        return {"seller_type": seller_type}
+
+    @staticmethod
+    def get_ad_description(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+        ad_description = soup.find("div", {"data-cy": "adPageAdDescription"}).getText()
+        return {"ad_description": ad_description}
 
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
-        return geocode_result
+        geometry = geocode_result[0]['geometry']
+        lat = geometry['location']['lat']
+        lon = geometry['location']['lng']
+        return {"latitude": lat, "longitude": lon}
 
     def is_url_new(self, url):
         return url not in set(self.data["url"])
+
+    def get_transit_time_distance(self, latitude, longitude, destination):
+        time_of_departure = datetime.datetime(2021, 12, 13, 8, 00)
+        origin = (latitude, longitude)
+        transit_matrix = self.gmaps.distance_matrix(
+            origin,
+            destination,
+            mode="transit",
+            departure_time=time_of_departure
+        )
+        distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
+        commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
+
+        return {"distance_to center": distance_kilometers, "commuting_time_min": commuting_time_min}
