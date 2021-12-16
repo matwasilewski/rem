@@ -15,8 +15,14 @@ OTODOM_LINK = "https://www.otodom.pl/"
 
 
 class Otodom:
-    def __init__(self, base_search_url, file_name, page_limit=1,
-                 use_google_maps_api=False, gcp_api_key_path="gcp_api.key"):
+    def __init__(
+        self,
+        base_search_url,
+        file_name,
+        page_limit=1,
+        use_google_maps_api=False,
+        gcp_api_key_path="gcp_api.key",
+    ):
         self.base_search_url = base_search_url
         self.page_limit = page_limit
         self.file_name = file_name
@@ -94,8 +100,9 @@ class Otodom:
 
         return listing_data
 
+    @staticmethod
     def append_new_listing_data(
-            self, dataframe: pd.DataFrame, listing_data: pd.Series
+        dataframe: pd.DataFrame, listing_data: pd.Series
     ):
         new_dataframe = dataframe.append(listing_data, ignore_index=True)
         return new_dataframe
@@ -128,7 +135,7 @@ class Otodom:
         return self.get_otodom_listing_urls_from_search_page(lis)
 
     @staticmethod
-    def get_otodom_listing_urls_from_search_page(self, lis):
+    def get_otodom_listing_urls_from_search_page(lis):
         links = []
         for li in lis:
             local_links = []
@@ -142,7 +149,7 @@ class Otodom:
         return links
 
     @staticmethod
-    def get_price(self, soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+    def get_price(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Cena"}
 
         price_div = _extract_divs(soup, soup_filter, "price")
@@ -176,8 +183,8 @@ class Otodom:
         floor_size = []
         for child in size_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Powierzchnia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Powierzchnia"
             ):
                 floor_size = child.contents
 
@@ -190,7 +197,7 @@ class Otodom:
         return {"floor_size_in_m2": floor_size_float}
 
     @staticmethod
-    def _resolve_floor_size(self, floor_size: str) -> float:
+    def _resolve_floor_size(floor_size: str) -> float:
         floor_size = floor_size.strip()
         floor_size = re.match("^[0-9,.]+", floor_size).group(0)
         floor_size = float(
@@ -199,9 +206,7 @@ class Otodom:
         return floor_size
 
     @staticmethod
-    def get_building_type(
-            self, soup: BeautifulSoup
-    ) -> Dict[str, Optional[str]]:
+    def get_building_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Rodzaj zabudowy"}
 
         type_of_building_div = _extract_divs(
@@ -215,8 +220,8 @@ class Otodom:
 
         for child in type_of_building_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rodzaj zabudowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rodzaj zabudowy"
             ):
                 type_of_building.append(child.contents)
 
@@ -227,7 +232,7 @@ class Otodom:
         return {"building_type": type_of_building[0][0]}
 
     @staticmethod
-    def get_window_type(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    def get_window_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Okna"}
 
         type_of_window_div = _extract_divs(soup, soup_filter, "window")
@@ -238,8 +243,8 @@ class Otodom:
 
         for child in type_of_window_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Okna"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Okna"
             ):
                 window.append(child.contents)
 
@@ -251,7 +256,7 @@ class Otodom:
 
     @staticmethod
     def get_year_of_construction(
-            self, soup: BeautifulSoup
+        soup: BeautifulSoup,
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Rok budowy"}
 
@@ -263,8 +268,8 @@ class Otodom:
 
         for child in year_of_construction_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rok budowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rok budowy"
             ):
                 year.append(child.contents)
 
@@ -275,9 +280,7 @@ class Otodom:
         return {"year_of_construction": int(year[0][0])}
 
     @staticmethod
-    def get_number_of_rooms(
-            self, soup: BeautifulSoup
-    ) -> Dict[str, Optional[int]]:
+    def get_number_of_rooms(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Liczba pokoi"}
 
         number_of_rooms_div = _extract_divs(
@@ -290,8 +293,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Liczba pokoi"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -302,7 +305,7 @@ class Otodom:
         return {"number_of_rooms": int(rooms[0][0])}
 
     @staticmethod
-    def get_condition(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    def get_condition(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Stan wykończenia"}
 
         condition_div = _extract_divs(soup, soup_filter, "condition")
@@ -313,8 +316,8 @@ class Otodom:
 
         for child in condition_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Stan wykończenia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Stan wykończenia"
             ):
                 condition.append(child.contents)
 
@@ -324,7 +327,8 @@ class Otodom:
 
         return {"condition": condition[0][0]}
 
-    def _resolve_floor(self, floor_string: str) -> Tuple[int, Optional[int]]:
+    @staticmethod
+    def _resolve_floor(floor_string: str) -> Tuple[int, Optional[int]]:
         floor: int
         floors_in_building: Optional[int]
         floor_string = "".join(floor_string.split()).lower()
@@ -355,7 +359,7 @@ class Otodom:
         return floor, floors_in_building
 
     @staticmethod
-    def get_total_floors_in_building(self, soup: BeautifulSoup):
+    def get_total_floors_in_building(soup: BeautifulSoup):
         soup_filter = {"aria-label": "Liczba pięter"}
 
         floors_in_building_div = _extract_divs(
@@ -368,8 +372,8 @@ class Otodom:
 
         for child in floors_in_building_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Liczba pięter"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pięter"
             ):
                 floors_in_building.append(child.contents)
 
@@ -390,8 +394,8 @@ class Otodom:
 
         for child in floor_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Piętro"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Piętro"
             ):
                 floor_list.append(child.contents)
 
@@ -409,7 +413,7 @@ class Otodom:
         }
 
     @staticmethod
-    def resolve_monthly_fee(self, monthly_fee_string: str):
+    def resolve_monthly_fee(monthly_fee_string: str):
         monthly_fee: float
         monthly_fee_string = "".join(monthly_fee_string.split()).lower()
 
@@ -435,8 +439,8 @@ class Otodom:
 
         for child in monthly_fee_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Czynsz"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Czynsz"
             ):
                 monthly_fee_list.append(child.contents)
 
@@ -449,7 +453,7 @@ class Otodom:
         return {"monthly_fee": monthly_fee}
 
     @staticmethod
-    def get_unique_id(self, soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+    def get_unique_id(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
         tags_content = []
 
         for tags in soup.find_all('meta'):
@@ -478,9 +482,7 @@ class Otodom:
         return {"unique_id": unique_id}
 
     @staticmethod
-    def get_ownership_form(
-            self, soup: BeautifulSoup
-    ) -> Dict[str, Optional[str]]:
+    def get_ownership_form(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Forma własności"}
 
         ownership_div = _extract_divs(soup, soup_filter, "ownership_form")
@@ -491,8 +493,8 @@ class Otodom:
 
         for child in ownership_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Forma własności"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Forma własności"
             ):
                 ownership.append(child.contents)
 
@@ -503,7 +505,7 @@ class Otodom:
         return {"ownership_form": ownership[0][0]}
 
     @staticmethod
-    def get_market_type(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    def get_market_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Rynek"}
 
         market_div = _extract_divs(soup, soup_filter, "market_type")
@@ -514,8 +516,8 @@ class Otodom:
 
         for child in market_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rynek"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rynek"
             ):
                 market.append(child.contents)
 
@@ -527,7 +529,7 @@ class Otodom:
 
     @staticmethod
     def get_construction_material(
-            self, soup: BeautifulSoup
+        soup: BeautifulSoup,
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Materiał budynku"}
 
@@ -541,8 +543,8 @@ class Otodom:
 
         for child in material_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Materiał budynku"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Materiał budynku"
             ):
                 material.append(child.contents)
 
@@ -603,7 +605,8 @@ class Otodom:
     #
     #      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
-    def get_heating(self, soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+    @staticmethod
+    def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Ogrzewanie"}
 
         heating_div = _extract_divs(soup, soup_filter, "heating")
@@ -614,8 +617,8 @@ class Otodom:
 
         for child in heating_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Ogrzewanie"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Ogrzewanie"
             ):
                 heating.append(child.contents)
 
@@ -626,7 +629,7 @@ class Otodom:
         return {"heating": heating[0][0]}
 
     @staticmethod
-    def get_address(self, soup: BeautifulSoup) -> dict[str, Optional[str]]:
+    def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
         address_list = []
         for a in soup.findAll('a'):
             address_list.append(a.text)
@@ -645,7 +648,7 @@ class Otodom:
         return {"address": address}
 
     @staticmethod
-    def get_listing_url(self, soup: BeautifulSoup):
+    def get_listing_url(soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return link
 
