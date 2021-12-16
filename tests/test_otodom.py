@@ -414,9 +414,7 @@ def test_get_all_listings_for_search_page(
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_listing_urls_for_page(
-        empty_search_soup
-    )
+    urls = otodom_instance.get_all_listing_urls_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
@@ -461,8 +459,6 @@ def test_url_generator_with_query_parameters(otodom_instance):
 
 
 def test_get_data_from_listing(otodom_instance, listing) -> None:
-    listing_data: Optional[pd.DataFrame] = None
-
     listing_data = otodom_instance.get_data_from_listing(listing)
 
     assert isinstance(listing_data, pd.Series)
@@ -478,13 +474,10 @@ def test_get_data_from_listing(otodom_instance, listing) -> None:
 def test_update_listing_data(
     otodom_instance, listing: BeautifulSoup, alternative_listing: BeautifulSoup
 ) -> None:
-    listing_data = pd.DataFrame()
-
     listing_soups = [listing, alternative_listing]
-    listing_data = otodom_instance.extract_data_from_listing_soups(
-        listing_data, listing_soups
-    )
+    otodom_instance.process_listing_soups(listing_soups)
 
+    listing_data = otodom_instance.data
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
     assert listing_data.loc[0, "price"] == 1500000.0
@@ -495,7 +488,7 @@ def test_update_listing_data(
 
 @pytest.mark.skip
 def test_scrap(otodom_instance):
-    url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom_instance.scrap(url)
+    otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    scrapped_data = otodom_instance.scrap()
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
