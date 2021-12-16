@@ -652,6 +652,12 @@ class Otodom:
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return link
 
+    @staticmethod
+    def get_ad_description(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
+        ad_description = soup.find("div", {"data-cy": "adPageAdDescription"}).getText()
+        return {"ad_description": ad_description}
+
+
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
         return geocode_result
