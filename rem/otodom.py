@@ -86,7 +86,6 @@ class Otodom:
                              listings_urls]
 
             self.process_listing_soups(listing_soups)
-
             self.checkpoint()
 
         if self.save_to_file:
