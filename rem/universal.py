@@ -1,3 +1,4 @@
+import time
 from typing import TextIO
 
 import requests
@@ -20,7 +21,8 @@ def get_soup(html_doc: TextIO):
     return soup
 
 
-def get_soup_from_url(url):
+def get_soup_from_url(url, offset=0):
+    time.sleep(offset)
     page = get_website(url)
     html = get_html_doc(page)
     soup = get_soup(html)

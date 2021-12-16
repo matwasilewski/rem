@@ -30,6 +30,7 @@ class Otodom:
         use_google_maps_api=False,
         gcp_api_key_path="gcp_api.key",
         save_to_file=True,
+        offset=0,
     ):
         self.data_directory = data_directory
         self.base_search_url = base_search_url
@@ -38,6 +39,7 @@ class Otodom:
         self.data_file_name = data_file_name
         self.data = load_data(data_file_name)
         self.save_to_file = save_to_file
+        self.offset = offset
 
         if use_google_maps_api:
             try:
@@ -74,12 +76,12 @@ class Otodom:
             if url_count == self.page_limit:
                 break
 
-            search_soup = get_soup_from_url(url)
+            search_soup = get_soup_from_url(url, offset=self.offset)
 
             listings_urls = self.get_all_listing_urls_for_page(search_soup)
             if len(listings_urls) == 0:
                 break
-            listing_soups = [get_soup_from_url(url) for url in listings_urls]
+            listing_soups = [get_soup_from_url(url, self.offset) for url in listings_urls]
 
             self.process_listing_soups(listing_soups)
 

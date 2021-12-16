@@ -69,6 +69,14 @@ def parse_args(args):
         type=bool,
         help='Should the result be saved in a file',
     )
+    parser.add_argument(
+        '--offset',
+        nargs="?",
+        required=False,
+        default=0,
+        type=int,
+        help='Offset between queries',
+    )
 
     return parser.parse_args(args)
 
@@ -84,6 +92,7 @@ def main():
                       use_google_maps_api=args.use_gcp,
                       gcp_api_key_path=args,
                       save_to_file=args.save_to_file,
+                      offset=args.offset,
                       )
 
     data = scrapper.scrap()
