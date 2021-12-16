@@ -678,6 +678,22 @@ class Otodom:
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return link
 
+
+    @staticmethod
+    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+        seller_type = soup.find("a", {"class": "css-1dd80io enlr3ze0"})
+        if not seller_type:
+            seller_type = 0
+        else:
+            seller_type = seller_type.getText()
+            if not seller_type:
+                return None
+            else:
+                seller_type = 1
+
+        return {"seller_type": seller_type}
+
+
     @staticmethod
     def get_ad_description(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         ad_description = soup.find("div", {"data-cy": "adPageAdDescription"}).getText()
