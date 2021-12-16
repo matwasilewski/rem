@@ -152,7 +152,7 @@ class Otodom:
                 if element.has_attr("href"):
                     local_links.append(element["href"])
             if len(local_links) == 1:
-                links.append(local_links[0])
+                links.append("https://www.otodom.pl" + local_links[0])
             else:
                 _log_wrong_number(len(local_links), 1, "listing links")
         return links
