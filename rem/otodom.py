@@ -10,6 +10,7 @@ from urllib.parse import parse_qs
 from rem.universal import get_soup_from_url
 from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
 import googlemaps
+import datetime
 
 OTODOM_LINK = "https://www.otodom.pl/"
 
@@ -703,3 +704,17 @@ class Otodom:
         lat = geometry['location']['lat']
         lon = geometry['location']['lng']
         return {"latitude": lat, "longitude": lon}
+
+    def get_transit_time_distance(self, latitude, longitude, destination):
+        time_of_departure = datetime.datetime(2021, 12, 13, 8, 00)
+        origin = (latitude, longitude)
+        transit_matrix = self.gmaps.distance_matrix(
+            origin,
+            destination,
+            mode="transit",
+            departure_time=time_of_departure
+        )
+        distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
+        commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
+
+        return {"distance_to center": distance_kilometers, "commuting_time_min": commuting_time_min}
