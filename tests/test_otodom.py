@@ -414,9 +414,7 @@ def test_get_all_listings_for_search_page(
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_listing_urls_for_page(
-        empty_search_soup
-    )
+    urls = otodom_instance.get_all_listing_urls_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
@@ -481,10 +479,9 @@ def test_update_listing_data(
     listing_data = pd.DataFrame()
 
     listing_soups = [listing, alternative_listing]
-    listing_data = otodom_instance.extract_data_from_listing_soups(
-        listing_data, listing_soups
-    )
+    otodom_instance.process_listing_soups(listing_soups)
 
+    listing_data = otodom_instance.data
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
     assert listing_data.loc[0, "price"] == 1500000.0

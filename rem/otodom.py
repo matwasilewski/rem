@@ -1,5 +1,5 @@
 import os.path
-from typing import Optional, Tuple, Dict
+from typing import Optional, Tuple, Dict, List
 
 import pandas as pd
 from bs4 import BeautifulSoup
@@ -8,7 +8,12 @@ from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
 from rem.universal import get_soup_from_url
-from rem.utils import _extract_divs, _log_wrong_number, _log_unexpected
+from rem.utils import (
+    _extract_divs,
+    _log_wrong_number,
+    _log_unexpected,
+    load_data,
+)
 import googlemaps
 
 OTODOM_LINK = "https://www.otodom.pl/"
@@ -25,7 +30,8 @@ class Otodom:
     ):
         self.base_search_url = base_search_url
         self.page_limit = page_limit
-        self.data_file_name = data_file_name
+        self.gmaps = None
+        self.data = load_data(data_file_name)
 
         if use_google_maps_api:
             try:
@@ -63,22 +69,19 @@ class Otodom:
 
             search_soup = get_soup_from_url(url)
 
-            listings_urls = self.get_all_listing_urls_for_page(
-                search_soup
-            )
+            listings_urls = self.get_all_listing_urls_for_page(search_soup)
             if len(listings_urls) == 0:
                 break
-
             listing_soups = [get_soup_from_url(url) for url in listings_urls]
-            dataframe = self.extract_data_from_listing_soups(listings_urls)
+
+            self.process_listing_soups(listings_urls)
 
         return dataframe
 
-    def extract_data_from_listing_soups(self, dataframe, listings):
+    def process_listing_soups(self, listings: List[BeautifulSoup]):
         for listing in listings:
             listing_data = self.get_data_from_listing(listing)
-            dataframe = self.append_new_listing_data(dataframe, listing_data)
-        return dataframe
+            self.add_new_listing_data(listing_data)
 
     def url_generator(self):
         parsed_url = urlparse(self.base_search_url)
@@ -100,20 +103,12 @@ class Otodom:
 
         return listing_data
 
-    @staticmethod
-    def append_new_listing_data(
-        dataframe: pd.DataFrame, listing_data: pd.Series
-    ):
-        new_dataframe = dataframe.append(listing_data, ignore_index=True)
-        return new_dataframe
+    def add_new_listing_data(self, listing_data: pd.Series):
+        self.data = self.data.append(listing_data, ignore_index=True)
 
     def get_all_listing_urls_for_page(self, search_soup):
-        lis_standard = self.get_standard_listing_urls_for_page(
-            search_soup
-        )
-        lis_promoted = self.get_promoted_listing_urls_for_page(
-            search_soup
-        )
+        lis_standard = self.get_standard_listing_urls_for_page(search_soup)
+        lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
         if len(lis_standard) == 0:
             return []
         else:
