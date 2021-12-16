@@ -8,7 +8,7 @@ logging.basicConfig(
     filename='otodom.log',
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(threadName)s -  %('
-    'levelname)s - %(message)s',
+           'levelname)s - %(message)s',
 )
 
 
@@ -96,6 +96,7 @@ def main():
                       )
 
     data = scrapper.scrap()
+
 
 if __name__ == "__main__":
     main()
