@@ -29,6 +29,7 @@ class Otodom:
         page_limit=1,
         use_google_maps_api=False,
         gcp_api_key_path="gcp_api.key",
+        save_to_file=True,
     ):
         self.data_directory = data_directory
         self.base_search_url = base_search_url
@@ -36,6 +37,7 @@ class Otodom:
         self.gmaps = None
         self.data_file_name = data_file_name
         self.data = load_data(data_file_name)
+        self.save_to_file = save_to_file
 
         if use_google_maps_api:
             try:
@@ -63,7 +65,7 @@ class Otodom:
             self.get_heating,
         ]
 
-    def scrap(self, save=True):
+    def scrap(self):
         dataframe = pd.DataFrame()
         generator = self.url_generator()
 
@@ -81,7 +83,7 @@ class Otodom:
 
             self.process_listing_soups(listing_soups)
 
-        if save:
+        if self.save_to_file:
             utils.save_data(
                 self.data, self.data_file_name, self.data_directory
             )

@@ -2,9 +2,7 @@ import argparse
 import logging
 import sys
 
-import validators
-
-from rem import otodom
+from rem.otodom import Otodom
 
 logging.basicConfig(
     filename='otodom.log',
@@ -59,8 +57,17 @@ def parse_args(args):
         '--gcp_key_path',
         nargs="?",
         required=False,
+        default="gcp_api.key",
         type=str,
         help='GCP key path',
+    )
+    parser.add_argument(
+        '--save_to_file',
+        nargs="?",
+        required=False,
+        default=True,
+        type=bool,
+        help='Should the result be saved in a file',
     )
 
     return parser.parse_args(args)
@@ -69,8 +76,17 @@ def parse_args(args):
 def main():
     args = parse_args(sys.argv[1:])
     logging.info(f"Starting scrapping of {args.url}...")
-    scrapped_data = otodom.otodom_scrap(args.url, args.page_limit)
 
+    scrapper = Otodom(base_search_url=args.url,
+                      data_file_name=args.data_file_name,
+                      data_directory=args.data_directory,
+                      page_limit=args.page_limit,
+                      use_google_maps_api=args.use_gcp,
+                      gcp_api_key_path=args,
+                      save_to_file=args.save_to_file,
+                      )
+
+    data = scrapper.scrap()
 
 if __name__ == "__main__":
     main()
