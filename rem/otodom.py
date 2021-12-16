@@ -18,14 +18,14 @@ class Otodom:
     def __init__(
         self,
         base_search_url,
-        file_name,
+        data_file_name,
         page_limit=1,
         use_google_maps_api=False,
         gcp_api_key_path="gcp_api.key",
     ):
         self.base_search_url = base_search_url
         self.page_limit = page_limit
-        self.file_name = file_name
+        self.data_file_name = data_file_name
 
         if use_google_maps_api:
             try:
@@ -53,9 +53,9 @@ class Otodom:
             self.get_heating,
         ]
 
-    def otodom_scrap(self):
+    def scrap(self):
         dataframe = pd.DataFrame()
-        generator = self.otodom_url_generator()
+        generator = self.url_generator()
 
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
@@ -63,7 +63,7 @@ class Otodom:
 
             search_soup = get_soup_from_url(url)
 
-            listings_urls = self.get_all_otodom_listing_urls_for_page(
+            listings_urls = self.get_all_listing_urls_for_page(
                 search_soup
             )
             if len(listings_urls) == 0:
@@ -76,11 +76,11 @@ class Otodom:
 
     def extract_data_from_listing_soups(self, dataframe, listings):
         for listing in listings:
-            listing_data = self.get_data_from_otodom_listing(listing)
+            listing_data = self.get_data_from_listing(listing)
             dataframe = self.append_new_listing_data(dataframe, listing_data)
         return dataframe
 
-    def otodom_url_generator(self):
+    def url_generator(self):
         parsed_url = urlparse(self.base_search_url)
         page_value = int(parse_qs(parsed_url.query).get("page", [1])[0])
         limit_value = int(parse_qs(parsed_url.query).get("limit", [36])[0])
@@ -91,7 +91,7 @@ class Otodom:
             yield f"{base_url}?page={page_value}&limit={limit_value}"
             page_value += 1
 
-    def get_data_from_otodom_listing(self, listing):
+    def get_data_from_listing(self, listing):
         listing_data: pd.Series = pd.Series()
 
         for listing_extractor in self.listing_information_retrieval_methods:
@@ -107,11 +107,11 @@ class Otodom:
         new_dataframe = dataframe.append(listing_data, ignore_index=True)
         return new_dataframe
 
-    def get_all_otodom_listing_urls_for_page(self, search_soup):
-        lis_standard = self.get_otodom_standard_listing_urls_for_page(
+    def get_all_listing_urls_for_page(self, search_soup):
+        lis_standard = self.get_standard_listing_urls_for_page(
             search_soup
         )
-        lis_promoted = self.get_otodom_promoted_listing_urls_for_page(
+        lis_promoted = self.get_promoted_listing_urls_for_page(
             search_soup
         )
         if len(lis_standard) == 0:
@@ -119,23 +119,23 @@ class Otodom:
         else:
             return lis_promoted + lis_standard
 
-    def get_otodom_promoted_listing_urls_for_page(self, soup: BeautifulSoup):
+    def get_promoted_listing_urls_for_page(self, soup: BeautifulSoup):
         promoted_filter = {"data-cy": "search.listing.promoted"}
         promoted_div = soup.find(attrs=promoted_filter)
         lis = promoted_div.findAll("li")
-        return self.get_otodom_listing_urls_from_search_page(lis)
+        return self.get_listing_urls_from_search_page(lis)
 
-    def get_otodom_standard_listing_urls_for_page(self, soup: BeautifulSoup):
+    def get_standard_listing_urls_for_page(self, soup: BeautifulSoup):
         standard_filter = {"data-cy": "search.listing"}
         divs = soup.find_all(attrs=standard_filter)
         if len(divs) < 2:
             return []
         standard_divs = divs[1]
         lis = standard_divs.findAll("li")
-        return self.get_otodom_listing_urls_from_search_page(lis)
+        return self.get_listing_urls_from_search_page(lis)
 
     @staticmethod
-    def get_otodom_listing_urls_from_search_page(lis):
+    def get_listing_urls_from_search_page(lis):
         links = []
         for li in lis:
             local_links = []

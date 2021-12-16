@@ -359,7 +359,7 @@ def test_address(otodom_instance, listing) -> None:
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    promoted_urls = otodom_instance.get_otodom_promoted_listing_urls_for_page(
+    promoted_urls = otodom_instance.get_promoted_listing_urls_for_page(
         search_soup
     )
     assert len(promoted_urls) == 3
@@ -381,7 +381,7 @@ def test_get_promoted_listing_urls_for_search_page(
 def test_get_standard_listintg_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    standard_urls = otodom_instance.get_otodom_standard_listing_urls_for_page(
+    standard_urls = otodom_instance.get_standard_listing_urls_for_page(
         search_soup
     )
     assert len(standard_urls) == 36
@@ -407,14 +407,14 @@ def test_get_standard_listintg_urls_for_search_page(
 def test_get_all_listings_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    urls = otodom_instance.get_all_otodom_listing_urls_for_page(search_soup)
+    urls = otodom_instance.get_all_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_otodom_listing_urls_for_page(
+    urls = otodom_instance.get_all_listing_urls_for_page(
         empty_search_soup
     )
     assert len(urls) == 0
@@ -424,7 +424,7 @@ def test_url_generator(otodom_instance):
     otodom_instance.base_search_url = (
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
     )
-    url_generator = otodom_instance.otodom_url_generator()
+    url_generator = otodom_instance.url_generator()
 
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
@@ -445,7 +445,7 @@ def test_url_generator(otodom_instance):
 def test_url_generator_with_query_parameters(otodom_instance):
     otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
 
-    url_generator = otodom_instance.otodom_url_generator()
+    url_generator = otodom_instance.url_generator()
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=1&limit=72"
@@ -463,7 +463,7 @@ def test_url_generator_with_query_parameters(otodom_instance):
 def test_get_data_from_listing(otodom_instance, listing) -> None:
     listing_data: Optional[pd.DataFrame] = None
 
-    listing_data = otodom_instance.get_data_from_otodom_listing(listing)
+    listing_data = otodom_instance.get_data_from_listing(listing)
 
     assert isinstance(listing_data, pd.Series)
     assert listing_data.loc["price"] == 1500000
@@ -496,6 +496,6 @@ def test_update_listing_data(
 @pytest.mark.skip
 def test_scrap(otodom_instance):
     url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom_instance.otodom_scrap(url)
+    scrapped_data = otodom_instance.scrap(url)
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
