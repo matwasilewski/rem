@@ -32,6 +32,36 @@ def parse_args(args):
         default=1,
         help='Enter otodom search url',
     )
+    parser.add_argument(
+        '--data_file_name',
+        nargs="?",
+        required=True,
+        type=str,
+        help='Enter data file name',
+    )
+    parser.add_argument(
+        '--data_directory',
+        nargs="?",
+        required=False,
+        type=str,
+        default="data",
+        help='Enter data directory',
+    )
+    parser.add_argument(
+        '--use_gcp',
+        nargs="?",
+        required=False,
+        type=bool,
+        default=False,
+        help='Use GCP API',
+    )
+    parser.add_argument(
+        '--gcp_key_path',
+        nargs="?",
+        required=False,
+        type=str,
+        help='GCP key path',
+    )
 
     return parser.parse_args(args)
 

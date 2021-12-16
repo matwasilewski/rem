@@ -5,6 +5,8 @@ def test_parse_url() -> None:
     arguments = [
         "--url",
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72",
+        "--data_file_name",
+        "sample-data-file",
     ]
     parsed = main.parse_args(arguments)
 
@@ -20,6 +22,8 @@ def test_parse_page_limit() -> None:
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72",
         "--page_limit",
         "3",
+        "--data_file_name",
+        "sample-data-file",
     ]
     parsed = main.parse_args(arguments)
 
@@ -30,6 +34,10 @@ def test_default_page_limit() -> None:
     arguments = [
         "--url",
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72",
+        "--page_limit",
+        "1",
+        "--data_file_name",
+        "sample-data-file",
     ]
     parsed = main.parse_args(arguments)
 

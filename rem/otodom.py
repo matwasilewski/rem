@@ -7,6 +7,7 @@ import re
 from urllib.parse import urlparse
 from urllib.parse import parse_qs
 
+from rem import utils
 from rem.universal import get_soup_from_url
 from rem.utils import (
     _extract_divs,
@@ -24,13 +25,16 @@ class Otodom:
         self,
         base_search_url,
         data_file_name,
+        data_directory="data",
         page_limit=1,
         use_google_maps_api=False,
         gcp_api_key_path="gcp_api.key",
     ):
+        self.data_directory = data_directory
         self.base_search_url = base_search_url
         self.page_limit = page_limit
         self.gmaps = None
+        self.data_file_name = data_file_name
         self.data = load_data(data_file_name)
 
         if use_google_maps_api:
@@ -59,10 +63,11 @@ class Otodom:
             self.get_heating,
         ]
 
-    def scrap(self):
+    def scrap(self, save=True):
         dataframe = pd.DataFrame()
         generator = self.url_generator()
 
+        # @TODO: Add update option
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
                 break
@@ -74,7 +79,12 @@ class Otodom:
                 break
             listing_soups = [get_soup_from_url(url) for url in listings_urls]
 
-            self.process_listing_soups(listings_urls)
+            self.process_listing_soups(listing_soups)
+
+        if save:
+            utils.save_data(
+                self.data, self.data_file_name, self.data_directory
+            )
 
         return dataframe
 
