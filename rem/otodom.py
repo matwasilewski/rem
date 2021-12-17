@@ -79,7 +79,7 @@ class Otodom:
 
             search_soup = get_soup_from_url(url, offset=self.offset)
 
-            listings_urls = self.get_all_listing_urls_for_page(search_soup)
+            listings_urls = self.get_all_relevant_listing_urls_for_page(search_soup)
             if len(listings_urls) == 0:
                 break
             listing_soups = [
@@ -135,7 +135,7 @@ class Otodom:
     def add_new_listing_data(self, listing_data: pd.Series):
         self.data = self.data.append(listing_data, ignore_index=True)
 
-    def get_all_listing_urls_for_page(self, search_soup):
+    def get_all_relevant_listing_urls_for_page(self, search_soup):
         lis_standard = self.get_standard_listing_urls_for_page(search_soup)
         lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
         if len(lis_standard) == 0:

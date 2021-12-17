@@ -407,14 +407,14 @@ def test_get_standard_listintg_urls_for_search_page(
 def test_get_all_listings_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    urls = otodom_instance.get_all_listing_urls_for_page(search_soup)
+    urls = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_listing_urls_for_page(empty_search_soup)
+    urls = otodom_instance.get_all_relevant_listing_urls_for_page(empty_search_soup)
     assert len(urls) == 0
 
 
