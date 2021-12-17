@@ -82,8 +82,9 @@ class Otodom:
             listings_urls = self.get_all_relevant_listing_urls_for_page(search_soup)
             if len(listings_urls) == 0:
                 break
+
             listing_soups = [
-                get_soup_from_url(url, self.offset) for url in listings_urls
+                get_soup_from_url(url, self.offset) for url in listings_urls if self.url_not_in_db(url)
             ]
 
             self.process_listing_soups(listing_soups)
@@ -687,8 +688,12 @@ class Otodom:
     @staticmethod
     def get_listing_url(soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
-        return {"link": link}
+        return {"url": link}
 
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
         return geocode_result
+
+    def url_not_in_data(self, url):
+        self._url_index
+        return True

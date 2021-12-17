@@ -223,7 +223,7 @@ def test_resolve_monthly_fee_5(otodom_instance) -> None:
 def test_get_listing_url(otodom_instance, listing) -> None:
     listing_url = otodom_instance.get_listing_url(listing)
     assert (
-        listing_url["link"]
+        listing_url["url"]
         == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
 
@@ -485,6 +485,16 @@ def test_update_listing_data(
     assert listing_data.loc[0, "year_of_construction"] == 1939
     assert listing_data.loc[1, "year_of_construction"] is None
 
+
+def test_url_not_in_db(
+        otodom_instance
+) -> None:
+    otodom_instance.data = pd.DataFrame(data={"url": "sample.com"})
+    test_url_in = "not-in-db.com"
+    test_url_not_in = "sample.com"
+
+    assert otodom_instance.url_not_in_data(test_url_not_in) == True
+    assert otodom_instance.url_not_in_data(test_url_in) == False
 
 @pytest.mark.skip
 def test_scrap(otodom_instance):
