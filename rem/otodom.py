@@ -199,7 +199,7 @@ class Otodom:
                 )
             )
         except ValueError as e:
-            logging.error(f"Can't conver the price {e}")
+            logging.error(f"Can't convert the price {e}")
 
         return {"price": price}
 
@@ -680,7 +680,7 @@ class Otodom:
         for i in indices:
             contem_address_list.append(address_list[i])
 
-        address = max(contem_address_list, key=len)
+        address = str(max(contem_address_list, key=len))
 
         return {"address": address}
 
