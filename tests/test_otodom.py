@@ -387,12 +387,12 @@ def test_seller_type(otodom_instance, listing) -> None:
 
 
 def test_extract_long_lat_via_address(otodom_gcp_instance, listing) -> None:
-    coordinates = otodom_instance.extract_long_lat_via_address(listing)
+    coordinates = otodom_gcp_instance.extract_long_lat_via_address(listing)
     assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
 
 
-def test_get_transit_time_distance(otodom_gcp_settings, listing) -> None:
-    distance_time_to_city_center = otodom_instance.get_transit_time_distance(
+def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
+    distance_time_to_city_center = otodom_gcp_instance.get_transit_time_distance(
         listing
     )
     assert distance_time_to_city_center == {
