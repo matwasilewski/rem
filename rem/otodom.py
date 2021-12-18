@@ -41,7 +41,9 @@ class Otodom:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
             except FileNotFoundError:
                 raise "no GCP API key provided!"
-            self.destination_coordinates = self.extract_long_lat_via_address(settings.DESTINATION)
+            self.destination_coordinates = self.extract_long_lat_via_address(
+                settings.DESTINATION
+            )
 
         self.listing_information_retrieval_methods = [
             self.get_listing_url,
@@ -331,8 +333,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Liczba pokoi"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -598,7 +600,6 @@ class Otodom:
 
         return {"construction_material": material[0][0]}
 
-
     @staticmethod
     def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Ogrzewanie"}
@@ -621,8 +622,6 @@ class Otodom:
             return {"heating": None}
 
         return {"heating": heating[0][0]}
-
-
 
     @staticmethod
     def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
@@ -686,8 +685,12 @@ class Otodom:
             mode="transit",
             departure_time=self.time_of_departure,
         )
-        distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
-        commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
+        distance_kilometers = transit_matrix["rows"][0]["elements"][0][
+            "distance"
+        ]["text"]
+        commuting_time_min = transit_matrix["rows"][0]["elements"][0][
+            "duration"
+        ]["text"]
 
         return {
             "distance_to center": distance_kilometers,
