@@ -266,104 +266,6 @@ def test_construction_material(otodom_instance, listing) -> None:
     assert construction_material == {"construction_material": "cegła"}
 
 
-@pytest.mark.skip
-def test_resolve_outdoor_space_1(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "ogród, taras"
-    )
-    assert garden == 1
-    assert balcony == 0
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_2(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "taras, ogródek"
-    )
-    assert garden == 1
-    assert balcony == 0
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_3(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "balkon, ogródek, taras"
-    )
-    assert balcony == 1
-    assert garden == 1
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_4(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "balkon/ ogródek/ taras"
-    )
-    assert balcony == 1
-    assert garden == 1
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_5(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("taras")
-    assert balcony == 0
-    assert garden == 0
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_6(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogródek")
-    assert balcony == 0
-    assert garden == 1
-    assert terrace == 0
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_7(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("ogród")
-    assert balcony == 0
-    assert garden == 1
-    assert terrace == 0
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_8(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space("balkon")
-    assert balcony == 1
-    assert garden == 0
-    assert terrace == 0
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_9(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "ogródek, balkon"
-    )
-    assert balcony == 1
-    assert garden == 1
-    assert terrace == 0
-
-
-@pytest.mark.skip
-def test_resolve_outdoor_space_10(otodom_instance) -> None:
-    garden, balcony, terrace = otodom_instance.resolve_outdoor_space(
-        "balkon\ taras"
-    )
-    assert balcony == 1
-    assert garden == 0
-    assert terrace == 1
-
-
-@pytest.mark.skip
-def test_outdoor_space(otodom_instance, listing) -> None:
-    outdoor_space = otodom_instance.get_outdoor_space(listing)
-    assert outdoor_space == {"balcony": 1, "garden": 0, "terrace": 0}
-
-
 def test_heating(otodom_instance, listing) -> None:
     heating = otodom_instance.get_heating(listing)
     assert heating == {"heating": "miejskie"}
@@ -385,12 +287,12 @@ def test_seller_type(otodom_instance, listing) -> None:
     seller_type = otodom_instance.get_seller_type(listing)
     assert seller_type == {"seller_type": "agency"}
 
-
+@pytest.mark.skip
 def test_extract_long_lat_via_address(otodom_gcp_instance, listing) -> None:
     coordinates = otodom_gcp_instance.extract_long_lat_via_address(listing)
     assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
 
-
+@pytest.mark.skip
 def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
     distance_time_to_city_center = otodom_gcp_instance.get_transit_time_distance(
         listing
@@ -400,6 +302,9 @@ def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
         "commuting_time_min": "42 mins",
     }
 
+def test_resolve_additional_features(otodom_instance, listing) -> None:
+    additional_features_list = otodom_instance.resolve_additional_features(listing)
+    assert additional_features_list == ['internet', 'system alarmowy', 'drzwi / okna antywłamaniowe', 'teren zamknięty', 'domofon / wideofon', 'klimatyzacja', 'balkon', 'piwnica', 'garaż/miejsce parkingowe']
 
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
