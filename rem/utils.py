@@ -21,7 +21,7 @@ def _extract_divs(soup, soup_filter, what: str):
 def _log_wrong_number(actual: int, expected: int, what: str) -> None:
     logging.error(
         f"{actual} {what} found for the listing, "
-        f"instead of expected {expected}. Skipping the record."
+        f"instead of expected {expected}."
     )
 
 

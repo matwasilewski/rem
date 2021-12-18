@@ -223,7 +223,7 @@ def test_resolve_monthly_fee_5(otodom_instance) -> None:
 def test_get_listing_url(otodom_instance, listing) -> None:
     listing_url = otodom_instance.get_listing_url(listing)
     assert (
-        listing_url
+        listing_url["url"]
         == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
 
@@ -351,36 +351,15 @@ def test_heating(otodom_instance, listing) -> None:
     assert heating == {"heating": "miejskie"}
 
 
-@pytest.mark.skip
-def test_parking_space(otodom_instance, listing) -> None:
-    parking_space = otodom_instance.get_parking_space(listing)
-    assert parking_space == {"parking_space": 1}
-
-
 def test_address(otodom_instance, listing) -> None:
     address = otodom_instance.get_address(listing)
     assert address == {"address": "Warszawa, Śródmieście, Belwederska"}
 
 
-def test_ad_description(otodom_instance, listing) -> None:
-    ad_description = otodom_instance.get_ad_description(listing)
-    assert ad_description == {"ad_description": "Gratka dla fanów przedwojennych kamienic! Jeden z najlepszych adresów w Warszawie! To tylko niektóre ze zdań, które idealnie opisują tę nieruchomość. Mieszkanie zlokalizowane jest przy Trakcie Królewskim, zaledwie 2 minuty spacerem od Łazienek Królewskich w pięknej, modernistycznej kamienicy z lat 30tych, z zachowanymi przedwojennymi „smaczkami” dla koneserów. PARAMETRY NIERUCHOMOŚCIMieszkanie ma bardzo dobry i wygodny rozkład. Salon z aneksem kuchennym wychodzi na ulicę Belwederską, roztacza się z niego widok na zielony ogród Ambasady Rosji. Dwie sypialnie (jedna z balkonem) oraz łazienka z oknem wychodzą na ciche, zielone patio. W przedpokoju znajdują się wbudowane szafy. Pomieszczenia wysokie są na 3 metry, zainstalowana klimatyzacja, odrestaurowane oryginalne grzejniki, to tylko kilka z dodatkowych atutów oferowanej nieruchomości. Kamienica posiada własne, zamykane patio z parkingiem tylko dla mieszkańców. Do mieszkania przynależy komórka lokatorska o powierzchni 10 m2. KOMUNIKACJA I OKOLICANieruchomość leży na pograniczu Śródmieścia i Mokotowa. W pobliżu przystanki autobusowe, do tramwaju 10 minut piechotą. Od serca Warszawy dzielą nas 4 kilometry. Do Łazienek Królewskich 2 minuty. W okolicy ambasady, kamienice i dużo zieleni. W NASZEJ OPINIINieruchomość jakich mało! Przedwojenna, zadbana, modernistyczna kamienica z własnym patio i parkingiem, sąsiedztwo Łazienek Królewskich oraz wygodny rozkład mieszkania zadowoli zarówno parę lubiącą klimatyczne nieruchomości, rodzinę 2+1, jak również nadaje się do dalszego wynajmu. Więcej unikalnych ofert w podobnych kryteriach znajdą Państwo na naszej stronie . Zapraszamy!A lucky strike for fans of pre-war tenement houses! One of the best addresses in Warsaw! These are just some of the sentences that perfectly describe this property. The apartment is located on the Trakt Królewski, just a 2-minute walk from the Royal Łazienki Park in a beautiful, modernist tenement house from the 1930s, with pre-war \"flavors\" for connoisseurs.PROPERTY PARAMETERSThe apartment has a very good and comfortable layout. The living room with a kitchenette overlooks Belwederska Street and offers a view of the green garden of the Russian Embassy. Two bedrooms (one with a balcony) and a bathroom with a window overlook a quiet, green patio. There are built-in wardrobes in the hall. The rooms are 3 meters high, air conditioning installed, restored original heaters are just a few of the additional advantages of the offered property. The tenement house has its own, closed patio with a parking lot for residents only. The apartment includes a storage room with an area of 10 m2.COMMUNICATION AND SURROUNDINGSThe property is located on the border of Śródmieście and Mokotów. Nearby bus stops, 10 minutes on foot to the tram. We are 4 kilometers away from the heart of Warsaw. To the Royal Łazienki 2 minutes. In the neighborhood embassies, tenement houses and lots of greenery.IN OUR OPINIONReal estate like no other! Pre-war, well-kept, modernist tenement house with its own patio and parking, the vicinity of Royal Łazienki Park and a convenient layout of the apartment will satisfy both a couple who like atmospheric real estate, a 2 + 1 family, and is also suitable for further rental.Please visit our website to find more unique offers with similar criteria!"}
-
-
-def test_seller_type(otodom_instance, listing) -> None:
-    seller_type = otodom_instance.get_seller_type(listing)
-    assert seller_type == {"seller_type": 1}
-
-
-def test_extract_long_lat_via_address(otodom_instance, listing) -> None:
-    coordinates = otodom_instance.extract_long_lat_via_address(listing)
-    assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
-
-
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    promoted_urls = otodom_instance.get_otodom_promoted_listing_urls_for_page(
+    promoted_urls = otodom_instance.get_promoted_listing_urls_for_page(
         search_soup
     )
     assert len(promoted_urls) == 3
@@ -402,7 +381,7 @@ def test_get_promoted_listing_urls_for_search_page(
 def test_get_standard_listintg_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    standard_urls = otodom_instance.get_otodom_standard_listing_urls_for_page(
+    standard_urls = otodom_instance.get_standard_listing_urls_for_page(
         search_soup
     )
     assert len(standard_urls) == 36
@@ -428,14 +407,14 @@ def test_get_standard_listintg_urls_for_search_page(
 def test_get_all_listings_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    urls = otodom_instance.get_all_otodom_listing_urls_for_page(search_soup)
+    urls = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_otodom_listing_urls_for_page(
+    urls = otodom_instance.get_all_relevant_listing_urls_for_page(
         empty_search_soup
     )
     assert len(urls) == 0
@@ -445,7 +424,7 @@ def test_url_generator(otodom_instance):
     otodom_instance.base_search_url = (
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
     )
-    url_generator = otodom_instance.otodom_url_generator()
+    url_generator = otodom_instance.url_generator()
 
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
@@ -466,7 +445,7 @@ def test_url_generator(otodom_instance):
 def test_url_generator_with_query_parameters(otodom_instance):
     otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
 
-    url_generator = otodom_instance.otodom_url_generator()
+    url_generator = otodom_instance.url_generator()
     assert (
         next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
         "/mieszkanie/warszawa?page=1&limit=72"
@@ -482,9 +461,7 @@ def test_url_generator_with_query_parameters(otodom_instance):
 
 
 def test_get_data_from_listing(otodom_instance, listing) -> None:
-    listing_data: Optional[pd.DataFrame] = None
-
-    listing_data = otodom_instance.get_data_from_otodom_listing(listing)
+    listing_data = otodom_instance.get_data_from_listing(listing)
 
     assert isinstance(listing_data, pd.Series)
     assert listing_data.loc["price"] == 1500000
@@ -499,13 +476,10 @@ def test_get_data_from_listing(otodom_instance, listing) -> None:
 def test_update_listing_data(
     otodom_instance, listing: BeautifulSoup, alternative_listing: BeautifulSoup
 ) -> None:
-    listing_data = pd.DataFrame()
-
     listing_soups = [listing, alternative_listing]
-    listing_data = otodom_instance.extract_data_from_listing_soups(
-        listing_data, listing_soups
-    )
+    otodom_instance.process_listing_soups(listing_soups)
 
+    listing_data = otodom_instance.data
     assert isinstance(listing_data, pd.DataFrame)
     assert len(listing_data.index) == 2
     assert listing_data.loc[0, "price"] == 1500000.0
@@ -514,9 +488,18 @@ def test_update_listing_data(
     assert listing_data.loc[1, "year_of_construction"] is None
 
 
+def test_old_and_new_url(otodom_instance) -> None:
+    otodom_instance.data = pd.DataFrame(data={"url": ["sample.com"]})
+    test_url_not_in_data = "not-in-db.com"
+    test_url_in_data = "sample.com"
+
+    assert otodom_instance.is_url_new(test_url_in_data) == False
+    assert otodom_instance.is_url_new(test_url_not_in_data) == True
+
+
 @pytest.mark.skip
 def test_scrap(otodom_instance):
-    url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom_instance.otodom_scrap(url)
+    otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    scrapped_data = otodom_instance.scrap()
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
