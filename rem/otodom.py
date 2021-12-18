@@ -18,8 +18,6 @@ from rem.utils import (
     load_data,
 )
 
-OTODOM_LINK = "https://www.otodom.pl/"
-
 
 class Otodom:
     def __init__(
@@ -724,7 +722,7 @@ class Otodom:
 
     def get_listing_url(self, soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
-        return link
+        return {"url": link}
 
     @staticmethod
     def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
