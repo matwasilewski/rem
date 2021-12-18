@@ -147,4 +147,3 @@ log = get_logger(
     verbose=settings.VERBOSE_LOGS,
     as_json=settings.JSON_LOGS,
 )
-
