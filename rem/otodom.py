@@ -611,56 +611,6 @@ class Otodom:
 
         return {"construction_material": material[0][0]}
 
-    # def resolve_outdoor_space(self, outdoor_space_string: str):
-    #    garden: int
-    #    balcony: int
-    #     terrace: int
-    #
-    #     outdoor_space_string = "".join(outdoor_space_string.split()).lower()
-    #
-    #    if "\\" in outdoor_space_string:
-    #        outdoor_space_string = outdoor_space_string.replace("\\", ",")
-    #    elif "/" in outdoor_space_string:
-    #         outdoor_space_string = outdoor_space_string.replace("/", ",")
-    #
-    #    outdoor_space_list = []
-    #     outdoor_space_list = outdoor_space_string.split(",")
-    #
-    #    if "ogród" in outdoor_space_list or "ogródek" in outdoor_space_list:
-    #        garden = 1
-    #    else:
-    #        garden = 0
-    #    if "balkon" in outdoor_space_list:
-    #        balcony = 1
-    #    else:
-    #        balcony = 0
-    #    if "taras" in outdoor_space_list:
-    #        terrace = 1
-    #    else:
-    #         terrace = 0
-    #
-    #    return garden, balcony, terrace#
-    #
-    # def get_outdoor_space(soup: BeautifulSoup):
-    #     soup_filter = {"aria-label": "Balkon / ogród / taras"}
-    #
-    #     outdoor_space_div = _extract_divs(soup, soup_filter, "outdoor_space")
-    #     if not outdoor_space_div:
-    #         breakpoint()
-    # return {"outdoor_space": None}
-    #
-    #     outdoor_space_list = []
-    #
-    #     for child in outdoor_space_div:
-    #         if (
-    #                 child.attrs.get("title") is not None
-    #                 and child.attrs.get("title") != "Balkon / ogród / taras"
-    #         ):
-    #             outdoor_space_list.append(child.contents)
-    #
-    #     garden, balcony, terrace = resolve_outdoor_space(outdoor_space_list[0][0])
-    #
-    #      return {"garden": garden, "balcony": balcony, "terrace": terrace}
 
     @staticmethod
     def get_heating(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
@@ -685,28 +635,7 @@ class Otodom:
 
         return {"heating": heating[0][0]}
 
-    # @staticmethod
-    # def get_parking_space(soup: BeautifulSoup) -> Dict[str, int]:
-    #     soup_filter = {"aria-label": "Miejsce parkingowe"}
-    #
-    #     parking_space_div = _extract_divs(soup, soup_filter, "parking_space")
-    #     if not parking_space_div:
-    #         return {"parking_space": None}
-    #
-    #     parking_space = []
-    #
-    #     for child in parking_space_div:
-    #         if (
-    #                 child.attrs.get("title") is not None
-    #                 and child.attrs.get("title") != "Miejsce parkingowe"
-    #         ):
-    #             parking_space.append(child.contents)
-    #
-    #     if len(parking_space) != 1:
-    #         _log_wrong_number(len(parking_space), 1, "parking_space")
-    #         return None
-    #
-    #     return {"parking_space": parking_space[0][0]}
+
 
     @staticmethod
     def get_address(soup: BeautifulSoup) -> dict[str, Optional[str]]:
