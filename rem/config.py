@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     SYSLOG_ADDR: Optional[str] = None
 
     # Scraping settings
-    BASE_SEARCH_URL: str = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    BASE_SEARCH_URL: str
     DATA_FILE_NAME: str = "otodom.csv"
     DATA_DIRECTORY: str = "data"
     PAGE_LIMIT: int = 1
@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     TIME_OF_DEPARTURE: datetime.datetime = datetime.datetime(
         2021, 12, 13, 8, 00
     )
-    DESTINATION: str = "Plac Defilad 1, Warszawa"
+    DESTINATION: str
 
     class Config:
         env_file_encoding = 'utf-8'
