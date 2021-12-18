@@ -681,6 +681,22 @@ class Otodom:
                     li_list.append(li.getText())
         return li_list
 
+
+    def get_parking_space(self, soup: BeautifulSoup) -> Tuple[Optional[str], Optional[str]]:
+        li_list = self.resolve_additional_features(soup)
+        parking_space = ["garaż/miejsce parkingowe", "garaż", "miejsce parkingowe"]
+        garage = 0
+        parking = 0
+        for attribute in li_list:
+            if attribute in parking_space:
+                parking_temp = attribute
+        if parking_space[1] in parking_temp:
+            garage = 1
+        if parking_space[2] in parking_temp:
+            parking = 1
+
+        return {"parking": parking, "garage": garage}
+
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
         geometry = geocode_result[0]['geometry']
