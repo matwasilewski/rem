@@ -2,6 +2,7 @@ import argparse
 import logging
 import sys
 
+from rem.config import settings
 from rem.otodom import Otodom
 
 logging.basicConfig(
@@ -33,7 +34,7 @@ def parse_args(args):
     parser.add_argument(
         '--data_file_name',
         nargs="?",
-        required=True,
+        required=False,
         type=str,
         help='Enter data file name',
     )
@@ -54,14 +55,6 @@ def parse_args(args):
         help='Use GCP API',
     )
     parser.add_argument(
-        '--gcp_key_path',
-        nargs="?",
-        required=False,
-        default="gcp_api.key",
-        type=str,
-        help='GCP key path',
-    )
-    parser.add_argument(
         '--save_to_file',
         nargs="?",
         required=False,
@@ -73,8 +66,8 @@ def parse_args(args):
         '--offset',
         nargs="?",
         required=False,
-        default=0,
-        type=int,
+        default=0.0,
+        type=float,
         help='Offset between queries',
     )
 
@@ -85,17 +78,14 @@ def main():
     args = parse_args(sys.argv[1:])
     logging.info(f"Starting scrapping of {args.url}...")
 
-    scrapper = Otodom(
-        base_search_url=args.url,
-        data_file_name=args.data_file_name,
-        data_directory=args.data_directory,
-        page_limit=args.page_limit,
-        use_google_maps_api=args.use_gcp,
-        gcp_api_key_path=args,
-        save_to_file=args.save_to_file,
-        offset=args.offset,
-    )
+    settings.BASE_SEARCH_URL = args.url
+    settings.DATA_FILE_NAME = args.data_file_name
+    settings.DATA_DIRECTORY = args.data_directory
+    settings.OFFSET = args.offset
+    settings.USE_GOOGLE_MAPS_API = args.use_gcp
+    settings.PAGE_LIMIT = args.page_limit
 
+    scrapper = Otodom()
     data = scrapper.scrap()
 
 

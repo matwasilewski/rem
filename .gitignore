@@ -7,3 +7,5 @@ notebooks/*
 data/*
 gcp_api.key
 otodom.log
+logs/*
+secrets/*

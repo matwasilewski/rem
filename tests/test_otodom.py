@@ -4,16 +4,22 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 
+from rem.config import settings
+
 import rem.universal
 from rem.otodom import Otodom
 
 
 @pytest.fixture(scope="session", autouse=True)
-def otodom_instance() -> Otodom:
-    otodom = Otodom(
-        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72",
-        "warszawa-mieszkania",
-    )
+def otodom_settings() -> Otodom:
+    my_settings = settings
+    my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    return my_settings
+
+
+@pytest.fixture(scope="session", autouse=True)
+def otodom_instance(otodom_settings) -> Otodom:
+    otodom = Otodom(otodom_settings)
     return otodom
 
 

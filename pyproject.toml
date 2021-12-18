@@ -16,6 +16,10 @@ coverage = "^6.2"
 google = "^3.0.0"
 validators = "^0.18.2"
 googlemaps = "^4.5.3"
+tomlkit = "^0.7.2"
+pydantic = "^1.8.2"
+ujson = "^5.0.0"
+JSON-log-formatter = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 

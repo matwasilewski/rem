@@ -1,4 +1,4 @@
-from rem import main
+import main
 
 
 def test_parse_url() -> None:
