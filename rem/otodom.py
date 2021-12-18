@@ -670,7 +670,7 @@ class Otodom:
     @staticmethod
     def resolve_additional_features(soup: BeautifulSoup) -> list:
         h3_tags = soup.findAll('h3')
-        li_list = []
+        li_list = set()
         for h3 in h3_tags:
             uls = []
             for next_sibling in h3.findNextSiblings():
@@ -678,24 +678,53 @@ class Otodom:
                     uls.append(next_sibling)
             for ul in uls:
                 for li in ul.findAll('li'):
-                    li_list.append(li.getText())
+                    li_list.add(li.getText())
+
+        for element in li_list:
+            if "/" in element:
+                new_elements = [element.strip() for element in element.split("/")]
+                for new in new_elements:
+                    li_list.add(new)
+        li_list = list(li_list)
         return li_list
 
 
-    def get_parking_space(self, soup: BeautifulSoup) -> Tuple[Optional[str], Optional[str]]:
+    def get_parking_space(self, soup: BeautifulSoup) -> Tuple[int, int]:
         li_list = self.resolve_additional_features(soup)
-        parking_space = ["garaż/miejsce parkingowe", "garaż", "miejsce parkingowe"]
+        parking_space = ["garaż", "miejsce parkingowe"]
+        parking_space_in_listing = set()
         garage = 0
         parking = 0
         for attribute in li_list:
             if attribute in parking_space:
-                parking_temp = attribute
-        if parking_space[1] in parking_temp:
+                parking_space_in_listing.add(attribute)
+        if parking_space[0] in parking_space_in_listing:
             garage = 1
-        if parking_space[2] in parking_temp:
+        if parking_space[1] in parking_space_in_listing:
             parking = 1
 
         return {"parking": parking, "garage": garage}
+
+
+    def get_outdoor_space(self, soup: BeautifulSoup) -> Tuple[int, int, int]:
+        li_list = self.resolve_additional_features(soup)
+        outdoor_space = ["balkon", "ogród", "ogródek", "taras"]
+        outdoor_spaces_in_listing = set()
+        balcony = 0
+        garden = 0
+        terrace = 0
+        for attribute in li_list:
+            if attribute in outdoor_space:
+                outdoor_spaces_in_listing.add(attribute)
+
+        if outdoor_space[0] in outdoor_spaces_in_listing:
+            balcony = 1
+        if outdoor_space[1] in outdoor_spaces_in_listing or outdoor_space[2] in outdoor_spaces_in_listing:
+            garden = 1
+        if outdoor_space[3] in outdoor_spaces_in_listing:
+            terrace = 1
+
+        return {"balcony": balcony, "garden": garden, "terrace": terrace}
 
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
