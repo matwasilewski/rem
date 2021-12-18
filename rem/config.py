@@ -1,3 +1,4 @@
+import datetime
 import os
 from functools import lru_cache
 from typing import Dict, Optional, Union
@@ -66,6 +67,7 @@ class Settings(BaseSettings):
     SAVE_TO_FILE: bool = True
     OFFSET: float = 0.0
     DOWNLOAD_LISTINGS_ALREADY_IN_FILE: bool = False
+    TIME_OF_DEPARTURE: datetime.datetime = datetime.datetime(2021, 12, 13, 8, 00)
 
     class Config:
         env_file_encoding = 'utf-8'

@@ -37,6 +37,7 @@ class Otodom:
         if settings.USE_GOOGLE_MAPS_API:
             self.destination_coordinates = self.extract_long_lat_via_address(settings.DESTINATION)
         self.time_of_departure = settings.TIME_OF_DEPARTURE
+
         if settings.USE_GOOGLE_MAPS_API:
             try:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
