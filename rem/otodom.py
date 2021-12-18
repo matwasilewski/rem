@@ -223,8 +223,8 @@ class Otodom:
         floor_size = []
         for child in size_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Powierzchnia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Powierzchnia"
             ):
                 floor_size = child.contents
 
@@ -260,8 +260,8 @@ class Otodom:
 
         for child in type_of_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rodzaj zabudowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rodzaj zabudowy"
             ):
                 type_of_building.append(child.contents)
 
@@ -283,8 +283,8 @@ class Otodom:
 
         for child in type_of_window_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Okna"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Okna"
             ):
                 window.append(child.contents)
 
@@ -296,7 +296,7 @@ class Otodom:
 
     @staticmethod
     def get_year_of_construction(
-        soup: BeautifulSoup,
+            soup: BeautifulSoup,
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Rok budowy"}
 
@@ -308,8 +308,8 @@ class Otodom:
 
         for child in year_of_construction_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rok budowy"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rok budowy"
             ):
                 year.append(child.contents)
 
@@ -333,8 +333,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pokoi"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -356,8 +356,8 @@ class Otodom:
 
         for child in condition_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Stan wykończenia"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Stan wykończenia"
             ):
                 condition.append(child.contents)
 
@@ -412,8 +412,8 @@ class Otodom:
 
         for child in floors_in_building_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pięter"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pięter"
             ):
                 floors_in_building.append(child.contents)
 
@@ -437,8 +437,8 @@ class Otodom:
 
         for child in floor_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Piętro"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Piętro"
             ):
                 floor_list.append(child.contents)
 
@@ -485,8 +485,8 @@ class Otodom:
 
         for child in monthly_fee_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Czynsz"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Czynsz"
             ):
                 monthly_fee_list.append(child.contents)
 
@@ -539,8 +539,8 @@ class Otodom:
 
         for child in ownership_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Forma własności"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Forma własności"
             ):
                 ownership.append(child.contents)
 
@@ -562,8 +562,8 @@ class Otodom:
 
         for child in market_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Rynek"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Rynek"
             ):
                 market.append(child.contents)
 
@@ -575,7 +575,7 @@ class Otodom:
 
     @staticmethod
     def get_construction_material(
-        soup: BeautifulSoup,
+            soup: BeautifulSoup,
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Materiał budynku"}
 
@@ -589,8 +589,8 @@ class Otodom:
 
         for child in material_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Materiał budynku"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Materiał budynku"
             ):
                 material.append(child.contents)
 
@@ -612,8 +612,8 @@ class Otodom:
 
         for child in heating_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Ogrzewanie"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Ogrzewanie"
             ):
                 heating.append(child.contents)
 
@@ -668,35 +668,36 @@ class Otodom:
         return {"ad_description": ad_description}
 
     @staticmethod
-    def resolve_additional_features(soup: BeautifulSoup) -> list:
+    def resolve_additional_features(soup: BeautifulSoup) -> set:
         h3_tags = soup.findAll('h3')
-        li_list = set()
-        for h3 in h3_tags:
+        additional_features = set()
+        for tag in h3_tags:
             uls = []
-            for next_sibling in h3.findNextSiblings():
+            for next_sibling in tag.findNextSiblings():
                 if next_sibling.name == "ul":
                     uls.append(next_sibling)
             for ul in uls:
-                for li in ul.findAll('li'):
-                    li_list.add(li.getText())
+                for feature in ul.findAll('li'):
+                    additional_features.add(feature.getText())
 
-        for element in li_list:
-            if "/" in element:
-                new_elements = [element.strip() for element in element.split("/")]
-                for new in new_elements:
-                    li_list.add(new)
-        li_list = list(li_list)
-        return li_list
+        updated_features = []
+        for feature in additional_features:
+            updated_features += [updated_feature.strip() for updated_feature in
+                                 feature.split("/")]
+        for feature in updated_features:
+            additional_features.add(feature)
+
+        return additional_features
 
     def get_parking_space(
-        self, soup: BeautifulSoup
-    ) -> Tuple[int, int]:
-        li_list = self.resolve_additional_features(soup)
+            self, soup: BeautifulSoup
+    ) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
         parking_space = ["garaż", "miejsce parkingowe"]
         parking_space_in_listing = set()
         garage = 0
         parking = 0
-        for attribute in li_list:
+        for attribute in additional_features:
             if attribute in parking_space:
                 parking_space_in_listing.add(attribute)
         if parking_space[0] in parking_space_in_listing:
@@ -706,21 +707,21 @@ class Otodom:
 
         return {"parking": parking, "garage": garage}
 
-
-    def get_outdoor_space(self, soup: BeautifulSoup) -> Tuple[int, int, int]:
-        li_list = self.resolve_additional_features(soup)
+    def get_outdoor_space(self, soup: BeautifulSoup) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
         outdoor_space = ["balkon", "ogród", "ogródek", "taras"]
         outdoor_spaces_in_listing = set()
         balcony = 0
         garden = 0
         terrace = 0
-        for attribute in li_list:
+        for attribute in additional_features:
             if attribute in outdoor_space:
                 outdoor_spaces_in_listing.add(attribute)
 
         if outdoor_space[0] in outdoor_spaces_in_listing:
             balcony = 1
-        if outdoor_space[1] in outdoor_spaces_in_listing or outdoor_space[2] in outdoor_spaces_in_listing:
+        if outdoor_space[1] in outdoor_spaces_in_listing or outdoor_space[
+            2] in outdoor_spaces_in_listing:
             garden = 1
         if outdoor_space[3] in outdoor_spaces_in_listing:
             terrace = 1
@@ -761,8 +762,8 @@ class Otodom:
         if self.base_search_url in listings_total:
             listings_total.remove(self.base_search_url)
         if (
-            "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-            in listings_total
+                "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+                in listings_total
         ):
             listings_total.remove(
                 "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"

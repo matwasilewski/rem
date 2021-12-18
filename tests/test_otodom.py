@@ -309,17 +309,23 @@ def test_resolve_additional_features(otodom_instance, listing) -> None:
     additional_features_list = otodom_instance.resolve_additional_features(
         listing
     )
-    assert additional_features_list == [
+    assert additional_features_list == {
         'internet',
         'system alarmowy',
         'drzwi / okna antywłamaniowe',
+        "drzwi",
+        "okna antywłamaniowe",
         'teren zamknięty',
         'domofon / wideofon',
+        "domofon",
+        "wideofon",
         'klimatyzacja',
         'balkon',
         'piwnica',
         'garaż/miejsce parkingowe',
-    ]
+        "garaż",
+        "miejsce parkingowe",
+    }
 
 
 def test_get_parking_space(otodom_instance, listing) -> None:
