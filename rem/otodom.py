@@ -34,7 +34,9 @@ class Otodom:
         self.data = load_data(settings.DATA_FILE_NAME)
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
-
+        if settings.USE_GOOGLE_MAPS_API:
+            self.destination_coordinates = self.extract_long_lat_via_address(settings.DESTINATION)
+        self.time_of_departure = settings.TIME_OF_DEPARTURE
         if settings.USE_GOOGLE_MAPS_API:
             try:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
@@ -329,8 +331,8 @@ class Otodom:
 
         for child in number_of_rooms_div:
             if (
-                child.attrs.get("title") is not None
-                and child.attrs.get("title") != "Liczba pokoi"
+                    child.attrs.get("title") is not None
+                    and child.attrs.get("title") != "Liczba pokoi"
             ):
                 rooms.append(child.contents)
 
@@ -717,16 +719,16 @@ class Otodom:
         return {"url": link}
 
     @staticmethod
-    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         seller_type = soup.find("a", {"class": "css-1dd80io enlr3ze0"})
         if not seller_type:
-            seller_type = 0
+            seller_type = "private"
         else:
             seller_type = seller_type.getText()
             if not seller_type:
                 return None
             else:
-                seller_type = 1
+                seller_type = "agency"
 
         return {"seller_type": seller_type}
 
@@ -747,21 +749,16 @@ class Otodom:
     def is_url_new(self, url):
         return url not in set(self.data["url"])
 
-    def get_transit_time_distance(self, latitude, longitude, destination):
-        time_of_departure = datetime.datetime(2021, 12, 13, 8, 00)
+    def get_transit_time_distance(self, latitude, longitude):
         origin = (latitude, longitude)
         transit_matrix = self.gmaps.distance_matrix(
             origin,
-            destination,
+            self.destination_coordinates,
             mode="transit",
-            departure_time=time_of_departure,
+            departure_time=self.time_of_departure,
         )
-        distance_kilometers = transit_matrix["rows"][0]["elements"][0][
-            "distance"
-        ]["text"]
-        commuting_time_min = transit_matrix["rows"][0]["elements"][0][
-            "duration"
-        ]["text"]
+        distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
+        commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
 
         return {
             "distance_to center": distance_kilometers,
