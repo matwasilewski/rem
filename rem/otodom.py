@@ -76,7 +76,6 @@ class Otodom:
         dataframe = pd.DataFrame()
         generator = self.url_generator()
 
-        # @TODO: Add update option
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
                 break
