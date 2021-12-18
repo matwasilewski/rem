@@ -4,7 +4,7 @@ from typing import Dict, Optional, Union
 
 import pkg_resources
 import tomlkit
-from pydantic import BaseSettings, validator
+from pydantic import BaseSettings
 
 
 def _get_project_meta(name: str = 'unknown') -> Dict:
@@ -53,17 +53,30 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     VERBOSE_LOGS: Union[bool, int, str] = True
     JSON_LOGS: Union[bool, int, str] = False
-    LOG_DIR: str = "logs/rem_logs"
+    LOG_DIR: str = os.sep.join(["logs", "rem_logs"])
     SYSLOG_ADDR: Optional[str] = None
+
+    # Scraping settings
+    BASE_SEARCH_URL: str = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    DATA_FILE_NAME: str = "otodom.csv"
+    DATA_DIRECTORY: str = "data"
+    PAGE_LIMIT: int = 1
+    USE_GOOGLE_MAPS_API: bool = False
+    GCP_API_KEY: str
+    SAVE_TO_FILE: bool = True
+    OFFSET: float = 0.0
+    DOWNLOAD_LISTINGS_ALREADY_IN_FILE: bool = False
 
     class Config:
         env_file_encoding = 'utf-8'
         case_sensitive = True
+        secrets_dir = "secrets"
 
 
 @lru_cache()
 def get_settings() -> Settings:
-    return Settings(_env_file=f"{os.getcwd()}/.env")
+    env_file = os.sep.join([os.getcwd(), ".env"])
+    return Settings(_env_file=env_file)
 
 
 settings = get_settings()

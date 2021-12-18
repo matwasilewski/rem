@@ -10,6 +10,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 from rem import utils
+from rem.config import settings
 from rem.universal import get_soup_from_url
 from rem.utils import (
     _extract_divs,
@@ -20,35 +21,20 @@ from rem.utils import (
 
 
 class Otodom:
-    def __init__(
-        self,
-        base_search_url,
-        data_file_name,
-        data_directory="data",
-        page_limit=1,
-        use_google_maps_api=False,
-        gcp_api_key_path="gcp_api.key",
-        save_to_file=True,
-        offset=0,
-        download_listings_already_in_data=False,
-    ):
-        self.download_listings_already_in_data = (
-            download_listings_already_in_data
-        )
-        self.data_directory = data_directory
-        self.base_search_url = base_search_url
-        self.page_limit = page_limit
+    def __init__(self):
+        self.download_old_listings = settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE
+        self.data_directory = settings.DATA_DIRECTORY
+        self.base_search_url = settings.BASE_SEARCH_URL
+        self.page_limit = settings.PAGE_LIMIT
         self.gmaps = None
-        self.data_file_name = data_file_name
-        self.data = load_data(data_file_name)
-        self.save_to_file = save_to_file
-        self.offset = offset
+        self.data_file_name = settings.DATA_FILE_NAME
+        self.data = load_data(settings.DATA_FILE_NAME)
+        self.save_to_file = settings.SAVE_TO_FILE
+        self.offset = settings.OFFSET
 
-        if use_google_maps_api:
+        if settings.USE_GOOGLE_MAPS_API:
             try:
-                with open(gcp_api_key_path) as f:
-                    gcp_key = f.read()
-                    self.gmaps = googlemaps.Client(key=gcp_key)
+                self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
             except FileNotFoundError:
                 raise "no GCP API key provided!"
 
@@ -104,7 +90,7 @@ class Otodom:
         listing_soups = [
             get_soup_from_url(url, self.offset)
             for url in listings_urls
-            if self.download_listings_already_in_data or self.is_url_new(url)
+            if self.download_old_listings or self.is_url_new(url)
         ]
         return listing_soups
 
