@@ -725,16 +725,16 @@ class Otodom:
         return {"url": link}
 
     @staticmethod
-    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[int]]:
+    def get_seller_type(soup: BeautifulSoup) -> Dict[str, Optional[str]]:
         seller_type = soup.find("a", {"class": "css-1dd80io enlr3ze0"})
         if not seller_type:
-            seller_type = 0
+            seller_type = "private"
         else:
             seller_type = seller_type.getText()
             if not seller_type:
                 return None
             else:
-                seller_type = 1
+                seller_type = "agency"
 
         return {"seller_type": seller_type}
 
@@ -764,12 +764,8 @@ class Otodom:
             mode="transit",
             departure_time=time_of_departure,
         )
-        distance_kilometers = transit_matrix["rows"][0]["elements"][0][
-            "distance"
-        ]["text"]
-        commuting_time_min = transit_matrix["rows"][0]["elements"][0][
-            "duration"
-        ]["text"]
+        distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
+        commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
 
         return {
             "distance_to center": distance_kilometers,
