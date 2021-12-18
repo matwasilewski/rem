@@ -316,6 +316,10 @@ def test_get_parking_space(otodom_instance, listing) -> None:
     parking_space = otodom_instance.get_parking_space(listing)
     assert parking_space == {"parking": 1, "garage": 1}
 
+def test_get_outdoor_space(otodom_instance, listing) -> None:
+    outdoor_space = otodom_instance.get_outdoor_space(listing)
+    assert outdoor_space == {"balcony": 1, "garden": 0, "terrace": 0}
+
 
 def test_get_promoted_listing_urls_for_search_page(
         otodom_instance, search_soup
