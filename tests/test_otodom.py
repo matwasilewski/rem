@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import pandas as pd
 import pytest
@@ -7,7 +6,6 @@ from bs4 import BeautifulSoup
 
 import rem.universal
 from rem.otodom import Otodom
-from rem.universal import get_website
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -498,8 +496,14 @@ def test_old_and_new_url(otodom_instance) -> None:
 
 
 def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
-    relevant_listings = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
-    assert "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa" not in relevant_listings
+    relevant_listings = otodom_instance.get_all_relevant_listing_urls_for_page(
+        search_soup
+    )
+    assert (
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+        not in relevant_listings
+    )
+
 
 @pytest.mark.skip
 def test_scrap(otodom_instance):
