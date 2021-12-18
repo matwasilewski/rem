@@ -227,8 +227,8 @@ def test_resolve_monthly_fee_5(otodom_instance) -> None:
 def test_get_listing_url(otodom_instance, listing) -> None:
     listing_url = otodom_instance.get_listing_url(listing)
     assert (
-        listing_url["url"]
-        == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
+            listing_url["url"]
+            == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
 
 
@@ -359,9 +359,11 @@ def test_address(otodom_instance, listing) -> None:
     address = otodom_instance.get_address(listing)
     assert address == {"address": "Warszawa, Śródmieście, Belwederska"}
 
+
 def test_ad_description(otodom_instance, listing) -> None:
     ad_description = otodom_instance.get_ad_description(listing)
-    assert ad_description == {"ad_description": "Gratka dla fanów przedwojennych kamienic! Jeden z najlepszych adresów w Warszawie! To tylko niektóre ze zdań, które idealnie opisują tę nieruchomość. Mieszkanie zlokalizowane jest przy Trakcie Królewskim, zaledwie 2 minuty spacerem od Łazienek Królewskich w pięknej, modernistycznej kamienicy z lat 30tych, z zachowanymi przedwojennymi „smaczkami” dla koneserów. PARAMETRY NIERUCHOMOŚCIMieszkanie ma bardzo dobry i wygodny rozkład. Salon z aneksem kuchennym wychodzi na ulicę Belwederską, roztacza się z niego widok na zielony ogród Ambasady Rosji. Dwie sypialnie (jedna z balkonem) oraz łazienka z oknem wychodzą na ciche, zielone patio. W przedpokoju znajdują się wbudowane szafy. Pomieszczenia wysokie są na 3 metry, zainstalowana klimatyzacja, odrestaurowane oryginalne grzejniki, to tylko kilka z dodatkowych atutów oferowanej nieruchomości. Kamienica posiada własne, zamykane patio z parkingiem tylko dla mieszkańców. Do mieszkania przynależy komórka lokatorska o powierzchni 10 m2. KOMUNIKACJA I OKOLICANieruchomość leży na pograniczu Śródmieścia i Mokotowa. W pobliżu przystanki autobusowe, do tramwaju 10 minut piechotą. Od serca Warszawy dzielą nas 4 kilometry. Do Łazienek Królewskich 2 minuty. W okolicy ambasady, kamienice i dużo zieleni. W NASZEJ OPINIINieruchomość jakich mało! Przedwojenna, zadbana, modernistyczna kamienica z własnym patio i parkingiem, sąsiedztwo Łazienek Królewskich oraz wygodny rozkład mieszkania zadowoli zarówno parę lubiącą klimatyczne nieruchomości, rodzinę 2+1, jak również nadaje się do dalszego wynajmu. Więcej unikalnych ofert w podobnych kryteriach znajdą Państwo na naszej stronie . Zapraszamy!A lucky strike for fans of pre-war tenement houses! One of the best addresses in Warsaw! These are just some of the sentences that perfectly describe this property. The apartment is located on the Trakt Królewski, just a 2-minute walk from the Royal Łazienki Park in a beautiful, modernist tenement house from the 1930s, with pre-war \"flavors\" for connoisseurs.PROPERTY PARAMETERSThe apartment has a very good and comfortable layout. The living room with a kitchenette overlooks Belwederska Street and offers a view of the green garden of the Russian Embassy. Two bedrooms (one with a balcony) and a bathroom with a window overlook a quiet, green patio. There are built-in wardrobes in the hall. The rooms are 3 meters high, air conditioning installed, restored original heaters are just a few of the additional advantages of the offered property. The tenement house has its own, closed patio with a parking lot for residents only. The apartment includes a storage room with an area of 10 m2.COMMUNICATION AND SURROUNDINGSThe property is located on the border of Śródmieście and Mokotów. Nearby bus stops, 10 minutes on foot to the tram. We are 4 kilometers away from the heart of Warsaw. To the Royal Łazienki 2 minutes. In the neighborhood embassies, tenement houses and lots of greenery.IN OUR OPINIONReal estate like no other! Pre-war, well-kept, modernist tenement house with its own patio and parking, the vicinity of Royal Łazienki Park and a convenient layout of the apartment will satisfy both a couple who like atmospheric real estate, a 2 + 1 family, and is also suitable for further rental.Please visit our website to find more unique offers with similar criteria!"}
+    assert ad_description == {
+        "ad_description": "Gratka dla fanów przedwojennych kamienic! Jeden z najlepszych adresów w Warszawie! To tylko niektóre ze zdań, które idealnie opisują tę nieruchomość. Mieszkanie zlokalizowane jest przy Trakcie Królewskim, zaledwie 2 minuty spacerem od Łazienek Królewskich w pięknej, modernistycznej kamienicy z lat 30tych, z zachowanymi przedwojennymi „smaczkami” dla koneserów. PARAMETRY NIERUCHOMOŚCIMieszkanie ma bardzo dobry i wygodny rozkład. Salon z aneksem kuchennym wychodzi na ulicę Belwederską, roztacza się z niego widok na zielony ogród Ambasady Rosji. Dwie sypialnie (jedna z balkonem) oraz łazienka z oknem wychodzą na ciche, zielone patio. W przedpokoju znajdują się wbudowane szafy. Pomieszczenia wysokie są na 3 metry, zainstalowana klimatyzacja, odrestaurowane oryginalne grzejniki, to tylko kilka z dodatkowych atutów oferowanej nieruchomości. Kamienica posiada własne, zamykane patio z parkingiem tylko dla mieszkańców. Do mieszkania przynależy komórka lokatorska o powierzchni 10 m2. KOMUNIKACJA I OKOLICANieruchomość leży na pograniczu Śródmieścia i Mokotowa. W pobliżu przystanki autobusowe, do tramwaju 10 minut piechotą. Od serca Warszawy dzielą nas 4 kilometry. Do Łazienek Królewskich 2 minuty. W okolicy ambasady, kamienice i dużo zieleni. W NASZEJ OPINIINieruchomość jakich mało! Przedwojenna, zadbana, modernistyczna kamienica z własnym patio i parkingiem, sąsiedztwo Łazienek Królewskich oraz wygodny rozkład mieszkania zadowoli zarówno parę lubiącą klimatyczne nieruchomości, rodzinę 2+1, jak również nadaje się do dalszego wynajmu. Więcej unikalnych ofert w podobnych kryteriach znajdą Państwo na naszej stronie . Zapraszamy!A lucky strike for fans of pre-war tenement houses! One of the best addresses in Warsaw! These are just some of the sentences that perfectly describe this property. The apartment is located on the Trakt Królewski, just a 2-minute walk from the Royal Łazienki Park in a beautiful, modernist tenement house from the 1930s, with pre-war \"flavors\" for connoisseurs.PROPERTY PARAMETERSThe apartment has a very good and comfortable layout. The living room with a kitchenette overlooks Belwederska Street and offers a view of the green garden of the Russian Embassy. Two bedrooms (one with a balcony) and a bathroom with a window overlook a quiet, green patio. There are built-in wardrobes in the hall. The rooms are 3 meters high, air conditioning installed, restored original heaters are just a few of the additional advantages of the offered property. The tenement house has its own, closed patio with a parking lot for residents only. The apartment includes a storage room with an area of 10 m2.COMMUNICATION AND SURROUNDINGSThe property is located on the border of Śródmieście and Mokotów. Nearby bus stops, 10 minutes on foot to the tram. We are 4 kilometers away from the heart of Warsaw. To the Royal Łazienki 2 minutes. In the neighborhood embassies, tenement houses and lots of greenery.IN OUR OPINIONReal estate like no other! Pre-war, well-kept, modernist tenement house with its own patio and parking, the vicinity of Royal Łazienki Park and a convenient layout of the apartment will satisfy both a couple who like atmospheric real estate, a 2 + 1 family, and is also suitable for further rental.Please visit our website to find more unique offers with similar criteria!"}
 
 
 def test_seller_type(otodom_instance, listing) -> None:
@@ -373,68 +375,70 @@ def test_extract_long_lat_via_address(otodom_instance, listing) -> None:
     coordinates = otodom_instance.extract_long_lat_via_address(listing)
     assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
 
+
 def test_get_transit_time_distance(otodom_instance, listing) -> None:
-     distance_time_to_city_center= otodom_instance.get_transit_time_distance(listing)
-     assert  distance_time_to_city_center== {"distance_to center": ,
-            "commuting_time_min": commuting_time_min,}
+    distance_time_to_city_center = otodom_instance.get_transit_time_distance(listing)
+    assert distance_time_to_city_center == {"distance_to center": "3.3 km",
+                                            "commuting_time_min": "42 mins"}
+
 
 def test_get_promoted_listing_urls_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     promoted_urls = otodom_instance.get_promoted_listing_urls_for_page(
         search_soup
     )
     assert len(promoted_urls) == 3
     assert (
-        promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
-        "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
-        "-ID4blGn"
+            promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
+                                "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
+                                "-ID4blGn"
     )
     assert (
-        promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
-        "-130-m-w-babka-tower-ID4ehmq"
+            promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
+                                "-130-m-w-babka-tower-ID4ehmq"
     )
     assert (
-        promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
-        "-marymonckiej-ID4ehkP"
+            promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
+                                "-marymonckiej-ID4ehkP"
     )
 
 
 def test_get_standard_listintg_urls_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     standard_urls = otodom_instance.get_standard_listing_urls_for_page(
         search_soup
     )
     assert len(standard_urls) == 36
     assert (
-        standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
-        "-warszawa-ul-fundamentowa-ID47bq4"
+            standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
+                                "-warszawa-ul-fundamentowa-ID47bq4"
     )
     assert (
-        standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
-        "-dla-rodziny-przy-parku-szczesliwickim"
-        "-ID4dVV3"
+            standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
+                                "-dla-rodziny-przy-parku-szczesliwickim"
+                                "-ID4dVV3"
     )
     assert (
-        standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
-        "-nowe-i-do-odbioru-ID4ebFQ"
+            standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
+                                 "-nowe-i-do-odbioru-ID4ebFQ"
     )
     assert (
-        standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
-        "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
+            standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
+                                 "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
     )
 
 
 def test_get_all_listings_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     urls = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(
-    otodom_instance, empty_search_soup
+        otodom_instance, empty_search_soup
 ) -> None:
     urls = otodom_instance.get_all_relevant_listing_urls_for_page(
         empty_search_soup
@@ -449,18 +453,18 @@ def test_url_generator(otodom_instance):
     url_generator = otodom_instance.url_generator()
 
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=36"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=2&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=2&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=3&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=3&limit=36"
     )
 
 
@@ -469,16 +473,16 @@ def test_url_generator_with_query_parameters(otodom_instance):
 
     url_generator = otodom_instance.url_generator()
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=2&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=2&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=3&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=3&limit=72"
     )
 
 
@@ -496,7 +500,7 @@ def test_get_data_from_listing(otodom_instance, listing) -> None:
 
 
 def test_update_listing_data(
-    otodom_instance, listing: BeautifulSoup, alternative_listing: BeautifulSoup
+        otodom_instance, listing: BeautifulSoup, alternative_listing: BeautifulSoup
 ) -> None:
     listing_soups = [listing, alternative_listing]
     otodom_instance.process_listing_soups(listing_soups)
@@ -524,8 +528,8 @@ def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
         search_soup
     )
     assert (
-        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        not in relevant_listings
+            "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+            not in relevant_listings
     )
 
 
