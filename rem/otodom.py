@@ -20,7 +20,6 @@ from rem.utils import (
 
 
 class Otodom:
-
     def __init__(
             self,
             base_search_url,
@@ -80,9 +79,7 @@ class Otodom:
     def scrap(self):
         dataframe = pd.DataFrame()
         generator = self.url_generator()
-        print(Otodom.class_variable)
 
-        # @TODO: Add update option
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
                 break
@@ -157,6 +154,10 @@ class Otodom:
     def get_all_relevant_listing_urls_for_page(self, search_soup):
         lis_standard = self.get_standard_listing_urls_for_page(search_soup)
         lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
+        listings_total = lis_standard + lis_promoted
+
+        listings_total = self.remove_main_page_from_urls(listings_total)
+
         if len(lis_standard) == 0:
             return []
         else:
@@ -233,8 +234,8 @@ class Otodom:
         floor_size = []
         for child in size_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Powierzchnia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Powierzchnia"
             ):
                 floor_size = child.contents
 
@@ -270,8 +271,8 @@ class Otodom:
 
         for child in type_of_building_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rodzaj zabudowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rodzaj zabudowy"
             ):
                 type_of_building.append(child.contents)
 
@@ -293,8 +294,8 @@ class Otodom:
 
         for child in type_of_window_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Okna"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Okna"
             ):
                 window.append(child.contents)
 
@@ -306,7 +307,7 @@ class Otodom:
 
     @staticmethod
     def get_year_of_construction(
-            soup: BeautifulSoup,
+        soup: BeautifulSoup,
     ) -> Dict[str, Optional[int]]:
         soup_filter = {"aria-label": "Rok budowy"}
 
@@ -318,8 +319,8 @@ class Otodom:
 
         for child in year_of_construction_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rok budowy"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rok budowy"
             ):
                 year.append(child.contents)
 
@@ -366,8 +367,8 @@ class Otodom:
 
         for child in condition_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Stan wykończenia"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Stan wykończenia"
             ):
                 condition.append(child.contents)
 
@@ -422,8 +423,8 @@ class Otodom:
 
         for child in floors_in_building_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Liczba pięter"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Liczba pięter"
             ):
                 floors_in_building.append(child.contents)
 
@@ -447,8 +448,8 @@ class Otodom:
 
         for child in floor_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Piętro"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Piętro"
             ):
                 floor_list.append(child.contents)
 
@@ -495,8 +496,8 @@ class Otodom:
 
         for child in monthly_fee_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Czynsz"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Czynsz"
             ):
                 monthly_fee_list.append(child.contents)
 
@@ -549,8 +550,8 @@ class Otodom:
 
         for child in ownership_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Forma własności"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Forma własności"
             ):
                 ownership.append(child.contents)
 
@@ -572,8 +573,8 @@ class Otodom:
 
         for child in market_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Rynek"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Rynek"
             ):
                 market.append(child.contents)
 
@@ -585,7 +586,7 @@ class Otodom:
 
     @staticmethod
     def get_construction_material(
-            soup: BeautifulSoup,
+        soup: BeautifulSoup,
     ) -> Dict[str, Optional[str]]:
         soup_filter = {"aria-label": "Materiał budynku"}
 
@@ -599,8 +600,8 @@ class Otodom:
 
         for child in material_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Materiał budynku"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Materiał budynku"
             ):
                 material.append(child.contents)
 
@@ -673,8 +674,8 @@ class Otodom:
 
         for child in heating_div:
             if (
-                    child.attrs.get("title") is not None
-                    and child.attrs.get("title") != "Ogrzewanie"
+                child.attrs.get("title") is not None
+                and child.attrs.get("title") != "Ogrzewanie"
             ):
                 heating.append(child.contents)
 
@@ -776,3 +777,16 @@ class Otodom:
             "distance_to center": distance_kilometers,
             "commuting_time_min": commuting_time_min,
         }
+
+    def remove_main_page_from_urls(self, listings_total):
+        if self.base_search_url in listings_total:
+            listings_total.remove(self.base_search_url)
+        if (
+            "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+            in listings_total
+        ):
+            listings_total.remove(
+                "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+            )
+
+        return listings_total

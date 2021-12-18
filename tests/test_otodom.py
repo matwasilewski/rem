@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import pandas as pd
 import pytest
@@ -7,7 +6,6 @@ from bs4 import BeautifulSoup
 
 import rem.universal
 from rem.otodom import Otodom
-from rem.universal import get_website
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -60,25 +58,25 @@ def empty_search_soup() -> BeautifulSoup:
 
 
 def test_get_website() -> None:
-    example_page = rem.universal.get_website("http://example.com/")
+    example_page = rem.universal.get_website("https://example.com/")
     assert example_page.status_code == 200
 
 
 def test_get_html_doc() -> None:
-    example_page = rem.universal.get_website("http://example.com/")
+    example_page = rem.universal.get_website("https://example.com/")
     example_html = rem.universal.get_html_doc(example_page)
     assert "Example Domain" in example_html
 
 
 def test_get_soup_from_url() -> None:
-    example_page = rem.universal.get_website("http://example.com/")
+    example_page = rem.universal.get_website("https://example.com/")
     example_html = rem.universal.get_html_doc(example_page)
     example_soup = rem.universal.get_soup(example_html)
     assert example_soup.find("h1").text == "Example Domain"
 
 
 def test_get_soup_from_url_function() -> None:
-    example_soup = rem.universal.get_soup_from_url("http://example.com/")
+    example_soup = rem.universal.get_soup_from_url("https://example.com/")
     assert example_soup.find("h1").text == "Example Domain"
 
 
@@ -513,6 +511,16 @@ def test_old_and_new_url(otodom_instance) -> None:
 
     assert otodom_instance.is_url_new(test_url_in_data) == False
     assert otodom_instance.is_url_new(test_url_not_in_data) == True
+
+
+def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
+    relevant_listings = otodom_instance.get_all_relevant_listing_urls_for_page(
+        search_soup
+    )
+    assert (
+        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+        not in relevant_listings
+    )
 
 
 @pytest.mark.skip
