@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     OFFSET: float = 0.0
     DOWNLOAD_LISTINGS_ALREADY_IN_FILE: bool = False
     TIME_OF_DEPARTURE: datetime.datetime = datetime.datetime(2021, 12, 13, 8, 00)
+    DESTINATION: str = "Plac Defilad 1, Warszawa"
 
     class Config:
         env_file_encoding = 'utf-8'

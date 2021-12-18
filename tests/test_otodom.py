@@ -4,26 +4,40 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 
-from rem.config import settings
+from rem.config import get_settings, Settings
 
 import rem.universal
 from rem.otodom import Otodom
 
 
-@pytest.fixture(scope="session", autouse=True)
-def otodom_settings() -> Otodom:
-    my_settings = settings
+@pytest.fixture(scope="session", autouse=False)
+def otodom_settings() -> Settings:
+    my_settings = get_settings()
     my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
     return my_settings
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session", autouse=False)
 def otodom_instance(otodom_settings) -> Otodom:
     otodom = Otodom(otodom_settings)
     return otodom
 
 
 @pytest.fixture(scope="session", autouse=False)
+def otodom_gcp_settings() -> Settings:
+    my_settings = get_settings()
+    my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    my_settings.USE_GOOGLE_MAPS_API = True
+    return my_settings
+
+
+@pytest.fixture(scope="session", autouse=False)
+def otodom_gcp_instance(otodom_gcp_settings) -> Otodom:
+    otodom = Otodom(otodom_gcp_settings)
+    return otodom
+
+
+@pytest.fixture(scope="session", autouse=True)
 def listing() -> BeautifulSoup:
     path = os.sep.join(
         [
@@ -371,12 +385,12 @@ def test_seller_type(otodom_instance, listing) -> None:
     assert seller_type == {"seller_type": "agency"}
 
 
-def test_extract_long_lat_via_address(otodom_instance, listing) -> None:
+def test_extract_long_lat_via_address(otodom_gcp_instance, listing) -> None:
     coordinates = otodom_instance.extract_long_lat_via_address(listing)
     assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
 
 
-def test_get_transit_time_distance(otodom_instance, listing) -> None:
+def test_get_transit_time_distance(otodom_gcp_settings, listing) -> None:
     distance_time_to_city_center = otodom_instance.get_transit_time_distance(listing)
     assert distance_time_to_city_center == {"distance_to center": "3.3 km",
                                             "commuting_time_min": "42 mins"}

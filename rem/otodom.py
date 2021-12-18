@@ -34,8 +34,6 @@ class Otodom:
         self.data = load_data(settings.DATA_FILE_NAME)
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
-        if settings.USE_GOOGLE_MAPS_API:
-            self.destination_coordinates = self.extract_long_lat_via_address(settings.DESTINATION)
         self.time_of_departure = settings.TIME_OF_DEPARTURE
 
         if settings.USE_GOOGLE_MAPS_API:
@@ -43,6 +41,7 @@ class Otodom:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
             except FileNotFoundError:
                 raise "no GCP API key provided!"
+            self.destination_coordinates = self.extract_long_lat_via_address(settings.DESTINATION)
 
         self.listing_information_retrieval_methods = [
             self.get_listing_url,
