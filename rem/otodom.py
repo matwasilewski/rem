@@ -20,6 +20,7 @@ from rem.utils import (
 
 
 class Otodom:
+
     def __init__(
             self,
             base_search_url,
@@ -30,7 +31,9 @@ class Otodom:
             gcp_api_key_path="gcp_api.key",
             save_to_file=True,
             offset=0,
+            destination=None,
             download_listings_already_in_data=False,
+            time_of_departure=datetime.datetime(2021, 12, 13, 8, 00)
     ):
         self.download_listings_already_in_data = (
             download_listings_already_in_data
@@ -43,7 +46,9 @@ class Otodom:
         self.data = load_data(data_file_name)
         self.save_to_file = save_to_file
         self.offset = offset
-
+        if use_google_maps_api:
+            self.destination_coordinates = self.extract_long_lat_via_address(destination)
+        self.time_of_departure = time_of_departure
         if use_google_maps_api:
             try:
                 with open(gcp_api_key_path) as f:
@@ -75,6 +80,7 @@ class Otodom:
     def scrap(self):
         dataframe = pd.DataFrame()
         generator = self.url_generator()
+        print(Otodom.class_variable)
 
         # @TODO: Add update option
         for url_count, url in enumerate(generator):
@@ -755,14 +761,13 @@ class Otodom:
     def is_url_new(self, url):
         return url not in set(self.data["url"])
 
-    def get_transit_time_distance(self, latitude, longitude, destination):
-        time_of_departure = datetime.datetime(2021, 12, 13, 8, 00)
+    def get_transit_time_distance(self, latitude, longitude):
         origin = (latitude, longitude)
         transit_matrix = self.gmaps.distance_matrix(
             origin,
-            destination,
+            self.destination_coordinates,
             mode="transit",
-            departure_time=time_of_departure,
+            departure_time=self.time_of_departure,
         )
         distance_kilometers = transit_matrix["rows"][0]["elements"][0]["distance"]["text"]
         commuting_time_min = transit_matrix["rows"][0]["elements"][0]["duration"]["text"]
