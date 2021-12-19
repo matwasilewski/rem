@@ -915,6 +915,26 @@ class Otodom:
             "bicycling_commuting_time_min": bicycling_commuting_time_min,
         }
 
+    def get_walking_time_distance(self, latitude, longitude):
+        origin = (latitude, longitude)
+        transit_matrix = self.gmaps.distance_matrix(
+            origin,
+            self.destination_coordinates,
+            mode="walking",
+            departure_time=self.time_of_departure_not_transit,
+        )
+        walking_distance_kilometers = transit_matrix["rows"][0]["elements"][0][
+            "distance"
+        ]["text"]
+        walking_commuting_time_min = transit_matrix["rows"][0]["elements"][0][
+            "duration"
+        ]["text"]
+
+        return {
+            "walking_distance_to center": walking_distance_kilometers,
+            "walking_commuting_time_min": walking_commuting_time_min,
+        }
+
     @staticmethod
     def get_creation_time(soup: BeautifulSoup):
         return {"created_at": str(datetime.datetime.now())}

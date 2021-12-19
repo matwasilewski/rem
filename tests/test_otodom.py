@@ -320,7 +320,7 @@ def test_get_driving_time_distance(otodom_gcp_instance, listing) -> None:
         "driving_distance_to center": "4.2 km",
         "driving_commuting_time_min": "11 mins",
     }
-
+@pytest.mark.skip
 def test_get_bicycling_time_distance(otodom_gcp_instance, listing) -> None:
 
     distance_time_to_city_center_driving = (
@@ -331,6 +331,16 @@ def test_get_bicycling_time_distance(otodom_gcp_instance, listing) -> None:
         "bicycling_commuting_time_min": "15 mins",
     }
 
+@pytest.mark.skip
+def test_get_walking_time_distance(otodom_gcp_instance, listing) -> None:
+
+    distance_time_to_city_center_driving = (
+        otodom_gcp_instance.get_walking_time_distance(52.2098433, 21.028336)
+    )
+    assert distance_time_to_city_center_driving == {
+        "walking_distance_to center": "3.5 km",
+        "walking_commuting_time_min": "45 mins",
+    }
 
 def test_resolve_additional_features(otodom_instance, listing) -> None:
     additional_features_list = otodom_instance.resolve_additional_features(
