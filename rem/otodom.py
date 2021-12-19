@@ -44,7 +44,7 @@ class Otodom:
         if settings.LOAD_FROM_DATA:
             self.data = load_data(settings.DATA_FILE_NAME)
         else:
-            self.data = pd.DataFrame()
+            self.data = pd.DataFrame({"url": []})
 
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
@@ -811,7 +811,9 @@ class Otodom:
         return {"latitude": lat, "longitude": lon}
 
     def is_url_new(self, url):
-        return url not in set(self.data["url"])
+        return "url" not in self.data.columns or "url" not in set(
+            self.data["url"]
+        )
 
     def get_transit_time_distance(self, latitude, longitude):
         origin = (latitude, longitude)

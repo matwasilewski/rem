@@ -99,10 +99,8 @@ def test_get_soup_from_url() -> None:
     assert example_soup.find("h1").text == "Example Domain"
 
 
-def test_get_soup_from_url_function() -> None:
-    example_soup = rem.otodom.get_soup_from_url(
-        "https://example.com/", save=False
-    )
+def test_get_soup_from_url_function(otodom_instance) -> None:
+    example_soup = otodom_instance.get_soup_from_url("https://example.com/")
     assert example_soup.find("h1").text == "Example Domain"
 
 

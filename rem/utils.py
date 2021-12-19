@@ -25,7 +25,7 @@ def _extract_divs(soup, soup_filter, what: str):
 
 
 def log_wrong_number(actual: int, expected: int, what: str) -> None:
-    log.error(
+    log.warning(
         f"{actual} {what} found for the listing, "
         f"instead of expected {expected}."
     )
@@ -42,7 +42,7 @@ def load_data(file_name, data_dir="data"):
         log.info(f"Loading existing data containing {len(df)} records...")
         return df
     except FileNotFoundError:
-        log.info(f"No existing data found.")
+        log.error(f"No existing data found.")
         return pd.DataFrame()
 
 
