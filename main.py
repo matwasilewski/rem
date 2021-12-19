@@ -80,8 +80,8 @@ def main():
 
     log.info(f"Config set to: {settings}")
 
-    scrapper = Otodom()
-    scrapper.scrap()
+    scraper = Otodom()
+    data, statistics = scraper.scrap()
 
 
 if __name__ == "__main__":

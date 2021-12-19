@@ -74,11 +74,17 @@ class Otodom:
         ]
 
     def scrap(self):
-        dataframe = pd.DataFrame()
         generator = self.url_generator()
 
-        for url_count, url in enumerate(generator):
-            if url_count == self.page_limit:
+        statistics = {
+            "search_pages": 0,
+            "total_urls_checked": 0,
+            "new_urls": 0,
+        }
+        search_url_count = 0
+
+        for search_url_count, url in enumerate(generator):
+            if search_url_count == self.page_limit:
                 log.info(
                     f"Reached page limit of {self.page_limit}. Terminating."
                 )
@@ -87,9 +93,11 @@ class Otodom:
             log.info(f"Requesting search page HTML from url {url}")
             search_soup = get_soup_from_url(url, offset=self.offset)
 
-            listings_urls = self.get_all_relevant_listing_urls_for_page(
-                search_soup
-            )
+            (
+                listings_urls,
+                metadata,
+            ) = self.get_all_relevant_listing_urls_for_page(search_soup)
+
             if len(listings_urls) == 0:
                 log.info(
                     "No relevant listing urls found on the search page. Terminating."
@@ -97,16 +105,28 @@ class Otodom:
                 break
 
             listing_soups = self.get_soups_from_listing_urls(listings_urls)
-
             self.process_listing_soups(listing_soups)
             self.checkpoint()
+
+            statistics["standard_urls_checked"] += metadata["standard"]
+            statistics["promoted_urls_checked"] += metadata["promoted"]
+            statistics["new_urls"] += len(listing_soups)
 
         if self.save_to_file:
             utils.save_data(
                 self.data, self.data_file_name, self.data_directory
             )
 
-        return self.data
+        statistics["search_pages"] = search_url_count
+        statistics["total_urls_checked"] = (
+            statistics["standard_urls_checked"]
+            + statistics["promoted_urls_checked"]
+        )
+
+        log.info(f"Finished scraping. Summary:")
+        log.info(statistics)
+
+        return self.data, statistics
 
     def get_soups_from_listing_urls(self, listing_urls):
         listing_soups = [
@@ -155,9 +175,13 @@ class Otodom:
 
     def get_all_relevant_listing_urls_for_page(self, search_soup):
         lis_standard = self.get_standard_listing_urls_for_page(search_soup)
+        lis_standard = self.remove_main_page_from_urls(lis_standard)
+
         lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
+        lis_promoted = self.remove_main_page_from_urls(lis_promoted)
+
         listings_total = lis_standard + lis_promoted
-        listings_total = self.remove_main_page_from_urls(listings_total)
+
         log.info(
             f"Retrieving {len(lis_standard)} standard listing URLs from the search page."
         )
@@ -166,9 +190,12 @@ class Otodom:
         )
 
         if len(lis_standard) == 0:
-            return []
+            return [], {"standard": 0, "promoted": 0}
         else:
-            return listings_total
+            return listings_total, {
+                "standard": len(lis_standard),
+                "promoted": len(lis_promoted),
+            }
 
     def get_promoted_listing_urls_for_page(self, soup: BeautifulSoup):
         promoted_filter = {"data-cy": "search.listing.promoted"}
@@ -795,3 +822,10 @@ class Otodom:
             )
 
         return listings_total
+
+    @staticmethod
+    def _reset_metadata():
+        return {
+            "standard": 0,
+            "promoted": 0,
+        }

@@ -390,14 +390,16 @@ def test_get_standard_listintg_urls_for_search_page(
 def test_get_all_listings_for_search_page(
     otodom_instance, search_soup
 ) -> None:
-    urls = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
+    urls, metadata = otodom_instance.get_all_relevant_listing_urls_for_page(
+        search_soup
+    )
     assert len(urls) == 39
 
 
 def test_get_empty_list_of_urls_for_empty_page(
     otodom_instance, empty_search_soup
 ) -> None:
-    urls = otodom_instance.get_all_relevant_listing_urls_for_page(
+    urls, metadata = otodom_instance.get_all_relevant_listing_urls_for_page(
         empty_search_soup
     )
     assert len(urls) == 0
@@ -481,9 +483,10 @@ def test_old_and_new_url(otodom_instance) -> None:
 
 
 def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
-    relevant_listings = otodom_instance.get_all_relevant_listing_urls_for_page(
-        search_soup
-    )
+    (
+        relevant_listings,
+        metadata,
+    ) = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
     assert (
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
         not in relevant_listings
@@ -497,6 +500,6 @@ def test_scrap(otodom_settings):
 
     otodom = Otodom(otodom_settings)
 
-    scrapped_data = otodom.scrap()
+    scrapped_data, statistics = otodom.scrap()
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
