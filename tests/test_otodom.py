@@ -293,20 +293,20 @@ def test_seller_type(otodom_instance, listing) -> None:
     assert seller_type == {"seller_type": "agency"}
 
 
-@pytest.mark.skip
+
 def test_extract_long_lat_via_address(otodom_gcp_instance, listing) -> None:
     coordinates = otodom_gcp_instance.extract_long_lat_via_address(listing)
     assert coordinates == {"latitude": 52.2098433, "longitude": 21.028336}
 
 
-@pytest.mark.skip
+
 def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
     distance_time_to_city_center = (
         otodom_gcp_instance.get_transit_time_distance(listing)
     )
     assert distance_time_to_city_center == {
-        "distance_to center": "3.3 km",
-        "commuting_time_min": "42 mins",
+        "distance_to center": "3.5 km",
+        "commuting_time_min": "45 mins",
     }
 
 
