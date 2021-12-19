@@ -11,7 +11,7 @@ def _extract_divs(soup, soup_filter, what: str):
         log_wrong_number(len(divs), 1, what)
         return None
     elif len(divs) == 0:
-        log_wrong_number(0, 1, what, log)
+        log_wrong_number(0, 1, what)
         return None
     nested_div = list(divs[0].children)
 
@@ -25,7 +25,7 @@ def log_wrong_number(actual: int, expected: int, what: str) -> None:
     )
 
 
-def _log_unexpected(unexpected: str, where: str) -> None:
+def log_unexpected(unexpected: str, where: str) -> None:
     log.error(
         f"Unexpected {unexpected} encountered in {where} in the listing"
     )

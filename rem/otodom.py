@@ -16,7 +16,7 @@ from rem.universal import get_soup_from_url
 from rem.utils import (
     _extract_divs,
     log_wrong_number,
-    _log_unexpected,
+    log_unexpected,
     load_data,
 )
 
@@ -195,9 +195,9 @@ class Otodom:
             log_wrong_number(len(price_div), 1, "price")
 
         if "." in price_div[0]:
-            _log_unexpected(".", "price")
+            log_unexpected(".", "price")
         elif "," in price_div[0]:
-            _log_unexpected(",", "price")
+            log_unexpected(",", "price")
 
         try:
             price = int(
