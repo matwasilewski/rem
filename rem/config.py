@@ -76,12 +76,12 @@ class Settings(BaseSettings):
     SAVE_HTMLS: bool = False
 
     class Config:
+        env_file = ".env"
         env_file_encoding = 'utf-8'
         case_sensitive = True
         secrets_dir = "secrets"
 
 
-@lru_cache()
 def get_settings() -> Settings:
     env_file = os.sep.join([os.getcwd(), ".env"])
     return Settings(_env_file=env_file)

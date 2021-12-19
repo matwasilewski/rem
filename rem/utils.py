@@ -85,7 +85,8 @@ def get_soup_from_url(url, directory=None, save=False, offset=0):
     html = get_html_doc(page)
 
     if save and directory:
-        with open(os.sep.join([directory, f"{url}.html"])) as f:
+        name = url.split("/")[-1]
+        with open(os.sep.join([directory, f"{name}.html"]), "w") as f:
             f.write(html)
 
     soup = get_soup(html)

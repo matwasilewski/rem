@@ -25,6 +25,7 @@ from rem.utils import (
 
 class Otodom:
     def __init__(self, new_settings=None):
+        global settings
         if new_settings:
             log.info(f"Overwriting settings manually with: {new_settings}")
             settings = new_settings
@@ -61,8 +62,11 @@ class Otodom:
             self.save_htmls_dir_path = os.sep.join(
                 [settings.DATA_DIRECTORY, "htmls"]
             )
-            if not os.path.isdir(self.save_htmls_dir_path):
-                os.mkdir(self.save_htmls_dir_path)
+            try:
+                if not os.path.isdir(self.save_htmls_dir_path):
+                    os.mkdir(self.save_htmls_dir_path)
+            except FileExistsError as e:
+                pass
 
         self.listing_information_retrieval_methods = [
             self.get_creation_time,
@@ -92,6 +96,8 @@ class Otodom:
             "search_pages": 0,
             "total_urls_checked": 0,
             "new_urls": 0,
+            "standard_urls_checked": 0,
+            "promoted_urls_checked": 0,
         }
         search_url_count = 0
 
