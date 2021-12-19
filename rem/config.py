@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 from functools import lru_cache
 from typing import Dict, Optional, Union
 
@@ -42,6 +43,7 @@ class Settings(BaseSettings):
     Settings. Environment variables always take priority over values loaded
     from the dotenv file.
     """
+    current_timestamp = int(time.time())
 
     # Meta
     APP_NAME: str = str(PKG_META['name'])
@@ -54,12 +56,12 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     VERBOSE_LOGS: Union[bool, int, str] = True
     JSON_LOGS: Union[bool, int, str] = False
-    LOG_DIR: str = os.sep.join(["logs", "rem.log"])
+    LOG_DIR: str = os.sep.join(["logs", f"{current_timestamp}-rem.log"])
     SYSLOG_ADDR: Optional[str] = None
 
     # Scraping settings
     BASE_SEARCH_URL: str
-    DATA_FILE_NAME: str = "otodom"
+    DATA_FILE_NAME: str = f"{current_timestamp}-otodom"
     DATA_DIRECTORY: str = "data"
     PAGE_LIMIT: int = 1
     USE_GOOGLE_MAPS_API: bool = False
