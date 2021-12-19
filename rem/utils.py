@@ -1,6 +1,12 @@
 import os.path
+import time
+from typing import TextIO
 
 import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from requests import Response
+
 from rem.logger import log
 
 
@@ -26,9 +32,7 @@ def log_wrong_number(actual: int, expected: int, what: str) -> None:
 
 
 def log_unexpected(unexpected: str, where: str) -> None:
-    log.error(
-        f"Unexpected {unexpected} encountered in {where} in the listing"
-    )
+    log.error(f"Unexpected {unexpected} encountered in {where} in the listing")
 
 
 def load_data(file_name, data_dir="data"):
@@ -50,3 +54,26 @@ def save_data(data: pd.DataFrame, file_name, data_dir="data"):
         log.warning("Overwriting data")
 
     data.to_csv(data_path)
+
+
+def get_website(url: str) -> Response:
+    page = requests.get(url)
+    return page
+
+
+def get_html_doc(response):
+    page = response.text
+    return page
+
+
+def get_soup(html_doc: TextIO):
+    soup = BeautifulSoup(html_doc, "html.parser")
+    return soup
+
+
+def get_soup_from_url(url, offset=0):
+    page = get_website(url)
+    time.sleep(offset)
+    html = get_html_doc(page)
+    soup = get_soup(html)
+    return soup

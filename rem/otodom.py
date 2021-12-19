@@ -11,13 +11,13 @@ from bs4 import BeautifulSoup
 
 from rem import utils
 from rem.config import settings
-from rem.universal import get_soup_from_url
 
 from rem.utils import (
     _extract_divs,
     log_wrong_number,
     log_unexpected,
     load_data,
+    get_soup_from_url,
 )
 
 

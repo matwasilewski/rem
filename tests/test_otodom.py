@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 
+import rem.utils
 from rem.config import get_settings, Settings
 
 import rem.universal
@@ -47,7 +48,7 @@ def listing() -> BeautifulSoup:
         ]
     )
     with open(path, encoding="utf-8") as fp:
-        soup = rem.universal.get_soup(fp)
+        soup = rem.utils.get_soup(fp)
     return soup
 
 
@@ -57,7 +58,7 @@ def alternative_listing() -> BeautifulSoup:
         ["tests", "resources", "mieszkanie-12-min-do-centrum.html"]
     )
     with open(path, encoding="utf-8") as fp:
-        soup = rem.universal.get_soup(fp)
+        soup = rem.utils.get_soup(fp)
     return soup
 
 
@@ -65,7 +66,7 @@ def alternative_listing() -> BeautifulSoup:
 def search_soup() -> BeautifulSoup:
     path = os.sep.join(["tests", "resources", "warszawa-page-1.html"])
     with open(path, encoding="utf-8") as fp:
-        soup = rem.universal.get_soup(fp)
+        soup = rem.utils.get_soup(fp)
     return soup
 
 
@@ -73,30 +74,30 @@ def search_soup() -> BeautifulSoup:
 def empty_search_soup() -> BeautifulSoup:
     path = os.sep.join(["tests", "resources", "warszawa-page-2000.html"])
     with open(path, encoding="utf-8") as fp:
-        soup = rem.universal.get_soup(fp)
+        soup = rem.utils.get_soup(fp)
     return soup
 
 
 def test_get_website() -> None:
-    example_page = rem.universal.get_website("https://example.com/")
+    example_page = rem.utils.get_website("https://example.com/")
     assert example_page.status_code == 200
 
 
 def test_get_html_doc() -> None:
-    example_page = rem.universal.get_website("https://example.com/")
-    example_html = rem.universal.get_html_doc(example_page)
+    example_page = rem.utils.get_website("https://example.com/")
+    example_html = rem.utils.get_html_doc(example_page)
     assert "Example Domain" in example_html
 
 
 def test_get_soup_from_url() -> None:
-    example_page = rem.universal.get_website("https://example.com/")
-    example_html = rem.universal.get_html_doc(example_page)
-    example_soup = rem.universal.get_soup(example_html)
+    example_page = rem.utils.get_website("https://example.com/")
+    example_html = rem.utils.get_html_doc(example_page)
+    example_soup = rem.utils.get_soup(example_html)
     assert example_soup.find("h1").text == "Example Domain"
 
 
 def test_get_soup_from_url_function() -> None:
-    example_soup = rem.universal.get_soup_from_url("https://example.com/")
+    example_soup = rem.utils.get_soup_from_url("https://example.com/")
     assert example_soup.find("h1").text == "Example Domain"
 
 
