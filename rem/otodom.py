@@ -129,16 +129,15 @@ class Otodom:
 
             listing_soups = self.get_soups_from_listing_urls(listings_urls)
             self.process_listing_soups(listing_soups)
-            self.checkpoint()
+
+            if self.save_to_file:
+                utils.save_data(
+                    self.data, self.data_file_name, self.data_directory
+                )
 
             statistics["standard_urls_checked"] += metadata["standard"]
             statistics["promoted_urls_checked"] += metadata["promoted"]
             statistics["new_urls"] += len(listing_soups)
-
-        if self.save_to_file:
-            utils.save_data(
-                self.data, self.data_file_name, self.data_directory
-            )
 
         statistics["search_pages"] = search_url_count
         statistics["total_urls_checked"] = (
@@ -158,11 +157,6 @@ class Otodom:
             if self.download_old_listings or self.is_url_new(url)
         ]
         return listing_soups
-
-    def checkpoint(self):
-        utils.save_data(
-            self.data, f"checkpoint-{self.data_file_name}", self.data_directory
-        )
 
     def process_listing_soups(self, listings: List[BeautifulSoup]):
         for listing in listings:
