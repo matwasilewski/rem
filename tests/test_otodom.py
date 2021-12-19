@@ -7,7 +7,6 @@ from bs4 import BeautifulSoup
 import rem.utils
 from rem.config import get_settings, Settings
 
-import rem.universal
 from rem.otodom import Otodom
 
 

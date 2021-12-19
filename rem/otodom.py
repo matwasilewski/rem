@@ -1,5 +1,5 @@
 import datetime
-import logging
+from .logger import log
 import re
 from typing import Optional, Tuple, Dict, List
 from urllib.parse import parse_qs
@@ -24,6 +24,7 @@ from rem.utils import (
 class Otodom:
     def __init__(self, new_settings=None):
         if new_settings:
+            log.info(f"Overwriting settings manually with: {new_settings}")
             settings = new_settings
 
         self.download_old_listings = settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE
@@ -41,7 +42,8 @@ class Otodom:
             try:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
             except FileNotFoundError:
-                raise "no GCP API key provided!"
+                log.error("No GCP API Key found!")
+                raise "No GCP API Key found!"
             self.destination_coordinates = self.extract_long_lat_via_address(
                 settings.DESTINATION
             )
@@ -72,14 +74,17 @@ class Otodom:
 
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
+                log.info(f"Reached page limit of {self.page_limit}. Terminating.")
                 break
 
+            log.info(f"Requesting search page HTML from url {url}")
             search_soup = get_soup_from_url(url, offset=self.offset)
 
             listings_urls = self.get_all_relevant_listing_urls_for_page(
                 search_soup
             )
             if len(listings_urls) == 0:
+                log.info("No relevant listing urls found on the search page. Terminating.")
                 break
 
             listing_soups = self.get_soups_from_listing_urls(listings_urls)
@@ -94,10 +99,10 @@ class Otodom:
 
         return dataframe
 
-    def get_soups_from_listing_urls(self, listings_urls):
+    def get_soups_from_listing_urls(self, listing_urls):
         listing_soups = [
             get_soup_from_url(url, self.offset)
-            for url in listings_urls
+            for url in listing_urls
             if self.download_old_listings or self.is_url_new(url)
         ]
         return listing_soups
@@ -132,7 +137,7 @@ class Otodom:
                 data = pd.Series(outcome)
                 listing_data = listing_data.append(data)
             except Exception as e:
-                logging.error(
+                log.error(
                     f"Exception in extractor {listing_extractor}: {e}"
                 )
 
@@ -145,13 +150,14 @@ class Otodom:
         lis_standard = self.get_standard_listing_urls_for_page(search_soup)
         lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
         listings_total = lis_standard + lis_promoted
-
         listings_total = self.remove_main_page_from_urls(listings_total)
+        log.info(f"Retrieving {len(lis_standard)} standard listing URLs from the search page.")
+        log.info(f"Retrieving {len(lis_promoted)} promoted listing URLs from the search page.")
 
         if len(lis_standard) == 0:
             return []
         else:
-            return lis_promoted + lis_standard
+            return listings_total
 
     def get_promoted_listing_urls_for_page(self, soup: BeautifulSoup):
         promoted_filter = {"data-cy": "search.listing.promoted"}
@@ -193,6 +199,8 @@ class Otodom:
 
         if len(price_div) != 1:
             log_wrong_number(len(price_div), 1, "price")
+            log.error("Listing without price!")
+            return {"price": None}
 
         if "." in price_div[0]:
             log_unexpected(".", "price")
@@ -209,7 +217,9 @@ class Otodom:
                 )
             )
         except ValueError as e:
-            logging.error(f"Can't convert the price {e}")
+            price = None
+            log.error(f"Can't convert the price {e}")
+            log.error("Listing without price!")
 
         return {"price": price}
 
@@ -643,7 +653,8 @@ class Otodom:
 
         return {"address": address}
 
-    def get_listing_url(self, soup: BeautifulSoup):
+    @staticmethod
+    def get_listing_url(soup: BeautifulSoup):
         link = soup.select('link[rel="canonical"]')[0].get("href")
         return {"url": link}
 
@@ -655,7 +666,7 @@ class Otodom:
         else:
             seller_type = seller_type.getText()
             if not seller_type:
-                return None
+                return {"seller_type": None}
             else:
                 seller_type = "agency"
 

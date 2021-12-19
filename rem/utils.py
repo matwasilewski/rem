@@ -57,6 +57,7 @@ def save_data(data: pd.DataFrame, file_name, data_dir="data"):
 
 
 def get_website(url: str) -> Response:
+    log.info(f"Requesting from url {url}...")
     page = requests.get(url)
     return page
 

@@ -85,6 +85,8 @@ def main():
     settings.USE_GOOGLE_MAPS_API = args.use_gcp
     settings.PAGE_LIMIT = args.page_limit
 
+    logging.info(f"Config set to: {settings}")
+
     scrapper = Otodom()
     data = scrapper.scrap()
 
