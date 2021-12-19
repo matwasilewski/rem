@@ -14,7 +14,7 @@ from rem.otodom import Otodom
 def otodom_settings() -> Settings:
     my_settings = get_settings()
     my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    return my_settings
+    yield my_settings
 
 
 @pytest.fixture(scope="session", autouse=False)
@@ -490,8 +490,12 @@ def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
 
 
 @pytest.mark.skip
-def test_scrap(otodom_instance):
-    otodom_instance.base_search_url = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    scrapped_data = otodom_instance.scrap()
+def test_scrap(otodom_settings):
+    otodom_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    otodom_settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE = True
+
+    otodom = Otodom(otodom_settings)
+
+    scrapped_data = otodom.scrap()
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75

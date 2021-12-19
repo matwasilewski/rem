@@ -5,8 +5,9 @@ from typing import TextIO
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from requests import Response
+from requests import Response, Timeout
 
+from rem.config import settings
 from rem.logger import log
 
 
@@ -57,8 +58,14 @@ def save_data(data: pd.DataFrame, file_name, data_dir="data"):
 
 
 def get_website(url: str) -> Response:
+    page = None
     log.info(f"Requesting from url {url}...")
-    page = requests.get(url)
+    try:
+        page = requests.get(url, timeout=settings.TIMEOUT)
+    except requests.exceptions.Timeout as e:
+        log.error(f"Timeout error when requesting {url}!: {e}")
+        SystemExit(e)
+
     return page
 
 

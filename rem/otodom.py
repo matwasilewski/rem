@@ -74,7 +74,9 @@ class Otodom:
 
         for url_count, url in enumerate(generator):
             if url_count == self.page_limit:
-                log.info(f"Reached page limit of {self.page_limit}. Terminating.")
+                log.info(
+                    f"Reached page limit of {self.page_limit}. Terminating."
+                )
                 break
 
             log.info(f"Requesting search page HTML from url {url}")
@@ -84,7 +86,9 @@ class Otodom:
                 search_soup
             )
             if len(listings_urls) == 0:
-                log.info("No relevant listing urls found on the search page. Terminating.")
+                log.info(
+                    "No relevant listing urls found on the search page. Terminating."
+                )
                 break
 
             listing_soups = self.get_soups_from_listing_urls(listings_urls)
@@ -97,7 +101,7 @@ class Otodom:
                 self.data, self.data_file_name, self.data_directory
             )
 
-        return dataframe
+        return self.data
 
     def get_soups_from_listing_urls(self, listing_urls):
         listing_soups = [
@@ -137,9 +141,7 @@ class Otodom:
                 data = pd.Series(outcome)
                 listing_data = listing_data.append(data)
             except Exception as e:
-                log.error(
-                    f"Exception in extractor {listing_extractor}: {e}"
-                )
+                log.error(f"Exception in extractor {listing_extractor}: {e}")
 
         return listing_data
 
@@ -151,8 +153,12 @@ class Otodom:
         lis_promoted = self.get_promoted_listing_urls_for_page(search_soup)
         listings_total = lis_standard + lis_promoted
         listings_total = self.remove_main_page_from_urls(listings_total)
-        log.info(f"Retrieving {len(lis_standard)} standard listing URLs from the search page.")
-        log.info(f"Retrieving {len(lis_promoted)} promoted listing URLs from the search page.")
+        log.info(
+            f"Retrieving {len(lis_standard)} standard listing URLs from the search page."
+        )
+        log.info(
+            f"Retrieving {len(lis_promoted)} promoted listing URLs from the search page."
+        )
 
         if len(lis_standard) == 0:
             return []

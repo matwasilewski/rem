@@ -54,12 +54,12 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "info"
     VERBOSE_LOGS: Union[bool, int, str] = True
     JSON_LOGS: Union[bool, int, str] = False
-    LOG_DIR: str = os.sep.join(["logs", "rem_logs"])
+    LOG_DIR: str = os.sep.join(["logs", "rem.log"])
     SYSLOG_ADDR: Optional[str] = None
 
     # Scraping settings
     BASE_SEARCH_URL: str
-    DATA_FILE_NAME: str = "otodom.csv"
+    DATA_FILE_NAME: str = "otodom"
     DATA_DIRECTORY: str = "data"
     PAGE_LIMIT: int = 1
     USE_GOOGLE_MAPS_API: bool = False
@@ -71,6 +71,7 @@ class Settings(BaseSettings):
         2021, 12, 13, 8, 00
     )
     DESTINATION: str
+    TIMEOUT: int = 0
 
     class Config:
         env_file_encoding = 'utf-8'
