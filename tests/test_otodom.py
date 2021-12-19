@@ -14,6 +14,7 @@ from rem.otodom import Otodom
 def otodom_settings() -> Settings:
     my_settings = get_settings()
     my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
+    my_settings.LOAD_FROM_DATA = False
     yield my_settings
 
 

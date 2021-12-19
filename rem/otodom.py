@@ -33,7 +33,12 @@ class Otodom:
         self.page_limit = settings.PAGE_LIMIT
         self.gmaps = None
         self.data_file_name = settings.DATA_FILE_NAME
-        self.data = load_data(settings.DATA_FILE_NAME)
+
+        if settings.LOAD_FROM_DATA:
+            self.data = load_data(settings.DATA_FILE_NAME)
+        else:
+            self.data = pd.DataFrame()
+
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
         self.time_of_departure = settings.TIME_OF_DEPARTURE

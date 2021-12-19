@@ -1,16 +1,9 @@
 import argparse
-import logging
 import sys
+from rem.logger import log
 
 from rem.config import settings
 from rem.otodom import Otodom
-
-logging.basicConfig(
-    filename='otodom.log',
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(threadName)s -  %('
-    'levelname)s - %(message)s',
-)
 
 
 # setup argparser with: propertytype, rentaltype, city, savephotos
@@ -76,7 +69,7 @@ def parse_args(args):
 
 def main():
     args = parse_args(sys.argv[1:])
-    logging.info(f"Starting scrapping of {args.url}...")
+    log.info(f"Starting scrapping of {args.url}...")
 
     settings.BASE_SEARCH_URL = args.url
     settings.DATA_FILE_NAME = args.data_file_name
@@ -85,10 +78,10 @@ def main():
     settings.USE_GOOGLE_MAPS_API = args.use_gcp
     settings.PAGE_LIMIT = args.page_limit
 
-    logging.info(f"Config set to: {settings}")
+    log.info(f"Config set to: {settings}")
 
     scrapper = Otodom()
-    data = scrapper.scrap()
+    scrapper.scrap()
 
 
 if __name__ == "__main__":
