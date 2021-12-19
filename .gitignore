@@ -10,3 +10,4 @@ otodom.log
 logs/*
 secrets/*
 .env
+.cache

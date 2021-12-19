@@ -81,19 +81,19 @@ def empty_search_soup() -> BeautifulSoup:
     return soup
 
 
-def test_get_website() -> None:
-    example_page = rem.utils.get_website("https://example.com/")
+def test_get_website(otodom_instance) -> None:
+    example_page = otodom_instance.get_website("https://example.com/")
     assert example_page.status_code == 200
 
 
-def test_get_html_doc() -> None:
-    example_page = rem.utils.get_website("https://example.com/")
+def test_get_html_doc(otodom_instance) -> None:
+    example_page = otodom_instance.get_website("https://example.com/")
     example_html = rem.utils.get_html_doc(example_page)
     assert "Example Domain" in example_html
 
 
-def test_get_soup_from_url() -> None:
-    example_page = rem.utils.get_website("https://example.com/")
+def test_get_soup_from_url(otodom_instance) -> None:
+    example_page = otodom_instance.get_website("https://example.com/")
     example_html = rem.utils.get_html_doc(example_page)
     example_soup = rem.utils.get_soup(example_html)
     assert example_soup.find("h1").text == "Example Domain"

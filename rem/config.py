@@ -80,6 +80,7 @@ class Settings(BaseSettings):
     TIMEOUT: int = 0
     LOAD_FROM_DATA: bool = True
     SAVE_HTMLS: bool = False
+    USE_CACHE: bool = True
 
     class Config:
         env_file = ".env"

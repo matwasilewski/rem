@@ -2,6 +2,10 @@ import datetime
 import os
 import time
 
+import requests
+from requests import Response
+from requests_cache import CachedSession
+
 from .logger import log
 import re
 from typing import Optional, Tuple, Dict, List
@@ -20,7 +24,6 @@ from rem.utils import (
     log_wrong_number,
     log_unexpected,
     load_data,
-    get_website,
     get_html_doc,
     get_soup,
 )
@@ -32,6 +35,13 @@ class Otodom:
         if new_settings:
             log.info(f"Overwriting settings manually with: {new_settings}")
             settings = new_settings
+
+        urls_expire_after = {
+            'otodom.pl/pl/oferty/sprzedaz/mieszkanie/**': 120,
+            "otodom.pl/pl/oferta/**": -1,
+        }
+
+        self.session = CachedSession(".cache/otodom_cache", urls_expire_after=urls_expire_after, backend="sqlite")
 
         self.download_old_listings = settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE
         self.data_directory = settings.DATA_DIRECTORY
@@ -975,8 +985,7 @@ class Otodom:
         }
 
     def get_soup_from_url(self, url: str) -> BeautifulSoup:
-        page = get_website(url)
-        time.sleep(self.offset)
+        page = self.get_website(url)
         html = get_html_doc(page)
 
         if self.save_htmls and self.data_directory:
@@ -998,6 +1007,10 @@ class Otodom:
     ) -> None:
         for listing in listings:
             coordinates = self.extract_long_lat_from_listing(listing)
+
+            if not coordinates:
+                continue
+
             longitude = coordinates["longitude"]
             latitude = coordinates["latitude"]
 
@@ -1022,3 +1035,16 @@ class Otodom:
         if "address" in address.keys() and address["address"]:
             return self.extract_long_lat_via_address(address["address"])
         return None
+
+    def get_website(self, url: str) -> Response:
+        page = None
+        log.info(f"Requesting from url {url}...")
+        try:
+            page = self.session.get(url, timeout=settings.TIMEOUT)
+            if not page.from_cache:
+                time.sleep(self.offset)
+        except requests.exceptions.Timeout as e:
+            log.error(f"Timeout error when requesting {url}!: {e}")
+            SystemExit(e)
+
+        return page
