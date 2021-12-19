@@ -49,7 +49,9 @@ class Otodom:
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
         self.time_of_departure = settings.TIME_OF_DEPARTURE
-        self.time_of_departure_not_transit = settings.TIME_OF_DEPARTURE_NOT_TRANSIT
+        self.time_of_departure_not_transit = (
+            settings.TIME_OF_DEPARTURE_NOT_TRANSIT
+        )
 
         if settings.USE_GOOGLE_MAPS_API:
             try:
@@ -102,8 +104,10 @@ class Otodom:
             "new_urls": 0,
             "standard_urls_checked": 0,
             "promoted_urls_checked": 0,
+            "time_elapsed": 0,
         }
         search_url_count = 0
+        start_time = time.time()
 
         for search_url_count, url in enumerate(generator):
             if search_url_count == self.page_limit:
@@ -139,12 +143,14 @@ class Otodom:
             statistics["standard_urls_checked"] += metadata["standard"]
             statistics["promoted_urls_checked"] += metadata["promoted"]
             statistics["new_urls"] += len(listing_soups)
+        end_time = time.time()
 
         statistics["search_pages"] = search_url_count
         statistics["total_urls_checked"] = (
             statistics["standard_urls_checked"]
             + statistics["promoted_urls_checked"]
         )
+        statistics["time_elapsed"] = end_time - start_time
 
         log.info(f"Finished scraping. Summary:")
         log.info(statistics)
@@ -897,12 +903,12 @@ class Otodom:
             mode="bicycling",
             departure_time=self.time_of_departure_not_transit,
         )
-        bicycling_distance_kilometers = transit_matrix["rows"][0]["elements"][0][
-            "distance"
-        ]["text"]
-        bicycling_commuting_time_min = transit_matrix["rows"][0]["elements"][0][
-            "duration"
-        ]["text"]
+        bicycling_distance_kilometers = transit_matrix["rows"][0]["elements"][
+            0
+        ]["distance"]["text"]
+        bicycling_commuting_time_min = transit_matrix["rows"][0]["elements"][
+            0
+        ]["duration"]["text"]
 
         return {
             "bicycling_distance_to center": bicycling_distance_kilometers,
