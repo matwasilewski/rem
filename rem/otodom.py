@@ -829,6 +829,19 @@ class Otodom:
 
         return {"air_conditioning": air_conditioning}
 
+    def get_basement(self, soup: BeautifulSoup) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
+        basement_list = ["klimatyzacja"]
+        basement_in_listing = set()
+        basement = 0
+        for attribute in additional_features:
+            if attribute in basement_list:
+                basement_in_listing.add(attribute)
+        if basement_list[0] in basement_in_listing:
+            basement = 1
+
+        return {"basement": basement}
+
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
         geometry = geocode_result[0]['geometry']
