@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     Settings. Environment variables always take priority over values loaded
     from the dotenv file.
     """
+
     current_timestamp = int(time.time())
 
     # Meta

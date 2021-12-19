@@ -98,11 +98,13 @@ class Otodom:
             self.get_elevator,
             self.get_outdoor_space,
             self.get_parking_space,
-            self.extract_long_lat_via_address,
+        ]
+
+        self.gcp_extractors = [
             self.get_transit_time_distance,
             self.get_driving_time_distance,
             self.get_bicycling_time_distance,
-            self.get_walking_time_distance
+            self.get_walking_time_distance,
         ]
 
     def scrap(self):
@@ -144,6 +146,9 @@ class Otodom:
 
             listing_soups = self.get_soups_from_listing_urls(listings_urls)
             self.process_listing_soups(listing_soups)
+
+            if settings.USE_GOOGLE_MAPS_API:
+                self.run_gcp_queries_on_listings(listing_soups)
 
             if self.save_to_file:
                 utils.save_data(
@@ -946,7 +951,7 @@ class Otodom:
         }
 
     @staticmethod
-    def get_creation_time(soup: BeautifulSoup):
+    def get_creation_time(soup: BeautifulSoup) -> Dict[str, str]:
         return {"created_at": str(datetime.datetime.now())}
 
     def remove_main_page_from_urls(self, listings_total):
@@ -963,13 +968,13 @@ class Otodom:
         return listings_total
 
     @staticmethod
-    def _reset_metadata():
+    def _reset_metadata() -> Dict[str, int]:
         return {
             "standard": 0,
             "promoted": 0,
         }
 
-    def get_soup_from_url(self, url):
+    def get_soup_from_url(self, url: str) -> BeautifulSoup:
         page = get_website(url)
         time.sleep(self.offset)
         html = get_html_doc(page)
@@ -987,3 +992,33 @@ class Otodom:
 
         soup = get_soup(html)
         return soup
+
+    def run_gcp_queries_on_listings(
+        self, listings: List[BeautifulSoup]
+    ) -> None:
+        for listing in listings:
+            coordinates = self.extract_long_lat_from_listing(listing)
+            longitude = coordinates["longitude"]
+            latitude = coordinates["latitude"]
+
+            listing_data: pd.Series = pd.Series()
+            for gcp_extractor in self.gcp_extractors:
+                try:
+                    outcome = gcp_extractor(latitude, longitude)
+                    data = pd.Series(outcome)
+                    listing_data = listing_data.append(data)
+                except Exception as e:
+                    log.error(
+                        f"Exception in GCP extractor {gcp_extractor}: {e}"
+                    )
+
+            self.add_new_listing_data(listing_data)
+        return
+
+    def extract_long_lat_from_listing(
+        self, listing: BeautifulSoup
+    ) -> Optional[Dict]:
+        address = self.get_address(listing)
+        if "address" in address.keys() and address["address"]:
+            return self.extract_long_lat_via_address(address["address"])
+        return None
