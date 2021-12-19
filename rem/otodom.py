@@ -1,4 +1,6 @@
 import datetime
+import os
+
 from .logger import log
 import re
 from typing import Optional, Tuple, Dict, List
@@ -33,6 +35,7 @@ class Otodom:
         self.page_limit = settings.PAGE_LIMIT
         self.gmaps = None
         self.data_file_name = settings.DATA_FILE_NAME
+        self.save_htmls = settings.SAVE_HTMLS
 
         if settings.LOAD_FROM_DATA:
             self.data = load_data(settings.DATA_FILE_NAME)
@@ -52,6 +55,12 @@ class Otodom:
             self.destination_coordinates = self.extract_long_lat_via_address(
                 settings.DESTINATION
             )
+
+        self.save_htmls_dir_path = None
+        if settings.SAVE_HTMLS:
+            self.save_htmls_dir_path = os.sep.join([settings.DATA_DIRECTORY, "htmls"])
+            if not os.path.isdir(self.save_htmls_dir_path):
+                os.mkdir(self.save_htmls_dir_path)
 
         self.listing_information_retrieval_methods = [
             self.get_creation_time,
@@ -92,7 +101,7 @@ class Otodom:
                 break
 
             log.info(f"Requesting search page HTML from url {url}")
-            search_soup = get_soup_from_url(url, offset=self.offset)
+            search_soup = get_soup_from_url(url, directory=self.save_htmls_dir_path, save=self.save_htmls, offset=self.offset)
 
             (
                 listings_urls,
@@ -131,7 +140,7 @@ class Otodom:
 
     def get_soups_from_listing_urls(self, listing_urls):
         listing_soups = [
-            get_soup_from_url(url, self.offset)
+            get_soup_from_url(url, self.save_htmls, self.offset)
             for url in listing_urls
             if self.download_old_listings or self.is_url_new(url)
         ]

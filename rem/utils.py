@@ -79,9 +79,14 @@ def get_soup(html_doc: TextIO):
     return soup
 
 
-def get_soup_from_url(url, offset=0):
+def get_soup_from_url(url, directory=None, save=False, offset=0):
     page = get_website(url)
     time.sleep(offset)
     html = get_html_doc(page)
+
+    if save and directory:
+        with open(os.sep.join([directory, f"{url}.html"])) as f:
+            f.write(html)
+
     soup = get_soup(html)
     return soup

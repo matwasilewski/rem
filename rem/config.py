@@ -73,6 +73,7 @@ class Settings(BaseSettings):
     DESTINATION: str
     TIMEOUT: int = 0
     LOAD_FROM_DATA: bool = True
+    SAVE_HTMLS: bool = False
 
     class Config:
         env_file_encoding = 'utf-8'
