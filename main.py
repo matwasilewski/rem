@@ -21,7 +21,7 @@ def parse_args(args):
         nargs="?",
         required=False,
         type=int,
-        default=0,
+        default=1,
         help='Enter otodom search url',
     )
     parser.add_argument(
@@ -73,13 +73,12 @@ def main():
 
     settings.BASE_SEARCH_URL = args.url
 
-    if args.page_limit:
+    if args.page_limit != 1:
         settings.PAGE_LIMIT = args.page_limit
     if args.offset:
         settings.OFFSET = args.offset
 
     log.info(f"Config set to: {settings}")
-
     scraper = Otodom()
     data, statistics = scraper.scrap()
 

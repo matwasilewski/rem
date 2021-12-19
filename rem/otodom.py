@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 
 from .logger import log
 import re
@@ -19,7 +20,9 @@ from rem.utils import (
     log_wrong_number,
     log_unexpected,
     load_data,
-    get_soup_from_url,
+    get_website,
+    get_html_doc,
+    get_soup,
 )
 
 
@@ -41,7 +44,7 @@ class Otodom:
         if settings.LOAD_FROM_DATA:
             self.data = load_data(settings.DATA_FILE_NAME)
         else:
-            self.data = pd.DataFrame()
+            self.data = pd.DataFrame({"url": []})
 
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
@@ -109,11 +112,8 @@ class Otodom:
                 break
 
             log.info(f"Requesting search page HTML from url {url}")
-            search_soup = get_soup_from_url(
+            search_soup = self.get_soup_from_url(
                 url,
-                directory=self.save_htmls_dir_path,
-                save=self.save_htmls,
-                offset=self.offset,
             )
 
             (
@@ -153,7 +153,7 @@ class Otodom:
 
     def get_soups_from_listing_urls(self, listing_urls):
         listing_soups = [
-            get_soup_from_url(url, self.save_htmls, self.offset)
+            self.get_soup_from_url(url)
             for url in listing_urls
             if self.download_old_listings or self.is_url_new(url)
         ]
@@ -850,7 +850,9 @@ class Otodom:
         return {"latitude": lat, "longitude": lon}
 
     def is_url_new(self, url):
-        return url not in set(self.data["url"])
+        return "url" not in self.data.columns or "url" not in set(
+            self.data["url"]
+        )
 
     def get_transit_time_distance(self, latitude, longitude):
         origin = (latitude, longitude)
@@ -895,3 +897,22 @@ class Otodom:
             "standard": 0,
             "promoted": 0,
         }
+
+    def get_soup_from_url(self, url):
+        page = get_website(url)
+        time.sleep(self.offset)
+        html = get_html_doc(page)
+
+        if self.save_htmls and self.data_directory:
+            file_name = url.split("/")[-1]
+            try:
+                save_path = os.sep.join(
+                    [self.save_htmls_dir_path, f"{file_name}.html"]
+                )
+                with open(save_path, "w") as f:
+                    f.write(html)
+            except FileNotFoundError as e:
+                log.error("Directory {does not exist! ")
+
+        soup = get_soup(html)
+        return soup
