@@ -58,7 +58,9 @@ class Otodom:
 
         self.save_htmls_dir_path = None
         if settings.SAVE_HTMLS:
-            self.save_htmls_dir_path = os.sep.join([settings.DATA_DIRECTORY, "htmls"])
+            self.save_htmls_dir_path = os.sep.join(
+                [settings.DATA_DIRECTORY, "htmls"]
+            )
             if not os.path.isdir(self.save_htmls_dir_path):
                 os.mkdir(self.save_htmls_dir_path)
 
@@ -101,7 +103,12 @@ class Otodom:
                 break
 
             log.info(f"Requesting search page HTML from url {url}")
-            search_soup = get_soup_from_url(url, directory=self.save_htmls_dir_path, save=self.save_htmls, offset=self.offset)
+            search_soup = get_soup_from_url(
+                url,
+                directory=self.save_htmls_dir_path,
+                save=self.save_htmls,
+                offset=self.offset,
+            )
 
             (
                 listings_urls,

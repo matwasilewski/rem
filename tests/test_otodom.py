@@ -99,7 +99,9 @@ def test_get_soup_from_url() -> None:
 
 
 def test_get_soup_from_url_function() -> None:
-    example_soup = rem.utils.get_soup_from_url("https://example.com/", save=False)
+    example_soup = rem.utils.get_soup_from_url(
+        "https://example.com/", save=False
+    )
     assert example_soup.find("h1").text == "Example Domain"
 
 
@@ -497,7 +499,9 @@ def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
 
 def test_creation_date(otodom_instance, listing) -> None:
     time = otodom_instance.get_creation_time()
-    assert re.match(r"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", time["created_at"])
+    assert re.match(
+        r"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", time["created_at"]
+    )
 
 
 @pytest.mark.skip
