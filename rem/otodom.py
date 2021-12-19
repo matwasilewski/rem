@@ -49,6 +49,7 @@ class Otodom:
         self.save_to_file = settings.SAVE_TO_FILE
         self.offset = settings.OFFSET
         self.time_of_departure = settings.TIME_OF_DEPARTURE
+        self.time_of_departure_not_transit = settings.TIME_OF_DEPARTURE_NOT_TRANSIT
 
         if settings.USE_GOOGLE_MAPS_API:
             try:
@@ -872,6 +873,26 @@ class Otodom:
         return {
             "distance_to center": distance_kilometers,
             "commuting_time_min": commuting_time_min,
+        }
+
+    def get_driving_time_distance(self, latitude, longitude):
+        origin = (latitude, longitude)
+        transit_matrix = self.gmaps.distance_matrix(
+            origin,
+            self.destination_coordinates,
+            mode="driving",
+            departure_time=self.time_of_departure_not_transit,
+        )
+        driving_distance_kilometers = transit_matrix["rows"][0]["elements"][0][
+            "distance"
+        ]["text"]
+        driving_commuting_time_min = transit_matrix["rows"][0]["elements"][0][
+            "duration"
+        ]["text"]
+
+        return {
+            "driving_distance_to center": driving_distance_kilometers,
+            "driving_commuting_time_min": driving_commuting_time_min,
         }
 
     @staticmethod

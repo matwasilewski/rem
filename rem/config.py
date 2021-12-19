@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     TIME_OF_DEPARTURE: datetime.datetime = datetime.datetime(
         2021, 12, 13, 8, 00
     )
+    TIME_OF_DEPARTURE_NOT_TRANSIT: datetime.datetime = datetime.datetime(
+        2022, 1, 4, 8, 00
+    )
     DESTINATION: str
     TIMEOUT: int = 0
     LOAD_FROM_DATA: bool = True
