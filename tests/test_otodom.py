@@ -1,4 +1,6 @@
+import datetime
 import os
+import re
 
 import pandas as pd
 import pytest
@@ -491,6 +493,11 @@ def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
         "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
         not in relevant_listings
     )
+
+
+def test_creation_date(otodom_instance, listing) -> None:
+    time = otodom_instance.get_creation_time()
+    assert re.match(r"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})", time["created_at"])
 
 
 @pytest.mark.skip

@@ -54,6 +54,7 @@ class Otodom:
             )
 
         self.listing_information_retrieval_methods = [
+            self.get_creation_time,
             self.get_listing_url,
             self.get_price,
             self.get_size,
@@ -809,6 +810,10 @@ class Otodom:
             "distance_to center": distance_kilometers,
             "commuting_time_min": commuting_time_min,
         }
+
+    @staticmethod
+    def get_creation_time():
+        return {"created_at": str(datetime.datetime.now())}
 
     def remove_main_page_from_urls(self, listings_total):
         if self.base_search_url in listings_total:
