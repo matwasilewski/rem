@@ -279,7 +279,7 @@ class Otodom:
             )
         except ValueError as e:
             price = None
-            log.error(f"Can't convert the price {e}")
+            log.error(f"Can't convert the price {str(e)}")
             log.error("Listing without price!")
 
         return {"price": price}
