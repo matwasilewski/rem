@@ -6,6 +6,7 @@ import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
 
+import rem.otodom
 import rem.utils
 from rem.config import get_settings, Settings
 
@@ -99,7 +100,7 @@ def test_get_soup_from_url() -> None:
 
 
 def test_get_soup_from_url_function() -> None:
-    example_soup = rem.utils.get_soup_from_url(
+    example_soup = rem.otodom.get_soup_from_url(
         "https://example.com/", save=False
     )
     assert example_soup.find("h1").text == "Example Domain"

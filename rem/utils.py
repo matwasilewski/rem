@@ -1,11 +1,10 @@
 import os.path
-import time
 from typing import TextIO
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from requests import Response, Timeout
+from requests import Response
 
 from rem.config import settings
 from rem.logger import log
@@ -76,18 +75,4 @@ def get_html_doc(response):
 
 def get_soup(html_doc: TextIO):
     soup = BeautifulSoup(html_doc, "html.parser")
-    return soup
-
-
-def get_soup_from_url(url, directory=None, save=False, offset=0):
-    page = get_website(url)
-    time.sleep(offset)
-    html = get_html_doc(page)
-
-    if save and directory:
-        name = url.split("/")[-1]
-        with open(os.sep.join([directory, f"{name}.html"]), "w") as f:
-            f.write(html)
-
-    soup = get_soup(html)
     return soup
