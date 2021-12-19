@@ -41,7 +41,11 @@ class Otodom:
             "otodom.pl/pl/oferta/**": -1,
         }
 
-        self.session = CachedSession(".cache/otodom_cache", urls_expire_after=urls_expire_after, backend="sqlite")
+        self.session = CachedSession(
+            ".cache/otodom_cache",
+            urls_expire_after=urls_expire_after,
+            backend="sqlite",
+        )
 
         self.download_old_listings = settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE
         self.data_directory = settings.DATA_DIRECTORY
