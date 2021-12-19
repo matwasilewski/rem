@@ -91,6 +91,16 @@ class Otodom:
             self.get_heating,
             self.get_address,
             self.get_ad_description,
+            self.get_air_conditioning,
+            self.get_basement,
+            self.get_elevator,
+            self.get_outdoor_space,
+            self.get_parking_space,
+            self.extract_long_lat_via_address,
+            self.get_transit_time_distance,
+            self.get_driving_time_distance,
+            self.get_bicycling_time_distance,
+            self.get_walking_time_distance
         ]
 
     def scrap(self):
