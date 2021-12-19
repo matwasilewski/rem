@@ -850,7 +850,7 @@ class Otodom:
         return {"latitude": lat, "longitude": lon}
 
     def is_url_new(self, url):
-        return "url" not in self.data.columns or "url" not in set(
+        return "url" not in self.data.columns or url not in set(
             self.data["url"]
         )
 
@@ -875,7 +875,7 @@ class Otodom:
         }
 
     @staticmethod
-    def get_creation_time():
+    def get_creation_time(soup: BeautifulSoup):
         return {"created_at": str(datetime.datetime.now())}
 
     def remove_main_page_from_urls(self, listings_total):
