@@ -21,7 +21,7 @@ def parse_args(args):
         nargs="?",
         required=False,
         type=int,
-        default=1,
+        default=0,
         help='Enter otodom search url',
     )
     parser.add_argument(
@@ -72,11 +72,11 @@ def main():
     log.info(f"Starting scrapping of {args.url}...")
 
     settings.BASE_SEARCH_URL = args.url
-    settings.DATA_FILE_NAME = args.data_file_name
-    settings.DATA_DIRECTORY = args.data_directory
-    settings.OFFSET = args.offset
-    settings.USE_GOOGLE_MAPS_API = args.use_gcp
-    settings.PAGE_LIMIT = args.page_limit
+
+    if args.page_limit:
+        settings.PAGE_LIMIT = args.page_limit
+    if args.offset:
+        settings.OFFSET = args.offset
 
     log.info(f"Config set to: {settings}")
 
