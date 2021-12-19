@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     USE_GOOGLE_MAPS_API: bool = False
     GCP_API_KEY: str
     SAVE_TO_FILE: bool = True
-    OFFSET: float = 0.0
+    OFFSET: float = 0
     DOWNLOAD_LISTINGS_ALREADY_IN_FILE: bool = False
     TIME_OF_DEPARTURE: datetime.datetime = datetime.datetime(
         2021, 12, 13, 8, 00
