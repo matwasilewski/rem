@@ -350,6 +350,10 @@ def test_get_air_conditioning(otodom_instance, listing) -> None:
     air_conditioning = otodom_instance.get_air_conditioning(listing)
     assert air_conditioning == {"air_conditioning": 1}
 
+def test_get_basement(otodom_instance, listing) -> None:
+    basement = otodom_instance.get_basement(listing)
+    assert basement == {"basement": 1}
+
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
 ) -> None:
