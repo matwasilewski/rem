@@ -12,9 +12,10 @@ from bs4 import BeautifulSoup
 from rem import utils
 from rem.config import settings
 from rem.universal import get_soup_from_url
+
 from rem.utils import (
     _extract_divs,
-    _log_wrong_number,
+    log_wrong_number,
     _log_unexpected,
     load_data,
 )
@@ -181,7 +182,7 @@ class Otodom:
                 else:
                     links.append("https://www.otodom.pl" + local_links[0])
             else:
-                _log_wrong_number(len(local_links), 1, "listing links")
+                log_wrong_number(len(local_links), 1, "listing links")
         return links
 
     @staticmethod
@@ -191,7 +192,7 @@ class Otodom:
         price_div = _extract_divs(soup, soup_filter, "price")
 
         if len(price_div) != 1:
-            _log_wrong_number(len(price_div), 1, "price")
+            log_wrong_number(len(price_div), 1, "price")
 
         if "." in price_div[0]:
             _log_unexpected(".", "price")
@@ -229,7 +230,7 @@ class Otodom:
                 floor_size = child.contents
 
         if len(floor_size) != 1:
-            _log_wrong_number(len(floor_size), 1, "floor size")
+            log_wrong_number(len(floor_size), 1, "floor size")
             return {"floor_size_in_m2": None}
 
         floor_size_float = self._resolve_floor_size(floor_size[0])
@@ -266,7 +267,7 @@ class Otodom:
                 type_of_building.append(child.contents)
 
         if len(type_of_building) != 1:
-            _log_wrong_number(len(type_of_building), 1, "type of building")
+            log_wrong_number(len(type_of_building), 1, "type of building")
             return {"building_type": None}
 
         return {"building_type": type_of_building[0][0]}
@@ -289,7 +290,7 @@ class Otodom:
                 window.append(child.contents)
 
         if len(window) != 1:
-            _log_wrong_number(len(window), 1, "window")
+            log_wrong_number(len(window), 1, "window")
             return {"windows_type": None}
 
         return {"windows_type": window[0][0]}
@@ -314,7 +315,7 @@ class Otodom:
                 year.append(child.contents)
 
         if len(year) != 1:
-            _log_wrong_number(len(year), 1, "year")
+            log_wrong_number(len(year), 1, "year")
             return {"year_of_construction": None}
 
         return {"year_of_construction": int(year[0][0])}
@@ -339,7 +340,7 @@ class Otodom:
                 rooms.append(child.contents)
 
         if len(rooms) != 1:
-            _log_wrong_number(len(rooms), 1, "number_of_rooms")
+            log_wrong_number(len(rooms), 1, "number_of_rooms")
             return {"number_of_rooms": None}
 
         return {"number_of_rooms": int(rooms[0][0])}
@@ -362,7 +363,7 @@ class Otodom:
                 condition.append(child.contents)
 
         if len(condition) != 1:
-            _log_wrong_number(len(condition), 1, "condition")
+            log_wrong_number(len(condition), 1, "condition")
             return {"condition": None}
 
         return {"condition": condition[0][0]}
@@ -418,7 +419,7 @@ class Otodom:
                 floors_in_building.append(child.contents)
 
         if len(floors_in_building) != 1:
-            _log_wrong_number(len(floors_in_building), 1, "floors_in_building")
+            log_wrong_number(len(floors_in_building), 1, "floors_in_building")
             return {"floors_in_building": None}
 
         return {"floors_in_building": int(floors_in_building[0][0])}
@@ -443,7 +444,7 @@ class Otodom:
                 floor_list.append(child.contents)
 
         if len(floor_list) != 1:
-            _log_wrong_number(len(floor_list), 1, "floor")
+            log_wrong_number(len(floor_list), 1, "floor")
             return {
                 "floor": None,
                 "floors_in_building": None,
@@ -491,7 +492,7 @@ class Otodom:
                 monthly_fee_list.append(child.contents)
 
         if len(monthly_fee_list) != 1:
-            _log_wrong_number(len(monthly_fee_list), 1, "monthly_fee")
+            log_wrong_number(len(monthly_fee_list), 1, "monthly_fee")
             return {"monthly_fee": None}
 
         monthly_fee = self.resolve_monthly_fee(monthly_fee_list[0][0])
@@ -545,7 +546,7 @@ class Otodom:
                 ownership.append(child.contents)
 
         if len(ownership) != 1:
-            _log_wrong_number(len(ownership), 1, "ownership_form")
+            log_wrong_number(len(ownership), 1, "ownership_form")
             return {"ownership_form": None}
 
         return {"ownership_form": ownership[0][0]}
@@ -568,7 +569,7 @@ class Otodom:
                 market.append(child.contents)
 
         if len(market) != 1:
-            _log_wrong_number(len(market), 1, "market_type")
+            log_wrong_number(len(market), 1, "market_type")
             return {"market_type": None}
 
         return {"market_type": market[0][0]}
@@ -595,7 +596,7 @@ class Otodom:
                 material.append(child.contents)
 
         if len(material) != 1:
-            _log_wrong_number(len(material), 1, "construction_material")
+            log_wrong_number(len(material), 1, "construction_material")
             return {"construction_material": None}
 
         return {"construction_material": material[0][0]}
@@ -618,7 +619,7 @@ class Otodom:
                 heating.append(child.contents)
 
         if len(heating) != 1:
-            _log_wrong_number(len(heating), 1, "heating")
+            log_wrong_number(len(heating), 1, "heating")
             return {"heating": None}
 
         return {"heating": heating[0][0]}
