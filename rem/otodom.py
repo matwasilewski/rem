@@ -803,6 +803,45 @@ class Otodom:
 
         return {"balcony": balcony, "garden": garden, "terrace": terrace}
 
+    def get_elevator(self, soup: BeautifulSoup) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
+        elevator_list = ["winda"]
+        elevator_in_listing = set()
+        elevator = 0
+        for attribute in additional_features:
+            if attribute in elevator_list:
+                elevator_in_listing.add(attribute)
+        if elevator_list[0] in elevator_in_listing:
+            elevator = 1
+
+        return {"elevator": elevator}
+
+    def get_air_conditioning(self, soup: BeautifulSoup) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
+        air_conditioning_list = ["klimatyzacja"]
+        air_conditioning_in_listing = set()
+        air_conditioning = 0
+        for attribute in additional_features:
+            if attribute in air_conditioning_list:
+                air_conditioning_in_listing.add(attribute)
+        if air_conditioning_list[0] in air_conditioning_in_listing:
+            air_conditioning = 1
+
+        return {"air_conditioning": air_conditioning}
+
+    def get_basement(self, soup: BeautifulSoup) -> Dict[str, int]:
+        additional_features = self.resolve_additional_features(soup)
+        basement_list = ["klimatyzacja"]
+        basement_in_listing = set()
+        basement = 0
+        for attribute in additional_features:
+            if attribute in basement_list:
+                basement_in_listing.add(attribute)
+        if basement_list[0] in basement_in_listing:
+            basement = 1
+
+        return {"basement": basement}
+
     def extract_long_lat_via_address(self, address):
         geocode_result = self.gmaps.geocode(address)
         geometry = geocode_result[0]['geometry']

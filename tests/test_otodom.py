@@ -341,6 +341,17 @@ def test_get_outdoor_space(otodom_instance, listing) -> None:
     outdoor_space = otodom_instance.get_outdoor_space(listing)
     assert outdoor_space == {"balcony": 1, "garden": 0, "terrace": 0}
 
+def test_get_elevator(otodom_instance, listing) -> None:
+    elevator = otodom_instance.get_elevator(listing)
+    assert elevator == {"elevator": 0}
+
+def test_get_air_conditioning(otodom_instance, listing) -> None:
+    air_conditioning = otodom_instance.get_air_conditioning(listing)
+    assert air_conditioning == {"air_conditioning": 1}
+
+def test_get_basement(otodom_instance, listing) -> None:
+    basement = otodom_instance.get_basement(listing)
+    assert basement == {"basement": 1}
 
 def test_get_promoted_listing_urls_for_search_page(
     otodom_instance, search_soup
