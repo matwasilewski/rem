@@ -28,11 +28,10 @@ from rem.utils import (
     get_soup,
 )
 
-global settings
-
 
 class Otodom:
     def __init__(self, new_settings=None, session=None):
+        global settings
         if new_settings:
             log.info(f"Overwriting settings manually with: {new_settings}")
             settings = new_settings
@@ -71,7 +70,9 @@ class Otodom:
             settings.TIME_OF_DEPARTURE_NOT_TRANSIT
         )
 
-        if settings.USE_GOOGLE_MAPS_API:
+        self.use_google_maps_api = settings.USE_GOOGLE_MAPS_API
+
+        if self.use_google_maps_api:
             try:
                 self.gmaps = googlemaps.Client(key=settings.GCP_API_KEY)
             except FileNotFoundError:
@@ -208,7 +209,7 @@ class Otodom:
         for listing in listings:
             listing_data = self.get_data_from_listing(listing)
 
-            if settings.USE_GOOGLE_MAPS_API:
+            if self.use_google_maps_api:
                 listing_data.append(self.get_gcp_data_from_listing(listing))
 
             self.add_new_listing_data(listing_data)
