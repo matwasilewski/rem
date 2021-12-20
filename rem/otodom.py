@@ -30,7 +30,7 @@ from rem.utils import (
 
 
 class Otodom:
-    def __init__(self, new_settings=None):
+    def __init__(self, new_settings=None, session=None):
         global settings
         if new_settings:
             log.info(f"Overwriting settings manually with: {new_settings}")
@@ -41,11 +41,14 @@ class Otodom:
             "otodom.pl/pl/oferta/**": -1,
         }
 
-        self.session = CachedSession(
-            ".cache/otodom_cache",
-            urls_expire_after=urls_expire_after,
-            backend="sqlite",
-        )
+        if not session:
+            self.session = CachedSession(
+                os.sep.join([".cache", "otodom_cache"]),
+                urls_expire_after=urls_expire_after,
+                backend="sqlite",
+            )
+        else:
+            self.session = session
 
         self.download_old_listings = settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE
         self.data_directory = settings.DATA_DIRECTORY
@@ -221,7 +224,7 @@ class Otodom:
             page_value += 1
 
     def get_data_from_listing(self, listing):
-        listing_data: pd.Series = pd.Series()
+        listing_data: pd.Series = pd.Series(dtype=str)
 
         for listing_extractor in self.listing_information_retrieval_methods:
             try:
@@ -1028,7 +1031,7 @@ class Otodom:
             longitude = coordinates["longitude"]
             latitude = coordinates["latitude"]
 
-            listing_data: pd.Series = pd.Series()
+            listing_data: pd.Series = pd.Series(dtype=str)
             for gcp_extractor in self.gcp_extractors:
                 try:
                     outcome = gcp_extractor(latitude, longitude)

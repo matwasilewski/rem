@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import pytest
 from bs4 import BeautifulSoup
+from requests_cache import CachedSession
 
 import rem.otodom
 import rem.utils
@@ -13,11 +14,26 @@ from rem.config import get_settings, Settings
 from rem.otodom import Otodom
 
 
+@pytest.fixture(scope="session")
+def test_session() -> CachedSession:
+    test_session = CachedSession(
+        os.sep.join([".cache", "test_cache"]),
+        backend="sqlite",
+    )
+    return test_session
+
+
 @pytest.fixture(scope="session", autouse=False)
 def otodom_settings() -> Settings:
     my_settings = get_settings()
     my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
     my_settings.LOAD_FROM_DATA = False
+    otodom_settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE = True
+    otodom_settings.OFFSET = 0
+    otodom_settings.PAGE_LIMIT = 1
+    otodom_settings.USE_GOOGLE_MAPS_API = False
+    otodom_settings.DATA_FILE_NAME = "otodom_test"
+
     yield my_settings
 
 
@@ -245,8 +261,8 @@ def test_resolve_monthly_fee_5(otodom_instance) -> None:
 def test_get_listing_url(otodom_instance, listing) -> None:
     listing_url = otodom_instance.get_listing_url(listing)
     assert (
-        listing_url["url"]
-        == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
+            listing_url["url"]
+            == "https://www.otodom.pl/pl/oferta/mieszkanie-w-kamienicy-w-srodmiesciu-ID4dG6i.html"
     )
 
 
@@ -302,7 +318,6 @@ def test_extract_long_lat_via_address(otodom_gcp_instance, listing) -> None:
 
 @pytest.mark.skip
 def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
-
     distance_time_to_city_center = (
         otodom_gcp_instance.get_transit_time_distance(52.2098433, 21.028336)
     )
@@ -314,7 +329,6 @@ def test_get_transit_time_distance(otodom_gcp_instance, listing) -> None:
 
 @pytest.mark.skip
 def test_get_driving_time_distance(otodom_gcp_instance, listing) -> None:
-
     distance_time_to_city_center_driving = (
         otodom_gcp_instance.get_driving_time_distance(52.2098433, 21.028336)
     )
@@ -326,7 +340,6 @@ def test_get_driving_time_distance(otodom_gcp_instance, listing) -> None:
 
 @pytest.mark.skip
 def test_get_bicycling_time_distance(otodom_gcp_instance, listing) -> None:
-
     distance_time_to_city_center_driving = (
         otodom_gcp_instance.get_bicycling_time_distance(52.2098433, 21.028336)
     )
@@ -338,7 +351,6 @@ def test_get_bicycling_time_distance(otodom_gcp_instance, listing) -> None:
 
 @pytest.mark.skip
 def test_get_walking_time_distance(otodom_gcp_instance, listing) -> None:
-
     distance_time_to_city_center_driving = (
         otodom_gcp_instance.get_walking_time_distance(52.2098433, 21.028336)
     )
@@ -397,55 +409,55 @@ def test_get_basement(otodom_instance, listing) -> None:
 
 
 def test_get_promoted_listing_urls_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     promoted_urls = otodom_instance.get_promoted_listing_urls_for_page(
         search_soup
     )
     assert len(promoted_urls) == 3
     assert (
-        promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
-        "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
-        "-ID4blGn"
+            promoted_urls[0] == "https://www.otodom.pl/pl/oferta/nowa"
+                                "-kawalerka-odbior-kluczy-1q2022-ochota-wloch"
+                                "-ID4blGn"
     )
     assert (
-        promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
-        "-130-m-w-babka-tower-ID4ehmq"
+            promoted_urls[1] == "https://www.otodom.pl/pl/oferta/apartament"
+                                "-130-m-w-babka-tower-ID4ehmq"
     )
     assert (
-        promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
-        "-marymonckiej-ID4ehkP"
+            promoted_urls[2] == "https://www.otodom.pl/pl/oferta/penthouse-na"
+                                "-marymonckiej-ID4ehkP"
     )
 
 
 def test_get_standard_listintg_urls_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     standard_urls = otodom_instance.get_standard_listing_urls_for_page(
         search_soup
     )
     assert len(standard_urls) == 36
     assert (
-        standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
-        "-warszawa-ul-fundamentowa-ID47bq4"
+            standard_urls[0] == "https://www.otodom.pl/pl/oferta/kawalerka"
+                                "-warszawa-ul-fundamentowa-ID47bq4"
     )
     assert (
-        standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
-        "-dla-rodziny-przy-parku-szczesliwickim"
-        "-ID4dVV3"
+            standard_urls[1] == "https://www.otodom.pl/pl/oferta/mieszkanie"
+                                "-dla-rodziny-przy-parku-szczesliwickim"
+                                "-ID4dVV3"
     )
     assert (
-        standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
-        "-nowe-i-do-odbioru-ID4ebFQ"
+            standard_urls[-2] == "https://www.otodom.pl/pl/oferta/dwupokojowe"
+                                 "-nowe-i-do-odbioru-ID4ebFQ"
     )
     assert (
-        standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
-        "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
+            standard_urls[-1] == "https://www.otodom.pl/pl/oferta/z-tarasem"
+                                 "-18-52m2-10min-do-centrum-blisko-skm-ID4enyi"
     )
 
 
 def test_get_all_listings_for_search_page(
-    otodom_instance, search_soup
+        otodom_instance, search_soup
 ) -> None:
     urls, metadata = otodom_instance.get_all_relevant_listing_urls_for_page(
         search_soup
@@ -454,7 +466,7 @@ def test_get_all_listings_for_search_page(
 
 
 def test_get_empty_list_of_urls_for_empty_page(
-    otodom_instance, empty_search_soup
+        otodom_instance, empty_search_soup
 ) -> None:
     urls, metadata = otodom_instance.get_all_relevant_listing_urls_for_page(
         empty_search_soup
@@ -469,18 +481,18 @@ def test_url_generator(otodom_instance):
     url_generator = otodom_instance.url_generator()
 
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=36"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=2&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=2&limit=36"
     )
     assert (
-        next(url_generator)
-        == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        "?page=3&limit=36"
+            next(url_generator)
+            == "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+               "?page=3&limit=36"
     )
 
 
@@ -489,16 +501,16 @@ def test_url_generator_with_query_parameters(otodom_instance):
 
     url_generator = otodom_instance.url_generator()
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=1&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=1&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=2&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=2&limit=72"
     )
     assert (
-        next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
-        "/mieszkanie/warszawa?page=3&limit=72"
+            next(url_generator) == "https://www.otodom.pl/pl/oferty/sprzedaz"
+                                   "/mieszkanie/warszawa?page=3&limit=72"
     )
 
 
@@ -516,7 +528,8 @@ def test_get_data_from_listing(otodom_instance, listing) -> None:
 
 
 def test_update_listing_data(
-    otodom_instance, listing: BeautifulSoup, alternative_listing: BeautifulSoup
+        otodom_instance, listing: BeautifulSoup,
+        alternative_listing: BeautifulSoup
 ) -> None:
     listing_soups = [listing, alternative_listing]
     otodom_instance.process_listing_soups(listing_soups)
@@ -545,8 +558,8 @@ def test_main_page_not_scraped(otodom_instance, search_soup) -> None:
         metadata,
     ) = otodom_instance.get_all_relevant_listing_urls_for_page(search_soup)
     assert (
-        "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
-        not in relevant_listings
+            "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa"
+            not in relevant_listings
     )
 
 
@@ -557,13 +570,13 @@ def test_creation_date(otodom_instance, listing) -> None:
     )
 
 
-@pytest.mark.skip
-def test_scrap(otodom_settings):
+def test_scrap(test_session, otodom_settings):
     otodom_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
-    otodom_settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE = True
 
     otodom = Otodom(otodom_settings)
 
     scrapped_data, statistics = otodom.scrap()
+    breakpoint()
+
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75
