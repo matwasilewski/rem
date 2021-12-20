@@ -31,7 +31,6 @@ from rem.utils import (
 
 class Otodom:
     def __init__(self, new_settings=None, session=None):
-        global settings
         if new_settings:
             log.info(f"Overwriting settings manually with: {new_settings}")
             settings = new_settings
@@ -141,7 +140,6 @@ class Otodom:
         for search_url_count, url in enumerate(generator):
             listing_soups: list = []
             metadata: Dict = self._reset_metadata()
-
 
             if search_url_count == self.page_limit:
                 log.info(
@@ -1019,32 +1017,6 @@ class Otodom:
 
         soup = get_soup(html)
         return soup
-
-    def run_gcp_queries_on_listings(
-        self, listings: List[BeautifulSoup]
-    ) -> None:
-        for listing in listings:
-            coordinates = self.extract_long_lat_from_listing(listing)
-
-            if not coordinates:
-                continue
-
-            longitude = coordinates["longitude"]
-            latitude = coordinates["latitude"]
-
-            listing_data: pd.Series = pd.Series(dtype=str)
-            for gcp_extractor in self.gcp_extractors:
-                try:
-                    outcome = gcp_extractor(latitude, longitude)
-                    data = pd.Series(outcome)
-                    listing_data = listing_data.append(data)
-                except Exception as e:
-                    log.error(
-                        f"Exception in GCP extractor {gcp_extractor}: {e}"
-                    )
-
-            self.add_new_listing_data(listing_data)
-        return
 
     def get_gcp_data_from_listing(self, listing: BeautifulSoup) -> pd.Series:
         listing_data = pd.Series()
