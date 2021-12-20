@@ -164,10 +164,8 @@ class Otodom:
                     break
 
                 listing_soups = self.get_soups_from_listing_urls(listings_urls)
-                self.process_listing_soups(listing_soups)
 
-                if settings.USE_GOOGLE_MAPS_API:
-                    self.run_gcp_queries_on_listings(listing_soups)
+                self.process_listing_soups(listing_soups)
 
             except requests.exceptions.RequestException as ex:
                 log.exception(f"Unexpected {ex=}, {type(ex)=}")
@@ -205,6 +203,10 @@ class Otodom:
     def process_listing_soups(self, listings: List[BeautifulSoup]):
         for listing in listings:
             listing_data = self.get_data_from_listing(listing)
+
+            if settings.USE_GOOGLE_MAPS_API:
+                listing_data.append(self.get_gcp_data_from_listing(listing))
+
             self.add_new_listing_data(listing_data)
 
     def url_generator(self):
@@ -880,7 +882,7 @@ class Otodom:
 
         return {"basement": basement}
 
-    def extract_long_lat_via_address(self, address):
+    def extract_long_lat_via_address(self, address: str):
         geocode_result = self.gmaps.geocode(address)
         geometry = geocode_result[0]['geometry']
         lat = geometry['location']['lat']
@@ -1039,6 +1041,25 @@ class Otodom:
 
             self.add_new_listing_data(listing_data)
         return
+
+    def get_gcp_data_from_listing(self, listing: BeautifulSoup) -> pd.Series:
+        listing_data = pd.Series()
+
+        coordinates = self.extract_long_lat_from_listing(listing)
+        if not coordinates:
+            return listing_data
+        listing_data.append(pd.Series(coordinates))
+
+        longitude = coordinates["longitude"]
+        latitude = coordinates["latitude"]
+
+        for gcp_extractor in self.gcp_extractors:
+            try:
+                extracted = pd.Series(gcp_extractor(latitude, longitude))
+                listing_data = listing_data.append(extracted)
+            except Exception as e:
+                log.error(f"Exception in GCP extractor {gcp_extractor}: {e}")
+        return listing_data
 
     def extract_long_lat_from_listing(
         self, listing: BeautifulSoup
