@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import time
 
 import pandas as pd
 import pytest
@@ -28,11 +29,12 @@ def otodom_settings() -> Settings:
     my_settings = get_settings()
     my_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
     my_settings.LOAD_FROM_DATA = False
-    otodom_settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE = True
-    otodom_settings.OFFSET = 0
-    otodom_settings.PAGE_LIMIT = 1
-    otodom_settings.USE_GOOGLE_MAPS_API = False
-    otodom_settings.DATA_FILE_NAME = "otodom_test"
+    my_settings.DOWNLOAD_LISTINGS_ALREADY_IN_FILE = True
+    my_settings.OFFSET = 0
+    my_settings.PAGE_LIMIT = 1
+    my_settings.USE_GOOGLE_MAPS_API = False
+    my_settings.DATA_FILE_NAME = "otodom_test"
+    my_settings.LOG_DIR = os.sep.join(["logs", f"test-{int(time.time())}-rem.log"])
 
     yield my_settings
 
@@ -573,10 +575,9 @@ def test_creation_date(otodom_instance, listing) -> None:
 def test_scrap(test_session, otodom_settings):
     otodom_settings.BASE_SEARCH_URL = "https://www.otodom.pl/pl/oferty/sprzedaz/mieszkanie/warszawa?page=1&limit=72"
 
-    otodom = Otodom(otodom_settings)
+    otodom = Otodom(otodom_settings, test_session)
 
     scrapped_data, statistics = otodom.scrap()
-    breakpoint()
 
     assert isinstance(scrapped_data, pd.DataFrame)
     assert len(scrapped_data.index) == 75

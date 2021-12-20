@@ -142,6 +142,7 @@ class Otodom:
             listing_soups: list = []
             metadata: Dict = self._reset_metadata()
 
+
             if search_url_count == self.page_limit:
                 log.info(
                     f"Reached page limit of {self.page_limit}. Terminating."
