@@ -136,6 +136,9 @@ class Otodom:
         start_time = time.time()
 
         for search_url_count, url in enumerate(generator):
+            listing_soups: list = []
+            metadata: Dict = self._reset_metadata()
+
             if search_url_count == self.page_limit:
                 log.info(
                     f"Reached page limit of {self.page_limit}. Terminating."
@@ -143,35 +146,40 @@ class Otodom:
                 break
 
             log.info(f"Requesting search page HTML from url {url}")
-            search_soup = self.get_soup_from_url(
-                url,
-            )
 
-            (
-                listings_urls,
-                metadata,
-            ) = self.get_all_relevant_listing_urls_for_page(search_soup)
-
-            if len(listings_urls) == 0:
-                log.info(
-                    "No relevant listing urls found on the search page. Terminating."
-                )
-                break
-
-            listing_soups = self.get_soups_from_listing_urls(listings_urls)
-            self.process_listing_soups(listing_soups)
-
-            if settings.USE_GOOGLE_MAPS_API:
-                self.run_gcp_queries_on_listings(listing_soups)
-
-            if self.save_to_file:
-                utils.save_data(
-                    self.data, self.data_file_name, self.data_directory
+            try:
+                search_soup = self.get_soup_from_url(
+                    url,
                 )
 
-            statistics["standard_urls_checked"] += metadata["standard"]
-            statistics["promoted_urls_checked"] += metadata["promoted"]
-            statistics["new_urls"] += len(listing_soups)
+                (
+                    listings_urls,
+                    metadata,
+                ) = self.get_all_relevant_listing_urls_for_page(search_soup)
+
+                if len(listings_urls) == 0:
+                    log.info(
+                        "No relevant listing urls found on the search page. Terminating."
+                    )
+                    break
+
+                listing_soups = self.get_soups_from_listing_urls(listings_urls)
+                self.process_listing_soups(listing_soups)
+
+                if settings.USE_GOOGLE_MAPS_API:
+                    self.run_gcp_queries_on_listings(listing_soups)
+
+            except requests.exceptions.RequestException as ex:
+                log.exception(f"Unexpected {ex=}, {type(ex)=}")
+            finally:
+                statistics["standard_urls_checked"] += metadata["standard"]
+                statistics["promoted_urls_checked"] += metadata["promoted"]
+                statistics["new_urls"] += len(listing_soups)
+                if self.save_to_file:
+                    utils.save_data(
+                        self.data, self.data_file_name, self.data_directory
+                    )
+
         end_time = time.time()
 
         statistics["search_pages"] = search_url_count
@@ -1000,8 +1008,8 @@ class Otodom:
                 )
                 with open(save_path, "w") as f:
                     f.write(html)
-            except FileNotFoundError as e:
-                log.error("Directory {does not exist! ")
+            except FileNotFoundError as ex:
+                log.error(f"Directory {save_path} does not exist! {ex=}")
 
         soup = get_soup(html)
         return soup
@@ -1041,14 +1049,15 @@ class Otodom:
         return None
 
     def get_website(self, url: str) -> Response:
-        page = None
         log.info(f"Requesting from url {url}...")
         try:
             page = self.session.get(url, timeout=settings.TIMEOUT)
             if not page.from_cache:
                 time.sleep(self.offset)
-        except requests.exceptions.Timeout as e:
-            log.error(f"Timeout error when requesting {url}!: {e}")
-            SystemExit(e)
+        except requests.exceptions.Timeout as ex:
+            log.exception(
+                f"Timeout {ex=} error when requesting {url=}! {type(ex)=}"
+            )
+            raise requests.RequestException
 
         return page
