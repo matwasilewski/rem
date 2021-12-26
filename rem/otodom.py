@@ -755,7 +755,10 @@ class Otodom:
         for i in indices:
             contem_address_list.append(address_list[i])
 
-        address = str(max(contem_address_list, key=len))
+        try:
+            address = str(max(contem_address_list, key=len))
+        except ValueError:
+            address = None
 
         return {"address": address}
 
